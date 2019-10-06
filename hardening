@@ -1,5 +1,11 @@
 #!/bin/bash
 echo "Inicia Script"
 
+echo "Inicia Instalacion..."
 apt install fail2ban -y
+apt install logwatch -y
+apt install logcheck -y
 
+echo "Inicia configuracion..."
+
+logwatch --detail Low --mailTo "$1" --service http,ssh --range yesterday  
