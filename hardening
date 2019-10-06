@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Inicia Script"
+
+apt install fail2ban -y
+
