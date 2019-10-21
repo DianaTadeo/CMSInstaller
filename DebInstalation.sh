@@ -44,6 +44,8 @@ else
 	composer --version
 	export PATH="$HOME/.composer/vendor/bin:$PATH"
 fi
+composer create-project drupal-composer/drupal-project:8.x-dev drupal-composer-build --stability dev --no-interaction
+
 if isinstalledDrush drush; then
 	echo `drush --version`
 else
