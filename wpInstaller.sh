@@ -72,7 +72,7 @@ echo "Ingresa el password para este usuario"
 read -e wp_pass
 echo "Ingresa un correo para este usuario"
 read -e mail
-wp --allow-root core install --url=$url --title=$title --admin_user=$wp_admin --admin_password=$wp_pass--admin_email=$mail
+wp --allow-root core install --url=$url --title=$title --admin_user=$wp_admin --admin_password=$wp_pass --admin_email=$mail
 mkdir wp-content/uploads
 chmod 775 wp-content/uploads
 
