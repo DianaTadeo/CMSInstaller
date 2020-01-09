@@ -58,7 +58,7 @@ cd /var/www/html/wordpress
 #chown -R www-data:www-data ../wordpress
 wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 chmod u+x wp-cli.phar
-sudo mv wp-cli.phar /usr/local/bin/wp
+mv wp-cli.phar /usr/local/bin/wp
 wp --allow-root core download
 wp --allow-root core config --dbhost=localhost --dbname=$dbname --dbuser=$dbuser --dbpass=$dbpass
 chmod 644 wp-config.php
