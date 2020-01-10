@@ -70,7 +70,7 @@ if($_POST) {
 					'SO' => $SO, 'DomainName' => $domainname, 'IPv4' => $IPv4,
 					'IPv6' => $IPv6, 'CMS' => $CMS, 'CMSVersion' => $CMS_version,
 					'DatabaseManager' => $database_manager, 'DBVersion' => $dbVersion,
-					'WebServer' => $webserver, 'PathInstall' => $path_install,
+					'WebServer' => $webserver, 'WSVersion' => $webServerVersion, 'PathInstall' => $path_install,
 					'BackupDays' => $backupdays, 'BackupTime' => $backuptime,
 					'DBExists' => $DB
 				);
