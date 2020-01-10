@@ -17,45 +17,8 @@ else
 echo "============================================"
 echo "A robot is now installing WordPress for you."
 echo "============================================"
-#download wordpress
-#curl -O https://wordpress.org/latest.tar.gz
-#unzip wordpress
-#tar -zxvf latest.tar.gz
-#change dir to wordpress
-#cd wordpress
 mkdir /var/www/html/wordpress
-#copy file to parent dir
-#cp -rf . /var/www/html/wordpress
-#move back to parent dir
-#remove files from wordpress folder
-#rm -R wordpress
 cd /var/www/html/wordpress
-#create wp config
-#cp wp-config-sample.php wp-config.php
-#set database details with perl find and replace
-#sed -i -e "s/database_name_here/$dbname/g" wp-config.php
-#sed -i -e "s/username_here/$dbuser/g" wp-config.php
-#sed -i -e "s/password_here/$dbpass/g" wp-config.php
-
-#set WP salts
-#perl -i -pe'
-#  BEGIN {
-#    @chars = ("a" .. "z", "A" .. "Z", 0 .. 9);
-#    push @chars, split //, "!@#$%^&*()-_ []{}<>~\`+=,.;:/?|";
-#    sub salt { join "", map $chars[ rand @chars ], 1 .. 64 }
-#  }
-#  s/put your unique phrase here/salt()/ge
-#' wp-config.php
-
-#create uploads folder and set permissions
-#mkdir wp-content/uploads
-#chmod 775 wp-content/uploads
-#echo "Cleaning..."
-#remove zip file
-#rm latest.tar.gz
-#remove bash script
-#rm wp.sh
-#chown -R www-data:www-data ../wordpress
 wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 chmod u+x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
