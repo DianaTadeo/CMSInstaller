@@ -9,19 +9,19 @@ echo "Database User: "
 read -e dbuser
 echo "Database Password: "
 read -s dbpass
-echo "run install? (y/n)"
-read -e run
-if [ "$run" == n ] ; then
-exit
-else
-echo "============================================"
-echo "A robot is now installing WordPress for you."
-echo "============================================"
-mkdir /var/www/html/wordpress
-cd /var/www/html/wordpress
-wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-chmod u+x wp-cli.phar
-mv wp-cli.phar /usr/local/bin/wp
+#echo "run install? (y/n)"
+#read -e run
+#if [ "$run" == n ] ; then
+#exit
+#else
+#echo "============================================"
+#echo "A robot is now installing WordPress for you."
+#echo "============================================"
+#mkdir /var/www/html/wordpress
+#cd /var/www/html/wordpress
+#wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+#chmod u+x wp-cli.phar
+#mv wp-cli.phar /usr/local/bin/wp
 wp --allow-root core download
 wp --allow-root core config --dbhost=localhost --dbname=$dbname --dbuser=$dbuser --dbpass=$dbpass
 chmod 644 wp-config.php
