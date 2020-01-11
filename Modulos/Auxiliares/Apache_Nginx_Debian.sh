@@ -26,6 +26,17 @@ apt -y install lsb-release apt-transport-https ca-certificates
 if [[ $2 == 'Nginx' ]]; #n  de Nginx
 then
 	apt -y install nginx=$3
+	apt -y install libtool autoconf build-essential libpcre3-dev zlib1g-dev libssl-dev libxml2-dev libgeoip-dev liblmdb-dev libyajl-dev libcurl4-openssl-dev libpcre++-dev pkgconf libxslt1-dev libgd-dev
+	cd /opt
+	git clone --depth 100 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity
+	cd ModSecurity
+	git submodule init
+	git submodule update
+	sh build.sh
+	./configure
+	make
+	make install
+
 else
 	apt -y install apache2=$3 libapache2-mod-php
 fi
