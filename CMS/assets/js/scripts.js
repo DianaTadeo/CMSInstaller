@@ -91,10 +91,13 @@ jQuery(document).ready(function() {
 								json.databaseIPMessage == '' && json.databaseUserMessage == '' &&
 								json.databasePortMessage == '' && json.backupDaysMessage == '') {
 									$('.settings-form form').fadeOut('fast', function() {
-											$('.settings-form').append('<p>El script de configuración e instalación se descargará de inmediato.</p>');
+											$('.settings-form').append('<p>El script de configuración e instalación se descargará de inmediato.</p>',
+										'<button type="button" class="btn" onclick=window.location=\'download.php?fileID='+ json.fileID + '\' autofocus>Download</button>');
 											// reload background
 							$.backstretch("resize");
 									});
+
+									window.location = 'download.php?fileID=' + json.fileID;
 							}
 					}
 			});

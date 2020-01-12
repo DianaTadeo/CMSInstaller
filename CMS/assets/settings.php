@@ -17,6 +17,19 @@ function isPort($port){
 	return filter_var($port, FILTER_VALIDATE_INT);
 }
 
+function downloadFile($file){
+	$filetype=filetype($file);
+	$filename=basename($file);
+	//header ("Content-Type: ".$filetype);
+	header('Content-Type: text/html');
+	header ("Content-Length: ".filesize($file));
+	header ('Content-Disposition: attachment; filename="'.$filename.'"');
+	header('Expires: 0');
+	header('Cache-Control: must-revalidate');
+	header('Pragma: public');
+	readfile($file);
+}
+
 if($_POST) {
 		$clientEmail = 'rafavafer@hotmail.com';
 		$SO = $_POST['SO'];
@@ -82,8 +95,10 @@ if($_POST) {
 					$json_options = json_encode($options);
 					$dir = '/var/www/html/CMS/files/';
 					$file = uniqid().getmypid();
-					$filename = $dir.$file.'.txt';
+					$filename = $dir.$file.'.json';
 					file_put_contents($filename, $json_options);
+					$array['fileID'] = $file;
+//					downloadFile($filename);
 			}
 		}
 
