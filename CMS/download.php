@@ -1,7 +1,7 @@
 <?php
 	$filename = addslashes(trim($_GET['fileID'])).'.json';
 	$file='/var/www/html/CMS/files/'.$filename;
-	if(file_exists){
+	if(file_exists($file)){
 		$filetype=filetype($file);
 		header ("Content-Type: ".$filetype);
 		//header('Content-Type: text/html');
