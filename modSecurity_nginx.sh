@@ -45,7 +45,7 @@ log_command()
 }
 ###################################################################
 #Banner that inits log file
-}
+
 ###################################################################
 #Exits if script failed
 exit_install()
@@ -58,184 +58,8 @@ exit_install()
 	echo
 	exit 1
 }
-###################################################################
-#Detecting Distribution
-check_distribution()
-{
-	DISTR=`grep -E "^ID=" /etc/*release | cut -d "=" -f2 |sed -r 's/"//g'`
-	log_command $? "grep -E \"^ID=\" /etc/*release | cut -d \"=\" -f2 | sed -r 's/\"//g'"
-	VERSION=`grep -E "^VERSION_ID=" /etc/*release | cut -d "=" -f2 |sed -r 's/"//g'`
-	log_command $? "grep -E \"^VERSION_ID=\" /etc/*release | cut -d \"=\" -f2 | sed -r 's/\"//g'"
-	EXCEPT=`grep -i centos /etc/issue`
-
-	
-	if [[ "$EXCEPT" == *"CentOS"*"6"* ]]; then
-	        log_command $? "grep -i centos /etc/issue"
-	        echo "CentOS 6"
-	fi
-	if [[ "$DISTR" == "centos" && "$VERSION" == "7"* ]]; then
-	        echo "CentOS 7"
-	fi
-	if [[ "$DISTR" == "debian" && "$VERSION" == "8"* ]]; then
-	        echo "Debian 8"
-	fi
-	if [[ "$DISTR" == "debian" && "$VERSION" == "9"* ]]; then
-	        echo "Debian 9"
-	fi
-	if [[ "$DISTR" == "ubuntu" && "$VERSION" == "16"* ]]; then
-	        echo "Ubuntu 16"
-	fi
-	if [[ "$DISTR" == "ubuntu" && "$VERSION" == "14"* ]]; then
-	        echo "Ubuntu 14"
-	fi
-	if [[ "$DISTR" == "ubuntu" && "$VERSION" == "17"* ]]; then
-	        echo "Ubuntu 17"
-	fi
-}
-
-#Installing dependencies
-#Modifies sources.list file to install the packages
-install_dependencies_nginx()
-{
-	echo
-	echo -e "$Cyan \nInstalling dependencies ...\n $Color_Off"
-	echo
-	echo                         >> $LOG
-	echo "Installing dependencies ..." >> $LOG
-	echo                         >> $LOG
-	repositoryChange=1
-	if [[ "$1" == *"Debian"* ]]; then
-		cmd="apt-get install -y git zlibc zlib1g zlib1g-dev libgeoip-dev libgeoip1 git build-essential libpcre3 libpcre3-dev libssl-dev libtool autoconf apache2-dev libxml2-dev libcurl4-openssl-dev automake pkgconf"
-		$cmd
-		log_command $? "$cmd"
-	fi
-	if [[ "$1" == *"Ubuntu"* ]]; then
-		cmd="apt-get update"
-		$cmd
-		log_command $? "$cmd"
-
-		cmd="apt-get install -y git zlibc zlib1g zlib1g-dev libgeoip-dev libgeoip1 git build-essential libpcre3 libpcre3-dev libssl-dev libtool autoconf apache2-dev libxml2-dev libcurl4-openssl-dev automake pkgconf"
-		$cmd
-		log_command $? "$cmd"
-	fi
-	if [[ "$1" == *"CentOS"* ]]; then
-#		cmd="rpm -Uvh --force https://epel.mirror.constant.com/6/i386/epel-release-6-8.noarch.rpm"
-#		$cmd
-#		log_command "$?" "$cmd"
-
-		yum groupinstall -y "Development Tools"
-		log_command "$?" "yum groupinstall -y \"Development Tools\""
 
 
-		cmd="yum install -y git  libtool autoconf  automake httpd httpd-devel pcre pcre-devel libxml2 libxml2-devel curl curl-devel openssl openssl-devel"
-		$cmd
-		log_command "$?" "$cmd"
-	fi
-
-}
-###################################################################
-#Installing Modsecurity
-install_modsecurity_nginx()
-{
-
-	echo
-	echo -e "$Cyan \nInstalling ModSecurity ...\n $Color_Off"
-	echo
-	echo                         >> $LOG
-	echo "Installing ModSecurity ..." >> $LOG
-	echo                         >> $LOG
-
-
-	if [[ "$1" == *"Debian"* || "$1" == *"Ubuntu"* || "$1" == "CentOS 7" ]]; then
-#		cmd="apt-get install git libapache2-mod-security2 -y"
-#		$cmd
-#		log_command $? "$cmd"
-
-		#Download folder
-		cmd="cd /opt"
-		$cmd
-		log_command $? "$cmd"
-		#Downloading ModSecurity
-		cmd="git clone https://github.com/SpiderLabs/ModSecurity"
-		$cmd
-		log_command $? "$cmd"
-
-		cmd="cd ModSecurity"
-		$cmd
-		log_command $? "$cmd"  
-
-		cmd="git checkout -b v3/master origin/v3/master"
-		$cmd
-		log_command $? "$cmd"  
-
-		 
-		#Compiling ModSecurity
-		cmd="sh build.sh"
-		$cmd
-		log_command $? "$cmd"
-
-		cmd="git submodule init"
-		$cmd
-		log_command $? "$cmd"
-
-		cmd="git submodule update"
-		$cmd
-		log_command $? "$cmd"
-
-		cmd="./configure"
-		$cmd
-		log_command $? "$cmd"
-
-		cmd="make"
-		$cmd
-		log_command $? "$cmd"
-
-		cmd="make install"
-		$cmd
-		log_command $? "$cmd"
-
-		#Modsecurity and nginx Connector
-
-		cmd="cd /opt/"
-		$cmd
-		log_command $? "$cmd"
-
-		cmd="git clone https://github.com/SpiderLabs/ModSecurity-nginx.git"
-		$cmd
-		log_command $? "$cmd"
-	fi
-
-	if [[ "$1" == *"CentOS 6"* ]]; then
-		cmd="cd /opt/"
-		$cmd
-		log_command "$?" "$cmd"
-
-		cmd="git clone -b nginx_refactoring https://github.com/SpiderLabs/ModSecurity.git"
-		$cmd
-		log_command "$?" "$cmd"
-
-		cmd="cd ModSecurity"
-		$cmd
-		log_command "$?" "$cmd"
-
-		cmd="./autogen.sh"
-		$cmd
-		log_command "$?" "$cmd"
-
-		cmd="./configure --enable-standalone-module --disable-mlogc"
-		$cmd
-		log_command "$?" "$cmd"
-
-		cmd="make"
-		$cmd
-		log_command "$?" "$cmd"
-
-		cmd="make install"
-		$cmd
-		log_command "$?" "$cmd"
-	fi
-}
-###################################################################
 install_nginx()
 {
 
@@ -316,6 +140,140 @@ install_nginx()
 		log_command "$?" "$cmd"
 	fi
 }
+
+###################################################################
+#Detecting Distribution
+#Installing dependencies
+#Modifies sources.list file to install the packages
+install_dependencies_nginx()
+{
+	echo
+	echo -e "$Cyan \nInstalling dependencies ...\n $Color_Off"
+	echo
+	echo                         >> $LOG
+	echo "Installing dependencies ..." >> $LOG
+	echo                         >> $LOG
+	repositoryChange=1
+	if [[ "$1" == *"Debian"* ]]; then
+		cmd="apt-get install -y git zlibc zlib1g zlib1g-dev libgeoip-dev libgeoip1 git build-essential libpcre3 libpcre3-dev libssl-dev libtool autoconf apache2-dev libxml2-dev libcurl4-openssl-dev automake pkgconf"
+		$cmd
+		log_command $? "$cmd"
+	fi
+	if [[ "$1" == *"CentOS"* ]]; then
+
+		yum groupinstall -y "Development Tools"
+		log_command "$?" "yum groupinstall -y \"Development Tools\""
+
+
+		cmd="yum install -y git libtool autoconf  automake httpd httpd-devel pcre pcre-devel libxml2 libxml2-devel curl curl-devel openssl openssl-devel"
+		$cmd
+		log_command "$?" "$cmd"
+	fi
+
+}
+###################################################################
+#Installing Modsecurity
+install_modsecurity_nginx()
+{
+
+	echo
+	echo -e "$Cyan \nInstalling ModSecurity ...\n $Color_Off"
+	echo
+	echo                         >> $LOG
+	echo "Installing ModSecurity ..." >> $LOG
+	echo                         >> $LOG
+
+
+	if [[ "$1" == *"Debian"* || "$1" == "CentOS 7" ]]; then
+#		cmd="apt-get install git libapache2-mod-security2 -y"
+#		$cmd
+#		log_command $? "$cmd"
+
+		#Download folder
+		cmd="cd /opt"
+		$cmd
+		#log_command $? "$cmd"
+		#Downloading ModSecurity
+		cmd="git clone https://github.com/SpiderLabs/ModSecurity"
+		$cmd
+		#log_command $? "$cmd"
+
+		cmd="cd ModSecurity"
+		$cmd
+		#log_command $? "$cmd"  
+
+		cmd="git checkout -b v3/master origin/v3/master"
+		$cmd
+		#log_command $? "$cmd"  
+
+		 
+		#Compiling ModSecurity
+		cmd="sh build.sh"
+		$cmd
+		#log_command $? "$cmd"
+
+		cmd="git submodule init"
+		$cmd
+		#log_command $? "$cmd"
+
+		cmd="git submodule update"
+		$cmd
+		#log_command $? "$cmd"
+
+		cmd="./configure"
+		$cmd
+		#log_command $? "$cmd"
+
+		cmd="make"
+		$cmd
+		#log_command $? "$cmd"
+
+		cmd="make install"
+		$cmd
+		#log_command $? "$cmd"
+
+		#Modsecurity and nginx Connector
+
+		cmd="cd /opt/"
+		$cmd
+		#log_command $? "$cmd"
+
+		cmd="git clone https://github.com/SpiderLabs/ModSecurity-nginx.git"
+		$cmd
+		#log_command $? "$cmd"
+	fi
+
+	if [[ "$1" == *"CentOS 6"* ]]; then
+		cmd="cd /opt/"
+		$cmd
+		log_command "$?" "$cmd"
+
+		cmd="git clone -b nginx_refactoring https://github.com/SpiderLabs/ModSecurity.git"
+		$cmd
+		log_command "$?" "$cmd"
+
+		cmd="cd ModSecurity"
+		$cmd
+		log_command "$?" "$cmd"
+
+		cmd="./autogen.sh"
+		$cmd
+		log_command "$?" "$cmd"
+
+		cmd="./configure --enable-standalone-module --disable-mlogc"
+		$cmd
+		log_command "$?" "$cmd"
+
+		cmd="make"
+		$cmd
+		log_command "$?" "$cmd"
+
+		cmd="make install"
+		$cmd
+		log_command "$?" "$cmd"
+	fi
+}
+###################################################################
 ###################################################################
 configuring_nginx()
 {
@@ -328,7 +286,7 @@ configuring_nginx()
 	echo                         >> $LOG	
 
 
-	if [[ "$1" == *"Debian"* || "$1" == *"Ubuntu"*  ]]; then
+	if [[ "$1" == *"Debian"* ]]; then
 
 		cmd="cp /opt/ModSecurity/modsecurity.conf-recommended /usr/local/nginx/conf/modsecurity.conf"
 		$cmd
@@ -621,11 +579,10 @@ configuring_nginx()
 }
 ###################################################################
 #Running functions
-check_user
-banner_log
-distribution=$(check_distribution)
+#check_user
+distribution="Debian"#$(check_distribution)
 echo $distribution
-install_dependencies_nginx "$distribution"
+#install_dependencies_nginx "$distribution"
 install_modsecurity_nginx "$distribution"
-install_nginx "$distribution"
-configuring_nginx "$distribution"
+#install_nginx "$distribution"
+#configuring_nginx "$distribution"
