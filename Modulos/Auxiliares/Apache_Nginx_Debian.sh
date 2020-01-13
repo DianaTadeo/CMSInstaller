@@ -4,9 +4,9 @@
 ##################################################
 
 
-
-#Argumento 1: Tipo de web server a instalar ['Nginx' o 'Apache']
-#Argumento 2: Version del web server
+#Argumento 1:Version de Debian
+#Argumento 2: Tipo de web server a instalar ['Nginx' o 'Apache']
+#Argumento 3: Version del web server
 
 LOG="`pwd`/../Log/Aux_Instalacion.log"
 
@@ -51,16 +51,21 @@ install_nginx(){
 
 
 ################## Instalacion de Apache ##########################
-# $1: Version													  #
+# $1: Version Debian
+# $2: Version Apache													  #
 ###################################################################
 install_apache(){
-	echo "deb http://security.debian.org jessie/updates main \ndeb http://security.debian.org stretch/updates main" >> /etc/apt/sources.list
-	wget http://nginx.org/keys/nginx_signing.key
-	apt-key add nginx_signing.key
+	#if [[ $1 == "Debian 9" ]]; then
+	#echo "deb http://ssecurity.debian.org stretch/updates main \n deb http://security.debian.org buster/updates" >> /etc/apt/sources.list
+	#else
+	#echo "deb http://security.debian.org jessie/updates main \ndeb http://security.debian.org stretch/updates main" >> /etc/apt/sources.list
+	#fi
+	#wget http://nginx.org/keys/nginx_signing.key
+	#apt-key add nginx_signing.key
 	apt update
 	
 	echo "[`date +"%F %X"`] Instalando Apache version $1"
-	cmd="apt -y install apache2-2.4.25-3+deb9u9"
+	cmd="apt -y install apache2"
 	#cmd="apt-cache policy apache2"
 	$cmd
 	log_errors $? "Instalacion de Apache"
@@ -79,7 +84,7 @@ install_apache_WAF(){
 	log_errors $? "Habilitando ModSecurity"
 	
 	if [ -f "/etc/modsecurity/modsecurity.conf-recommended" ]; then
-			mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
+		mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
 		
 	fi
 	
@@ -87,11 +92,11 @@ install_apache_WAF(){
 	sed -i "s/SecResponseBodyAccess On/SecResponseBodyAccess Off/" /etc/modsecurity/modsecurity.conf 
 	cmd="a2enmod security2"
 	$cmd
-	log_command $? "Configurando ModSecurity"
+	log_errors $? "Configurando ModSecurity"
 	
 	cmd="systemctl restart apache2"
 	$cmd
-	log_command $? "Configuracion de ModSecurity"
+	log_errors $? "Configuracion de ModSecurity"
 
 	sed -i "s/IncludeOptional \/usr\/share\/modsecurity-crs\/owasp-crs\.load/#IncludeOptional \/usr\/share\/modsecurity-crs\/owasp-crs\.load/" /etc/apache2/mods-enabled/security2.conf
 	rm -rf /usr/share/modsecurity-crs
@@ -102,11 +107,11 @@ install_apache_WAF(){
 
 	cmd="systemctl restart apache2"
 	$cmd
-	log_command "$?" "Configuracion OWASP"
+	log_errors "$?" "Configuracion OWASP"
 }
 
 echo "==============================================="
-echo "     Inicia la instalacion de $1 $2"
+echo "     Inicia la instalacion de $2 $3"
 echo "==============================================="
 
 apt-get update
@@ -123,12 +128,13 @@ log_errors $? "Instalacion de extensiones"
 #	apt update
 #fi
 #apt -y install php #php-mysql
-if [[ $1 == 'Nginx' ]]; #n  de Nginx
+if [[ $2 == 'Nginx' ]]; #n  de Nginx
 then
-	install_nginx $2
+	install_nginx $1 $3
 
 else
-	install_apache $2
+	install_apache $1 $3
+	install_apache_WAF
 	#apt -y install apache2=$2 libapache2-mod-php
 fi
 chown -R www-data:www-data /var/www/html
