@@ -4,7 +4,7 @@
 ##################################################
 
 
-#Argumento 1:Version de Debian
+#Argumento 1: Version de Debian
 #Argumento 2: Tipo de web server a instalar ['Nginx' o 'Apache']
 #Argumento 3: Version del web server
 
@@ -27,22 +27,34 @@ log_errors(){
 # $1: Version													#
 #################################################################
 install_nginx(){
-	echo "deb http://nginx.org/packages/mainline/debian stretch nginx" >> /etc/apt/sources.list
+		cd /opt
+		wget http://nginx.org/download/nginx-1.12.0.tar.gz
+		tar -zxf nginx-$1.tar.gz
+		cd nginx-$1
+		cmd="apt-get install -y git zlibc zlib1g zlib1g-dev libgeoip-dev libgeoip1 git build-essential libpcre3 libpcre3-dev libssl-dev libtool autoconf apache2-dev libxml2-dev libcurl4-openssl-dev automake pkgconf"
+		$cmd
+		log_errors $? "Instalando dependencias para Nginx: $cmd"
+		./configure --user=www-data --group=www-data --with-pcre-jit --with-debug --with-http_ssl_module --with-http_realip_module --add-module=/opt/ModSecurity-nginx
+		make
+		cmd="make install"
+		$cmd
+		log_errors $? "Compilando...: $cmd"
+	#echo "deb http://nginx.org/packages/mainline/debian stretch nginx" >> /etc/apt/sources.list
 	
-	wget http://nginx.org/keys/nginx_signing.key
-	apt-key add nginx_signing.key
-	apt update
+	#wget http://nginx.org/keys/nginx_signing.key
+	#apt-key add nginx_signing.key
+	#apt update
 	
-	echo "[`date +"%F %X"`] Instalando Nginx version $1"
-	cmd="apt -y install nginx=$1"
-	$cmd
-	log_errors $? "Instalacion de Nginx"
+	#echo "[`date +"%F %X"`] Instalando Nginx version $1"
+	#cmd="apt -y install nginx=$1"
+	#$cmd
+	#log_errors $? "Instalacion de Nginx"
 	
-	echo "[`date +"%F %X"`] Instalando dependencias de Nginx"
-	cmd="apt -y install libtool autoconf build-essential libpcre3-dev zlib1g-dev libssl-dev libxml2-dev libgeoip-dev liblmdb-dev libyajl-dev libcurl4-openssl-dev libpcre++-dev pkgconf libxslt1-dev libgd-dev"
-	$cmd
-	log_errors $? "Instalacion de dependencias de Naginx"
-	rm nginx_signing.key
+	#echo "[`date +"%F %X"`] Instalando dependencias de Nginx"
+	#cmd="apt -y install libtool autoconf build-essential libpcre3-dev zlib1g-dev libssl-dev libxml2-dev libgeoip-dev liblmdb-dev libyajl-dev libcurl4-openssl-dev libpcre++-dev pkgconf libxslt1-dev libgd-dev"
+	#$cmd
+	#log_errors $? "Instalacion de dependencias de Naginx"
+	#rm nginx_signing.key
 }
 
 #install_modsecurity_nginx(){
@@ -68,20 +80,19 @@ install_apache(){
 	cmd="apt -y install apache2"
 	#cmd="apt-cache policy apache2"
 	$cmd
-	log_errors $? "Instalacion de Apache"
+	log_errors $? "Instalacion de Apache: $cmd"
 	
 }
 ############# Instalacion de WAF para Apache ######################
-# $1: Version													  #
 ###################################################################
 install_apache_WAF(){
 	echo "[`date +"%F %X"`] Instalando ModSecurity para Apache"
 	cmd="apt-get -y install libapache2-mod-security2"
 	$cmd
-	log_errors $? "Configuracion de ModSecurity"
+	log_errors $? "Instalacion de ModSecurity: $cmd"
 	
 	systemctl restart apache2
-	log_errors $? "Habilitando ModSecurity"
+	log_errors $? "Habilitando ModSecurity: $cmd"
 	
 	if [ -f "/etc/modsecurity/modsecurity.conf-recommended" ]; then
 		mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
@@ -92,11 +103,11 @@ install_apache_WAF(){
 	sed -i "s/SecResponseBodyAccess On/SecResponseBodyAccess Off/" /etc/modsecurity/modsecurity.conf 
 	cmd="a2enmod security2"
 	$cmd
-	log_errors $? "Configurando ModSecurity"
+	log_errors $? "Habilitando ModSecurity: $cmd"
 	
 	cmd="systemctl restart apache2"
 	$cmd
-	log_errors $? "Configuracion de ModSecurity"
+	log_errors $? "Iniciando de ModSecurity: $cmd"
 
 	sed -i "s/IncludeOptional \/usr\/share\/modsecurity-crs\/owasp-crs\.load/#IncludeOptional \/usr\/share\/modsecurity-crs\/owasp-crs\.load/" /etc/apache2/mods-enabled/security2.conf
 	rm -rf /usr/share/modsecurity-crs
@@ -107,7 +118,74 @@ install_apache_WAF(){
 
 	cmd="systemctl restart apache2"
 	$cmd
-	log_errors "$?" "Configuracion OWASP"
+	log_errors "$?" "Configuracion OWASP: $cmd"
+}
+############# Instalacion de WAF para Nginx ######################
+###################################################################
+install_nginx_WAF(){
+		cd /opt
+		#Downloading ModSecurity
+		git clone https://github.com/SpiderLabs/ModSecurity
+		cd ModSecurity
+		git checkout -b v3/master origin/v3/master
+		#Compiling ModSecurity
+		sh build.sh
+		git submodule init
+		git submodule update
+		cmd="./configure"
+		$cmd
+		log_command $? "Instalando WAF para Nginx: $cmd"
+		cmd="make"
+		$cmd
+		log_command $? "Instalando WAF para Nginx: $cmd"
+		cmd="make install"
+		$cmd
+		log_command $? "Instalacion de WAF para Nginx: $cmd"
+
+		#Modsecurity and nginx Connector
+		cd /opt/
+		git clone https://github.com/SpiderLabs/ModSecurity-nginx.git
+		
+		cp /opt/ModSecurity/modsecurity.conf-recommended /usr/local/nginx/conf/modsecurity.conf
+		ln -s /usr/local/nginx/sbin/nginx /bin/nginx
+		mkdir /usr/local/nginx/conf/sites-available
+		mkdir /usr/local/nginx/conf/sites-enabled
+		mkdir /usr/local/nginx/conf/ssl 
+		mkdir /etc/nginx
+		ln -s /usr/local/nginx/conf/ssl /etc/nginx/ssl
+		cp /usr/local/nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.bak
+		sed -i "s/#user  nobody;/user www-data;/" /usr/local/nginx/conf/nginx.conf
+		sed -ie '$s/}/include \/usr\/local\/nginx\/conf\/sites-enabled\/\*;\n}/' /usr/local/nginx/conf/nginx.conf
+		wget https://raw.github.com/JasonGiedymin/nginx-init-ubuntu/master/nginx -O /etc/init.d/nginx
+		chmod +x /etc/init.d/nginx
+		cmd="update-rc.d nginx defaults"
+		$cmd
+		log_command $? "Configurando Nginx: $cmd"
+		cmd="service nginx start"
+		$cmd
+		log_command $? "Conectanto Niginx con ModSecurity: $cmd"
+
+		cd /opt/
+		git clone https://github.com/SpiderLabs/owasp-modsecurity-crs.git
+		cd owasp-modsecurity-crs/
+
+		cp -R rules/ /usr/local/nginx/conf/ 
+		cp /opt/owasp-modsecurity-crs/crs-setup.conf.example /usr/local/nginx/conf/crs-setup.conf
+		echo "#Load OWASP Config
+	Include crs-setup.conf
+	#Load all other Rules
+	Include rules/*.conf
+	#Disable rule by ID from error message
+	#SecRuleRemoveById 920350" >> /usr/local/nginx/conf/modsecurity.conf
+
+		sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /usr/local/nginx/conf/modsecurity.conf
+		mv /usr/local/nginx/conf/rules/REQUEST-921-PROTOCOL-ATTACK.conf /usr/local/nginx/conf/rules/REQUEST-921-PROTOCOL-ATTACK.conf.example
+		sed -i 's/#charset koi8-r;/#charset koi8-r;\n\tmodsecurity on;/' /usr/local/nginx/conf/nginx.conf
+		sed -i '0,/location \/ {/s/location \/ {/location \/ {\n\tmodsecurity_rules_file \/usr\/local\/nginx\/conf\/modsecurity.conf;/' /usr/local/nginx/conf/nginx.conf
+
+		cmd="service nginx reload"
+		$cmd
+		log_command $? "Configuracion de ModSecurity: $cmd"
 }
 
 echo "==============================================="
@@ -118,24 +196,25 @@ apt-get update
 apt-get upgrade
 log_errors $? "Upgrade de paquetes"
 apt -y install curl wget
+if [[ $1 == 'Debian 9' ]]; #Si es Debian 9
+then
+	wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
+	echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+	apt update
+fi
+apt -y install php php-mysql
 log_errors $? "Instalacion de utilerias"
 apt -y install lsb-release apt-transport-https ca-certificates
 log_errors $? "Instalacion de extensiones"
-#if [[ $1 == '' ]]; #Si es Debian 9
-#then
-#	wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
-#	echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-#	apt update
-#fi
-#apt -y install php #php-mysql
-if [[ $2 == 'Nginx' ]]; #n  de Nginx
+
+
+if [[ $2 == 'Nginx' ]]; 
 then
 	install_nginx $1 $3
-
+	install_nginx_WAF
 else
 	install_apache $1 $3
 	install_apache_WAF
-	#apt -y install apache2=$2 libapache2-mod-php
 fi
 chown -R www-data:www-data /var/www/html
 #apt-get install  php7.4-intl php7.4-mysql php7.4-curl php7.4-gd php7.4-soap php7.4-xml php7.4-zip php7.4-readline php7.4-opcache php7.4-json php7.4-gd -y apt-get 
