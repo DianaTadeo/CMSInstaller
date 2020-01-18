@@ -16,7 +16,7 @@ jQuery(document).ready(function() {
 	// function to set CMS version
 	function cmsVersion(){
 		var cmsOptions = {
-			drupal : ["8.x", "7.x"],
+			drupal : ["8.8.1", "7.69"],
 			joomla : ["3.9.12"],
 			moodle : ["3.7.2", "3.6.6"],
 			ojs : ["3.1.2-1", "2.4.8-5"],
@@ -33,8 +33,8 @@ jQuery(document).ready(function() {
 	// function to set Database Manager version
 	function dbVersion(){
 		var dbOptions = {
-			mysql : [" 8.0.12", "7.x"],
-			postgresql : ["3.9.12"],
+			MySQL : [" 8.0.12", "7.x"],
+			PostgreSQL : ["3.9.12"],
 		}
 		$('#dbVersion').empty();
 			dbOptions[$('#databasemanager').val()].forEach(function(element,index){
@@ -46,9 +46,18 @@ jQuery(document).ready(function() {
 
 	// function to set web server version
 	function webServerVersion(){
+		var a_versions = [];
+		if ($('#SO').val() == 'Debian 9')
+			a_versions = ["2.4.25"];
+		else if ($('#SO').val() == 'Debian 10')
+			a_versions = ["2.4.38"];
+		else if ($('#SO').val() == 'CentOS 6')
+			a_versions = ["2.2.15"];
+		else
+			a_versions = ["2.4.6"];
 		var webServerOptions = {
-			nginx : ["8.x", "7.x"],
-			apache : ["2.4.41"],
+			Nginx : ["8.x", "7.x"],
+			Apache : a_versions,
 		}
 		$('#webServerVersion').empty();
 			webServerOptions[$('#webserver').val()].forEach(function(element,index){
@@ -58,6 +67,10 @@ jQuery(document).ready(function() {
 		$('#webserver').change(webServerVersion);
 	webServerVersion();
 
+	//shows specific web server versions depending on the OS
+	$('#SO').change(function() {
+		webServerVersion();
+	});
 	/*
 		Settings form
 	*/

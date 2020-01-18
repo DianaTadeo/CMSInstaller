@@ -17,19 +17,6 @@ function isPort($port){
 	return filter_var($port, FILTER_VALIDATE_INT);
 }
 
-function downloadFile($file){
-	$filetype=filetype($file);
-	$filename=basename($file);
-	//header ("Content-Type: ".$filetype);
-	header('Content-Type: text/html');
-	header ("Content-Length: ".filesize($file));
-	header ('Content-Disposition: attachment; filename="'.$filename.'"');
-	header('Expires: 0');
-	header('Cache-Control: must-revalidate');
-	header('Pragma: public');
-	readfile($file);
-}
-
 if($_POST) {
 		$clientEmail = 'rafavafer@hotmail.com';
 		$SO = $_POST['SO'];
@@ -50,7 +37,7 @@ if($_POST) {
 			$databaseUser = $_POST['databaseUser'];
 		}
 		if (empty($_POST['path']))
-			$path_install = '/var/wwww/html';
+			$path_install = '/var/www/html';
 		else
 			$path_install = addslashes(trim($_POST['path']));
 		$backupdays = $_POST['backupdays'];
@@ -84,7 +71,7 @@ if($_POST) {
 					'IPv6' => $IPv6, 'CMS' => $CMS, 'CMSVersion' => $CMS_version,
 					'DatabaseManager' => $database_manager, 'DBVersion' => $dbVersion,
 					'WebServer' => $webserver, 'WSVersion' => $webServerVersion, 'PathInstall' => $path_install,
-					'BackupDays' => $backupdays, 'BackupTime' => $backuptime,
+					'BackupDays' => $backupdays, 'BackupTime' => $backuptime, 'EmailTo' => $emailTo,
 					'DBExists' => $DB
 				);
 				if($options['DBExists'] === 'Yes'){
