@@ -33,23 +33,26 @@ install_MySQL(){
 	cmd="apt install mariadb-server -y"
 	$cmd
 	log_errors $? "Instalacion de MySQL: $cmd"
+	sed -i "s/.*port.*/port = $6/" /etc/mysql/mariadb.conf.d/50-server.cnf
+	systemctl restart mysql.service
 	cmd="mysql_secure_installation"
 	$cmd
 	log_errors $? "Instalacion de MySQL: $cmd"
-	echo "Ingresa el password para ese usuario: "
-	read -s userPass
-	if [[ $2 == 'Yes']]; then
+	read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+	if [[ $2 == 'Yes' ]]; then
 		mysql -h $5 -P $6 -u $4 --password=$userPass $3
-		log_errors $? "Error al conectarse a la base de datos $3 en MySQL, servidor $5"
+		log_errors $? "Conexión a la base de datos '$3' en MySQL, servidor $5"
 	else
-		mysql -h $5 -P $6 -e "CREATE USER '$4' IDENTIFIED BY '$userPass';"
-		log_errors $? "Error al crear al usuario $4 en MySQL, servidor $5"
-		mysql -h $5 -P $6 -e "GRANT ALL PRIVILEGES ON *.* TO $4;"
-		log_errors $? "Error al dar permisos al usuario $4 en MySQL, servidor $5"
-		mysql -h $5 -P $6 -u $4 --password=$userPass -e "CREATE DATABASE $3;"
-		log_errors $? "Error al crear la base de datos $3 en MySQL, servidor $5"
-		mysql -h $5 -P $6 -e "FLUSH PRIVILEGES;"
-		log_errors $? "Error en privilegios para el usuario $4 en MySQL, servidor $5"
+		read -sp "Ingresa el password para el usuario 'root' de MySQL: " rootPass; echo -e "\n"
+		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "CREATE USER '$4' IDENTIFIED BY '$userPass';"
+		log_errors $? "Creación del usuario '$4' en MySQL, servidor $5"
+		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "GRANT ALL PRIVILEGES ON *.* TO '$4';"
+		log_errors $? "Permisos otorgador al usuario '$4' en MySQL, servidor $5"
+		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "CREATE DATABASE $3;"
+		log_errors $? "Creación de la base de datos '$3' en MySQL, servidor $5"
+		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "FLUSH PRIVILEGES;"
+		log_errors $? "Privilegios otorgados al usuario '$4' en MySQL, servidor $5"
+	fi
 }
 
 install_PostregSQL(){
@@ -64,8 +67,7 @@ install_PostregSQL(){
 	else
 		su postgres -c "psql -h $5 -p $6 -c 'CREATE DATABASE $3;'"
 		log_errors $? "Error al crear la base de datos $3 en PostgreSQL, servidor $5"
-		echo "Ingresa el password para ese usuario: "
-		read -s userPass
+		read -s "Ingresa el password para ese usuario: " userPass
 		su -c "psql -h $5 -p $6 -c \"CREATE USER $4 WITH PASSWORD '$userPass'\" " postgres
 		log_errors $? "Error al crear al usuario $4 en PostgreSQL, servidor $5"
 		su postgres -c "psql -h $5 -p $6 -c 'GRANT ALL PRIVILEGES ON DATABASE $3 TO $4;'"
