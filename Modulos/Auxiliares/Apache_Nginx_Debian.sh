@@ -17,7 +17,7 @@ LOG="`pwd`/../Log/Aux_Instalacion.log"
 log_errors(){
 	if [ $1 -ne 0 ]; then
 		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
-		exit_install
+		exit 1
 	else
 		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
 	fi
@@ -40,16 +40,16 @@ install_nginx(){
 		$cmd
 		log_errors $? "Compilando...: $cmd"
 	#echo "deb http://nginx.org/packages/mainline/debian stretch nginx" >> /etc/apt/sources.list
-	
+
 	#wget http://nginx.org/keys/nginx_signing.key
 	#apt-key add nginx_signing.key
 	#apt update
-	
+
 	#echo "[`date +"%F %X"`] Instalando Nginx version $1"
 	#cmd="apt -y install nginx=$1"
 	#$cmd
 	#log_errors $? "Instalacion de Nginx"
-	
+
 	#echo "[`date +"%F %X"`] Instalando dependencias de Nginx"
 	#cmd="apt -y install libtool autoconf build-essential libpcre3-dev zlib1g-dev libssl-dev libxml2-dev libgeoip-dev liblmdb-dev libyajl-dev libcurl4-openssl-dev libpcre++-dev pkgconf libxslt1-dev libgd-dev"
 	#$cmd
@@ -58,7 +58,7 @@ install_nginx(){
 }
 
 #install_modsecurity_nginx(){
-#	
+#
 #}
 
 
@@ -75,13 +75,13 @@ install_apache(){
 	#wget http://nginx.org/keys/nginx_signing.key
 	#apt-key add nginx_signing.key
 	apt update
-	
+
 	echo "[`date +"%F %X"`] Instalando Apache version $1"
 	cmd="apt -y install apache2"
 	#cmd="apt-cache policy apache2"
 	$cmd
 	log_errors $? "Instalacion de Apache: $cmd"
-	
+
 }
 ############# Instalacion de WAF para Apache ######################
 ###################################################################
@@ -90,21 +90,21 @@ install_apache_WAF(){
 	cmd="apt-get -y install libapache2-mod-security2"
 	$cmd
 	log_errors $? "Instalacion de ModSecurity: $cmd"
-	
+
 	systemctl restart apache2
 	log_errors $? "Habilitando ModSecurity: $cmd"
-	
+
 	if [ -f "/etc/modsecurity/modsecurity.conf-recommended" ]; then
 		mv /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
-		
+
 	fi
-	
+
 	sed -i "s/SecRuleEngine DetectionOnly/SecRuleEngine On/" /etc/modsecurity/modsecurity.conf
-	sed -i "s/SecResponseBodyAccess On/SecResponseBodyAccess Off/" /etc/modsecurity/modsecurity.conf 
+	sed -i "s/SecResponseBodyAccess On/SecResponseBodyAccess Off/" /etc/modsecurity/modsecurity.conf
 	cmd="a2enmod security2"
 	$cmd
 	log_errors $? "Habilitando ModSecurity: $cmd"
-	
+
 	cmd="systemctl restart apache2"
 	$cmd
 	log_errors $? "Iniciando de ModSecurity: $cmd"
@@ -145,12 +145,12 @@ install_nginx_WAF(){
 		#Modsecurity and nginx Connector
 		cd /opt/
 		git clone https://github.com/SpiderLabs/ModSecurity-nginx.git
-		
+
 		cp /opt/ModSecurity/modsecurity.conf-recommended /usr/local/nginx/conf/modsecurity.conf
 		ln -s /usr/local/nginx/sbin/nginx /bin/nginx
 		mkdir /usr/local/nginx/conf/sites-available
 		mkdir /usr/local/nginx/conf/sites-enabled
-		mkdir /usr/local/nginx/conf/ssl 
+		mkdir /usr/local/nginx/conf/ssl
 		mkdir /etc/nginx
 		ln -s /usr/local/nginx/conf/ssl /etc/nginx/ssl
 		cp /usr/local/nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.bak
@@ -169,7 +169,7 @@ install_nginx_WAF(){
 		git clone https://github.com/SpiderLabs/owasp-modsecurity-crs.git
 		cd owasp-modsecurity-crs/
 
-		cp -R rules/ /usr/local/nginx/conf/ 
+		cp -R rules/ /usr/local/nginx/conf/
 		cp /opt/owasp-modsecurity-crs/crs-setup.conf.example /usr/local/nginx/conf/crs-setup.conf
 		echo "#Load OWASP Config
 	Include crs-setup.conf
@@ -195,20 +195,23 @@ echo "==============================================="
 apt-get update
 apt-get upgrade
 log_errors $? "Upgrade de paquetes"
-apt -y install curl wget
-if [[ $1 == 'Debian 9' ]]; #Si es Debian 9
-then
-	wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
-	echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-	apt update
-fi
-apt -y install php php-mysql
-log_errors $? "Instalacion de utilerias"
+#############################  Se instalan con main.sh
+#apt -y install curl wget
+################## La version de PHP correspondiente se instala en cada script
+# de instaladorCMS
+#if [[ $1 == 'Debian 9' ]]; #Si es Debian 9
+#then
+#	wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
+#	echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+#	apt update
+#fi
+#apt -y install php php-mysql
+#log_errors $? "Instalacion de utilerias"
 apt -y install lsb-release apt-transport-https ca-certificates
 log_errors $? "Instalacion de extensiones"
 
 
-if [[ $2 == 'Nginx' ]]; 
+if [[ $2 == 'Nginx' ]];
 then
 	install_nginx $1 $3
 	install_nginx_WAF
@@ -217,5 +220,4 @@ else
 	install_apache_WAF
 fi
 chown -R www-data:www-data /var/www/html
-#apt-get install  php7.4-intl php7.4-mysql php7.4-curl php7.4-gd php7.4-soap php7.4-xml php7.4-zip php7.4-readline php7.4-opcache php7.4-json php7.4-gd -y apt-get 
-
+#apt-get install  php7.4-intl php7.4-mysql php7.4-curl php7.4-gd php7.4-soap php7.4-xml php7.4-zip php7.4-readline php7.4-opcache php7.4-json php7.4-gd -y apt-get
