@@ -30,13 +30,13 @@ install_dep(){
 			wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
 			echo "deb https://packages.sury.org/php/ $VERSION_NAME main" | tee /etc/apt/sources.list.d/php.list
 			apt update
-			apt install php7.1 php7.1-common \
-			php7.1-gd php7.1-json php7.1-mbstring \
-			php7.1-xml php7.1-zip unzip zip -y
-			if [[ $2 == 'MySQL' ]]; then apt install php7.1-mysql -y;
-			else apt install php7.1-pgsql -y; fi
+			apt install php7.3 php7.3-common \
+			php7.3-gd php7.3-json php7.3-mbstring \
+			php7.3-xml php7.3-zip unzip zip -y
+			if [[ $2 == 'MySQL' ]]; then apt install php7.3-mysql -y;
+			else apt install php7.3-pgsql -y; fi
 			if [[ $3 == 'Apache' ]]; then
-				apt install libapache2-mod-php7.1 -y
+				apt install libapache2-mod-php7.3 -y
 				a2enmod rewrite
 				site_default_apache "Debian" "Apache"
 			else
