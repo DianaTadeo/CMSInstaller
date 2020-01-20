@@ -156,7 +156,7 @@ DB_EXISTS=`jq '.DBExists' $JSON_OPTIONS | cut -f2 -d'"'`
 
 # Se ejecutan las funciones para realizar las instalaciones y configuraciones
 OS_dependencies "$SO"
-chmod +x ./Modulos/Auxiliares/* ./Modulos/InstaladoresCMS/*
+chmod +x ./Modulos/Auxiliares/* ./Modulos/InstaladoresCMS/* ./Modulos/Hardening
 web_server_installer "$SO" "$WEB_SERVER" "$WS_VERSION"
 
 # Se asginan valores para conexión a la BD si existe o no
