@@ -28,7 +28,12 @@ OS_dependencies(){
 }
 
 OS_hardening(){
+	# $1=SO; $2=EMAIL_NOTIFICATION
 	echo "TODO"
+	# configuraciones generales de hardening (política de contraseñas, sudo, servicios predet., etc.)
+	# ./Modulos/Hardening/Configuraciones_Generales.sh "$1"
+	# Instalación y configuración de F2Ban, logwatch y logcheck
+	# bash ./Modulos/Hardening/F2BanLogwatchLogcheck.sh "$1" "$2"
 }
 
 web_server_installer(){
@@ -36,12 +41,10 @@ web_server_installer(){
 	# $1=$SO; $2=$WEBSERVER; $3=$WSVersion;
 	case $1 in
 		'Debian 9' | 'Debian 10')
-			echo "Es debian"
 			# Se ejecuta script para instalación de web server en debian
 			 ./Modulos/Auxiliares/Apache_Nginx_Debian.sh "$1" "$2" "$3"
 		;;
 		'CentOS 6' | 'CentOS 7')
-			echo "Es centos"
 			# Se ejecuta script para instalación de web server en centos
 			 ./Modulos/Auxiliares/Apache_Nginx_CentOS.sh "$1" "$2" "$3"
 		;;
@@ -54,13 +57,11 @@ data_base_manager_installer(){
 	# $5=$DB_USER; $6=$DB_IP; $7=$DB_PORT; $8=$DB_NAME
 	case $1 in
 		'Debian 9' | 'Debian 10')
-			echo "Es debian"
 			# Se ejecuta script para instalación de base de datos en debian
 			bash ./Modulos/Auxiliares/DB_Instalador_Debian.sh "$2" "$3" "$4" "$DB_NAME" \
 			"$DB_USER" "$DB_IP" "$DB_PORT"
 		;;
 		'CentOS 6' | 'CentOS 7')
-			echo "Es centos"
 			# Se ejecuta script para instalación de base de datos en centos
 			bash ./Modulos/Auxiliares/DB_Instalador_CentOS.sh "$2" "$3" "$4" "$DB_NAME" \
 			"$DB_USER" "$DB_IP" "$DB_PORT"
@@ -103,10 +104,23 @@ backups(){
 #																																					#
 ###########################################################################
 
-if [ $(id -u) -ne 0 ]
-	then
-		echo "Ejecuta como root"
-		exit
+if [[ -z $(which sudo) ]]; then
+	echo "Para ejecutar el script primero se instalará sudo:"
+	case $SO in
+		'Debian 9' | 'Debian 10')
+			apt install sudo -y
+			;;
+		'CentOS 6' | 'CentOS 7')
+			yum install sudo -y
+			;;
+	esac
+	echo -e "Ejecuta nuevamente el script.\nEjecución: sudo ./main.sh"
+	exit 1
+fi
+
+if [ $(id -u) -ne 0 ] && [[ -z "$SUDO_USER" ]];then
+	echo "Ejecución: sudo ./main.sh"
+	exit 1
 fi
 # Se instala jq para parsear JSON con las opciones elegidas en Debian o CentOS
 jq_install_OS_detection
@@ -143,7 +157,6 @@ DB_EXISTS=`jq '.DBExists' $JSON_OPTIONS | cut -f2 -d'"'`
 # Se ejecutan las funciones para realizar las instalaciones y configuraciones
 OS_dependencies "$SO"
 chmod +x ./Modulos/Auxiliares/* ./Modulos/InstaladoresCMS/*
-OS_hardening "$SO"
 web_server_installer "$SO" "$WEB_SERVER" "$WS_VERSION"
 
 # Se asginan valores para conexión a la BD si existe o no
@@ -163,4 +176,7 @@ data_base_manager_installer "$SO" "$DBM" "$DB_VERSION" "$DB_EXISTS" \
 
 CMS "$CMS" "$SO"  "$CMS_VERSION" "$DBM" "$DB_NAME" "$DB_IP" "$DB_PORT" \
 "$DB_USER" "$PATH_INSTALL" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$WEB_SERVER"
+
+# Todavía no lo pruebo
+OS_hardening "$SO" "$EMAIL_NOTIFICATION"
 backups
