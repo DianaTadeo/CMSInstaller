@@ -120,7 +120,7 @@ users_and_privileges(){
 	log_errors $? "Se establecen permisos \"rwx------\" y a \"root:root\" dueño de los archivos \"cron\""
 
 	PGSG_FILES=("/etc/passwd" "/etc/group" "/etc/shadow" "/etc/gshadow")
-	for FILE IN ${PGSG_FILES[@]}; do
+	for FILE in ${PGSG_FILES[@]}; do
 		if [[ $FILE = "/etc/passwd" ]] || [[ $FILE="/etc/group" ]]; then	VALUE="644"	else VALUE="600"; fi
 		chmod $VALUE $FILE
 		chown root:root $FILE
