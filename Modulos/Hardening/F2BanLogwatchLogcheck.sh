@@ -232,7 +232,7 @@ install_logcheck(){
 
 SO=$1
 # Dirección en la que se recibirán las notficaciones -> $2
-DESTEMAIL="$2"
+DESTEMAIL=$2
 # Tiempo de baneo en segundos de una IP
 BANTIME=600
 # Tiempo para que el contador de intentos fallidos de una determinada IP se reinicie
@@ -242,13 +242,13 @@ MAXRETRY=3
 # Dirección con la que se enviarán los correos
 SENDER="root@localhost"
 
-if [ $(which fail2ban) ]; then
+if [[ $(which fail2ban) ]]; then
 	echo "Fail2ban ya está instalado: $(fail2ban --version)" >> $LOG
 else
 	install_fail2ban "$SO" "$DESTEMAIL" "$BANTIME" "$FINDTIME" "$MAXRETRY" "$SENDER"
 fi
 
-if [ $(which logwatch) ]]; then
+if [[ $(which logwatch) ]]; then
 	echo "Fail2ban ya está instalado: $(which logwatch)" >> $LOG
 else
 	install_logwatch "$SO" "$DESTEMAIL"
