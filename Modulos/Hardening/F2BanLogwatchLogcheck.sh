@@ -129,7 +129,7 @@ install_fail2ban(){
 			sed -i "s/\(^port*=\)*ssh$/\1 $ssh_port /" $JAIL_LOCAL
 	fi
 
-	if [[ $1 == 'CentOS 6']]; then
+	if [[ $1 == 'CentOS 6' ]]; then
 		cmd="service fail2ban restart"
 	else
 		cmd="systemctl restart fail2ban"
