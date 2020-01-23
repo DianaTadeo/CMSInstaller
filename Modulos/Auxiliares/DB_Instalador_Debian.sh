@@ -13,7 +13,7 @@
 # Argumento 7: Puerto del servidor de la Base de Datos
 
 
-LOG="`pwd`/../Log/Aux_Instalacion.log"
+LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
 ###################### Log de Errores ###########################
 # $1: Salida de error											#
@@ -81,9 +81,9 @@ echo "==============================================="
 
 if [[ $1 == 'PostgreSQL' ]];
 then
-	install_PostregSQL $2 $3 $4 $5 $6 $7
+	install_PostregSQL "$2" "$3" "$4" "$5" "$6" "$7"
 else
-	install_MySQL $2 $3 $4 $5 $6 $7
+	install_MySQL "$2" "$3" "$4" "$5" "$6" "$7"
 fi
 echo "==============================================="
 echo "      Se ha instalado correctamente"
