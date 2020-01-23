@@ -8,7 +8,7 @@
 #Argumento 2: Tipo de web server a instalar ['Nginx' o 'Apache']
 #Argumento 3: Version del web server
 
-LOG="`pwd`/../Log/Aux_Instalacion.log"
+LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
 ###################### Log de Errores ###########################
 # $1: Salida de error											#
@@ -193,7 +193,10 @@ echo "     Inicia la instalacion de $2 $3"
 echo "==============================================="
 
 apt-get update
-apt-get upgrade
+DEBIAN_FRONTEND=noninteractive apt \
+-o Dpkg::Options::=--force-confold \
+-o Dpkg::Options::=--force-confdef \
+-y upgrade
 log_errors $? "Upgrade de paquetes"
 #############################  Se instalan con main.sh
 #apt -y install curl wget
@@ -210,6 +213,11 @@ log_errors $? "Upgrade de paquetes"
 apt -y install lsb-release apt-transport-https ca-certificates
 log_errors $? "Instalacion de extensiones"
 
+if [ $(which git) ]; then
+		echo $(git version)
+else
+		apt install git -y
+fi
 
 if [[ $2 == 'Nginx' ]];
 then
