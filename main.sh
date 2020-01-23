@@ -5,7 +5,7 @@
 # en Debian 9, 10 y CentOS 6, 7
 
 # Argumento 1: fileID.json generado desde el sitio web
-LOG="`pwd`/../Log/Configuracion_Instalacion_CMS.log"
+LOG="`pwd`/Modulos/Log/Configuracion_Instalacion_CMS.log"
 
 
 ###################### Log de Errores ###########################
@@ -62,7 +62,6 @@ ip_v4_v6(){
 
 OS_hardening(){
 	# $1=SO; $2=EMAIL_NOTIFICATION
-	echo "TODO"
 	# Instalación y configuración de F2Ban, logwatch y logcheck
 	bash ./Modulos/Hardening/F2BanLogwatchLogcheck.sh "$1" "$2"
 
@@ -191,7 +190,8 @@ DB_EXISTS=`jq '.DBExists' $JSON_OPTIONS | cut -f2 -d'"'`
 # Se ejecutan las funciones para realizar las instalaciones y configuraciones
 
 OS_dependencies "$SO"
-chmod +x ./Modulos/Auxiliares/* ./Modulos/InstaladoresCMS/* ./Modulos/Hardening
+chmod +x ./Modulos/Auxiliares/* ./Modulos/InstaladoresCMS/* ./Modulos/Hardening/*
+mkdir -p ./Modulos/Log
 
 web_server_installer "$SO" "$WEB_SERVER" "$WS_VERSION"
 
@@ -202,8 +202,10 @@ if [ $DB_EXISTS = "Yes" ]; then
 	DB_PORT=`jq '.DBPort' $JSON_OPTIONS | cut -f2 -d'"'`
 else
 	read -p "Ingresa el usuario para la base de datos: " DB_USER
-	read -p "Ingresa la dirección IPv4 del servidor de la base de datos: " DB_IP
-	read -p "Ingresa el puerto del servidor de la base de datos: " DB_PORT
+	read -p "Ingresa la dirección IPv4 del servidor de la base de datos [localhost por defecto]: " DB_IP
+	if [ -z "$DB_IP" ]; then DB_IP="localhost"; fi
+	read -p "Ingresa el puerto del servidor de la base de datos [3306 por defecto]: " DB_PORT
+	if [ -z "$DB_PORT" ]; then DB_PORT="3306"; fi
 fi
 read -p "Ingresa el nombre de la base de datos: " DB_NAME
 
