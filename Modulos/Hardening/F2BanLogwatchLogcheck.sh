@@ -6,7 +6,7 @@
 # Argumento 1: SO
 # Argumento 2: EMAIL_NOTIFICATION
 
-LOG="`pwd`/../Log/Hardening.log"
+LOG="`pwd`/Modulos/Log/Hardening.log"
 
 ###################### Log de Errores ###########################
 # $1: Salida de error											#
@@ -70,9 +70,6 @@ install_fail2ban(){
 	# Se copian archivo jail.conf en jail.local para aplicar este archivo de configuración
 	JAIL_LOCAL="/etc/fail2ban/jail.local"
 	cp /etc/fail2ban/jail.conf $JAIL_LOCAL
-	cmd="sed -i -e "/#.*$/d" -e "/^$/d" prueba.local"
-	$cmd
-	log_errors $? "Se quitan comentarios de archivo fail.local: $cmd"
 
 	sed -i "0,/\(bantime[ \t]*=\).*/s/\(bantime[ \t]*=\).*/\1 $BANTIME/" $JAIL_LOCAL
 	log_errors $? "Se asgina bantime=$BANTIME"
@@ -187,7 +184,7 @@ install_logcheck(){
 	LOGCHECK_LOGFILES="/etc/logcheck/logcheck.logfiles"
 
 	#Sets mail that will receive reports
-	sed -i "s/SENDMAILTO=\"logcheck\"/SENDMAILTO=\"$2\"/" $LOGCHECK_CONF
+	sed -i "s/\(SENDMAILTO=\)\"logcheck\"/\1\"$2\"/" $LOGCHECK_CONF
 	log_errors $? "Se asigna correo que recibirá los reportes de logcheck: $2"
 
 	# Archivos log de los servidores web y mail
