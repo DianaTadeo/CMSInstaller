@@ -70,14 +70,14 @@ password_policy(){
 	# $1=SO
 	case $1 in
 		'Debian 9' | 'Debian 10')
-			apt install libpam-cracklib -y
+			apt install libpam-pwquality -y
 			log_errors $? "Instalación de libpam-pam_pwquality"
 			PAM_D_COMMON_PASSWORD="/etc/pam.d/common-password"
 			PAM_D_COMMON_AUTH="/etc/pam.d/common-auth"
 			sed -i "s/\(auth.*sufficient.*\)pam_unix.*/\1pam_unix.so likeauth nullok/" $PAM_D_COMMON_AUTH
 			sed -i "s/\(password.*sufficient.*\)pam_unix.*/\1pam_unix.so nullok use_authtok sha256 shadow remember=5/" $PAM_D_COMMON_PASSWORD
 			log_errors $? "Se restringe que los usuarios reutilicen alguna de sus últimas 5 contraseñas anteriores"
-			sed -i "s/\(password.*requi.*\)pam_cracklib.*/\1pam_pwquality.so try_first_pass retry=3 minlen=8 lcredit=-1 ucredit=-1 dcredit=-1 ocredit=-1 difok=0 reject_username enforce_for_root/" $PAM_D_COMMON_PASSWORD
+			sed -i "s/\(password.*requi.*\)pam_pwquality.*/\1pam_pwquality.so try_first_pass retry=3 minlen=8 lcredit=-1 ucredit=-1 dcredit=-1 ocredit=-1 difok=0 reject_username enforce_for_root/" $PAM_D_COMMON_PASSWORD
 			log_errors $? "Se aplica uso de contraseñas fuertes: longitud mínima de 8, con al menos 1 letra minúscula, 1 mayúscula, 1 dígito, 1 carácter especial"
 			;;
 		'CentOS 6' | 'CentOS 7')
@@ -97,6 +97,8 @@ password_policy(){
 	log_errors $? "Expiración de contraseñas (nuevos usuarios): cada 90 días (se advertirá 7 días antes) y mínimo 7"
 	ACCOUNTS=$(grep "/bin/.*sh" /etc/passwd  | cut -d":" -f1)
 	for ACCOUNT in $ACCOUNTS; do
+		echo "Debes cambiar el password de '$ACCOUNT':"
+		passwd $ACCOUNT
 		chage -M 90 -m 7 -W 7 $ACCOUNT
 	done
 	log_errors $? "Expiración de contraseñas (usuarios existentes): cada 90 días (se adevertirá 7 días antes) y mínimo 7"
