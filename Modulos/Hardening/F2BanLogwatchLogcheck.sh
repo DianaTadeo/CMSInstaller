@@ -137,7 +137,10 @@ install_fail2ban(){
 
 install_logwatch(){
 	if [[ "$1" == "Debian 9"  ]] || [[ "$1" == "Debian 10"  ]]; then
-		cmd="apt -y install logwatch mailutils postfix"
+		cmd="DEBIAN_FRONTEND=noninteractive apt \
+		-o Dpkg::Options::=--force-confold \
+		-o Dpkg::Options::=--force-confdef \
+		-y install logwatch mailutils postfix"
 		$cmd
 		log_errors $? "$cmd"
 	else
