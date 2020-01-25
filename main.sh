@@ -222,3 +222,4 @@ CMS "$CMS" "$SO"  "$CMS_VERSION" "$DBM" "$DB_NAME" "$DB_IP" "$DB_PORT" \
 
 OS_hardening "$SO" "$EMAIL_NOTIFICATION"
 backups
+echo -e "Recarga las variables de entorno.\n Ejecute: . ~/.bashrc"
