@@ -5,6 +5,9 @@
 # en Debian 9, 10 y CentOS 6, 7
 
 # Argumento 1: fileID.json generado desde el sitio web
+
+# Se crea directorio (si es que no existe) para archivos Log
+mkdir -p ./Modulos/Log
 LOG="`pwd`/Modulos/Log/Configuracion_Instalacion_CMS.log"
 
 
@@ -106,12 +109,12 @@ CMS(){
 	# Función que instalará el CMS elegido.
 	# $1=CMS; $2=$SO; $3=$CMS_VERSION; $4=$DBM; $5=$DB_NAME; $6=$DB_IP; $7=$DB_PORT;
 	# $8=$DB_USER; $9=$PATH_INSTALL; $10=$DOMAIN_NAME;
-	# $11=EMAIL_NOTIFICATION; $12=WEB_SERVER
+	# $11=EMAIL_NOTIFICATION; $12=WEB_SERVER; $13=DB_EXISTS
 	case $1 in
 		'drupal')
 			echo 'Drupal' $3
 			bash ./Modulos/InstaladoresCMS/Drupal_Instalador_General.sh "$2" "$3" "$4" \
-			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}"
+			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}"
 			;;
 		'joomla')
 			echo 'Joomla' $3
@@ -129,7 +132,7 @@ CMS(){
 }
 
 backups(){
-	echo "TODO"
+	echo "backups: TODO"
 }
 ###########################################################################
 #																																					#
@@ -191,7 +194,6 @@ DB_EXISTS=`jq '.DBExists' $JSON_OPTIONS | cut -f2 -d'"'`
 
 OS_dependencies "$SO"
 chmod +x ./Modulos/Auxiliares/* ./Modulos/InstaladoresCMS/* ./Modulos/Hardening/*
-mkdir -p ./Modulos/Log
 
 web_server_installer "$SO" "$WEB_SERVER" "$WS_VERSION"
 
@@ -202,10 +204,12 @@ if [ $DB_EXISTS = "Yes" ]; then
 	DB_PORT=`jq '.DBPort' $JSON_OPTIONS | cut -f2 -d'"'`
 else
 	read -p "Ingresa el usuario para la base de datos: " DB_USER
-	read -p "Ingresa la dirección IPv4 del servidor de la base de datos [localhost por defecto]: " DB_IP
+	## Se quita la opción de ingresar IP porque la BD es local
+	#read -p "Ingresa la dirección IPv4 del servidor de la base de datos [localhost por defecto]: " DB_IP
 	if [ -z "$DB_IP" ]; then DB_IP="localhost"; fi
-	read -p "Ingresa el puerto del servidor de la base de datos [3306 por defecto]: " DB_PORT
-	if [ -z "$DB_PORT" ]; then DB_PORT="3306"; fi
+	if [ $DBM = "MySQL" ]; then DEFAULT_DB_PORT="3306"; else DEFAULT_DB_PORT="5432"; fi
+	read -p "Ingresa el puerto del servidor de la base de datos [$DEFAULT_DB_PORT por defecto]: " DB_PORT
+	if [ -z "$DB_PORT" ]; then DB_PORT=$DEFAULT_DB_PORT; fi
 fi
 read -p "Ingresa el nombre de la base de datos: " DB_NAME
 
@@ -213,8 +217,8 @@ data_base_manager_installer "$SO" "$DBM" "$DB_VERSION" "$DB_EXISTS" \
 "$DB_USER" "$DB_IP" "$DB_PORT" "$DB_NAME"
 
 CMS "$CMS" "$SO"  "$CMS_VERSION" "$DBM" "$DB_NAME" "$DB_IP" "$DB_PORT" \
-"$DB_USER" "$PATH_INSTALL" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$WEB_SERVER"
+"$DB_USER" "$PATH_INSTALL" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$WEB_SERVER" \
+"$DB_EXISTS"
 
-# Todavía no lo pruebo
 OS_hardening "$SO" "$EMAIL_NOTIFICATION"
 backups
