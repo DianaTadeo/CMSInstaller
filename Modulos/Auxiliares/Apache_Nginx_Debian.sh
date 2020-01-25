@@ -192,7 +192,7 @@ echo "==============================================="
 echo "     Inicia la instalacion de $2 $3"
 echo "==============================================="
 
-apt-get update
+apt update
 DEBIAN_FRONTEND=noninteractive apt \
 -o Dpkg::Options::=--force-confold \
 -o Dpkg::Options::=--force-confdef \
