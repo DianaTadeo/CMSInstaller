@@ -11,7 +11,7 @@
 # Argumento 5: Usuario para la Base de Datos
 # Argumento 6: Servidor de la Base de Datos (localhost, ip, etc.)
 # Argumento 7: Puerto del servidor de la Base de Datos
-
+# Argumento 8: Version de Debian
 
 LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
@@ -56,7 +56,7 @@ install_MySQL(){
 }
 
 install_PostregSQL(){
-	# $1=DBVersion; $2=DBExists; $3=DBName; $4=DBUser; $5=DBIP; $6=DBPort
+	# $1=DBVersion; $2=DBExists; $3=DBName; $4=DBUser; $5=DBIP; $6=DBPort $7=VerDebian
 	cmd="apt-get install postgresql -y"
 	$cmd
 	log_errors $? "Instalacion de PostgreSQL: $cmd"
@@ -65,14 +65,45 @@ install_PostregSQL(){
 		su postgres -c "psql -h $5 -p $6 -d $3 -U $4 -c '\q'"
 		log_errors $? "Conexión a la base de datos '$3' en PostgreSQL, servidor $5"
 	else
+		#Si es Debian 9
+		if [[ $7 == '9' ]]; then
+			sed -i "s/.*port.*/port = $6/" /etc/postgresql/9.6/main/postgresql.conf
+			cp /etc/postgresql/9.6/main/pg_hba.conf /etc/postgresql/9.6/main/pg_hba_estable.conf
+			chown postgres:postgres /etc/postgresql/9.6/main/pg_hba.conf
+		    sed -i "s/peer/trust/" /etc/postgresql/9.6/main/pg_hba.conf
+		    sed -i "s/md5/trust/" /etc/postgresql/9.6/main/pg_hba.conf
+		#Si es Debian 10
+		else
+			sed -i "s/.*port.*/port = $6/" /etc/postgresql/11/main/postgresql.conf
+			cp /etc/postgresql/11/main/pg_hba.conf /etc/postgresql/11/main/pg_hba_estable.conf
+			chown postgres:postgres /etc/postgresql/11/main/pg_hba.conf
+		    sed -i "s/peer/trust/" /etc/postgresql/11/main/pg_hba.conf
+		    sed -i "s/md5/trust/" /etc/postgresql/11/main/pg_hba.conf
+		fi
+		systemctl restart postgresql
+		log_errors $? "Reinicio de PostgreSQL: $cmd"
 		read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+		echo "Inicia la creacion de la base de datos..."
 		su postgres -c "psql -h $5 -p $6 -c 'CREATE DATABASE $3;'"
 		log_errors $? "Creación de la base de datos $3 en PostgreSQL, servidor '$5'"
-		su -c "psql -h $5 -p $6 -c \"CREATE USER $4 WITH PASSWORD '$userPass';\" " postgres
+		su -c "psql -h $5 -p $6 -c \"CREATE USER $4 WITH PASSWORD '$userPass';\" " - postgres
 		log_errors $? "Creación del usuario '$4' en PostgreSQL, servidor '$5'"
 		su postgres -c "psql -h $5 -p $6 -c 'GRANT ALL PRIVILEGES ON DATABASE $3 TO $4;'"
-		log_errors $? "Privilegios otorgador al usuario '$4' en PostgreSQL, servidor '$5'"
-
+		log_errors $? "Privilegios otorgador al usuario '$4' en PostgreSQL, servidor '$5"
+		if [ $7 == 9 ]; then
+			rm /etc/postgresql/9.6/main/pg_hba.conf
+			mv /etc/postgresql/9.6/main/pg_hba_estable.conf /etc/postgresql/9.6/main/pg_hba.conf
+			chown postgres:postgres /etc/postgresql/9.6/main/pg_hba.conf
+		else
+			rm /etc/postgresql/11/main/pg_hba.conf
+			mv /etc/postgresql/11/main/pg_hba_estable.conf /etc/postgresql/11/main/pg_hba.conf
+			chown postgres:postgres /etc/postgresql/11/main/pg_hba.conf
+		fi
+		
+		cmd = "systemctl restart postgresql"
+		$cmd
+		log_errors $? "Reinicio de PostgreSQL: $cmd"
+		echo "Instalacion completada exitosamente"
 	fi
 }
 
@@ -82,7 +113,7 @@ echo "==============================================="
 
 if [[ $1 == 'PostgreSQL' ]];
 then
-	install_PostregSQL "$2" "$3" "$4" "$5" "$6" "$7"
+	install_PostregSQL "$2" "$3" "$4" "$5" "$6" "$7" "$8"
 else
 	install_MySQL "$2" "$3" "$4" "$5" "$6" "$7"
 fi
