@@ -5,19 +5,46 @@
 #############################################################
 
 # Argumento 1: Nombre de la Base de Datos
-# Argumento 2: Servidor de base de datos (localhost, ip, etc..)
+# Argumento 2: Servidor de base de datos (localhost, ip, etc..) seguido de puerto ej. localhost:2020
 # Argumento 3: Usuario de la Base de Datos
-# Argumento 4: Puerto de la base de Datos
-# Argumento 5: Ruta de Instalacion de Wordpress
-# Argumento 6: Url de Wordpress
-# Argumento 7: Correo de notificaciones
-# Argumento 8: 'PostgreSQL' | 'MySQL'
-# Argumento 9: 'Nginx' |'Apache'
-# Argumento 10: 'CentOS' | 'Debian'
+# Argumento 4: Ruta de Instalacion de Wordpress
+# Argumento 5: Url de Wordpress
+# Argumento 6: Correo de notificaciones
+# Argumento 7: 'PostgreSQL' | 'MySQL'
+# Argumento 8: 'Nginx' |'Apache'
+# Argumento 9: 'CentOS 6'| 'CentOS 7' | 'Debian 9' | 'Debian 10'
 # Se devuelve un archivo json con la informacion y credenciales 
 # de la instalacion de Wordpress
+
+install_dep(){
+	# $1=SO; $2=DBM
+	case $1 in
+		'Debian 9' | 'Debian 10')
+			if [[ $1 == 'Debian 9' ]]; then VERSION_NAME="stretch"; else VERSION_NAME="buster"; fi
+			apt install ca-certificates apt-transport-https gnupg -y
+			wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
+			echo "deb https://packages.sury.org/php/ $VERSION_NAME main" | tee /etc/apt/sources.list.d/php.list
+			apt update
+			apt install php7.3 php7.3-common \
+			php7.3-gd php7.3-json php7.3-mbstring \
+			php7.3-xml php7.3-zip unzip zip -y
+			if [[ $2 == 'MySQL' ]]; then apt install php7.3-mysql -y;
+			else apt install php7.3-pgsql -y; fi
+			;;
+		'CentOS 6' | 'CentOS 7')
+			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
+			yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y
+			yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y
+			yum install yum-utils -y
+			yum-config-manager --enable remi-php73 -y
+			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y
+			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
+			;;
+	esac
+}
+
 instalacion_WP(){
-	#$1=DBName $2=DBHost $3=DBUser $4=DBPort $5=WPDirRoot $6=DBManager $7=WebServer $8=OS
+	#$1=DBName $2=DBHost:port $3=DBUser $4=WPDirRoot $5=DBManager $6=WebServer $7=OS
 	clear
 	echo "==============================================="
 	echo "	Se inicia la instalacion de Wordpress"
@@ -25,31 +52,38 @@ instalacion_WP(){
 
 	echo "Ingresa el password del usuario de la base de datos: "
 	read -s dbpass
-	mkdir $5
-	cd $5
+	mkdir $4
+	cd $4
 	wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 	chmod u+x wp-cli.phar
 	mv wp-cli.phar /usr/local/bin/wp
 	wp --allow-root core download
-	wp --allow-root core config --dbhost=$2:$4 --dbname=$1 --dbuser=$3 --dbpass=$dbpass
-	if [[ $6 == 'PostgreSQL' ]]; then
-		apt-get install php-pgsql php-mysql -y
+	apt-get install php-mysql -y
+	#wp --allow-root core config --dbhost=$2 --dbname=$1 --dbuser=$3 --dbpass=$dbpass
+	echo "====Instalacion con cli terminada"
+	if [[ $5 == 'PostgreSQL' ]]; then
+		echo "==========Se configura PostgreSQL para WordPress"
+		apt-get install php-pgsql -y
 		wget https://downloads.wordpress.org/plugin/wppg.1.0.1.zip
 		unzip wppg.1.0.1.zip
-		mv wppg $5/wp-content/plugins/
+		cd $4
+		mv wppg ./wp-content/plugins/
 		rm wppg.1.0.1.zip
-		cp $5/wp-content/plugins/wppg/pg4wp/db.php $5/wp-content/
-		sed -i 's/wp-content\/pg4wp/wp-content\/plugins\/wppg\/pg4wp/' $5/wp-content/db.php
-		#sed -i 's/database_name_here/$1/' $5/wordpress/wp-config.php
-		#sed -i 's/username_here/$3/' $5/wordpress/wp-config.php
-		#sed -i 's/password_here/$dbpass/' $5/wordpress/wp-config.php
-		#sed -i 's/localhost/$2:$4/' $5/wordpress/wp-config.php
-		
+		cp ./wp-content/plugins/wppg/pg4wp/db.php ./wp-content/
+		mv ./wp-config-sample.php ./wp-config.php
+		#ls .
+		sed -i "s/wp-content\/pg4wp/wp-content\/plugins\/wppg\/pg4wp/" ./wp-content/db.php
+		sed -i "s/database_name_here/$1/" ./wp-config.php
+		sed -i "s/username_here/$3/" ./wp-config.php
+		sed -i "s/password_here/$dbpass/" ./wp-config.php
+		sed -i "s/localhost/$2/" ./wp-config.php
+	else
+		wp --allow-root core config --dbhost=$2 --dbname=$1 --dbuser=$3 --dbpass=$dbpass		
 	fi
 	chmod 644 wp-config.php
-	chown -R www-data:www-data $5
-	if [[ $7 == 'Apache' ]]; then
-		if [[ $8 == 'Debian' ]]; then
+	chown -R www-data:www-data $4
+	if [[ $6 == 'Apache' ]]; then
+		if [[ $7 == 'Debian 9' | $7 == 'Debian 10' ]]; then
 			systemctl restart apache2
 		else
 			systemctl restart httpd
@@ -70,19 +104,15 @@ configuracion_WP(){
 	echo "Ingresa un nombre de usuario para ser administrador"
 	read -s wp_admin
 	echo "Ingresa el password para este usuario"
-	read -sp wp_pass
+	read -s wp_pass
 	wp --allow-root core install --url=$1 --title=$title --admin_user=$wp_admin --admin_password=$wp_pass --admin_email=$2
-	mkdir wp-content/uploads
-	chmod 775 wp-content/uploads
 	wp --allow-root plugin install simple-login-captcha --activate
-	wp --allow-root plugin install 
 	echo "==============================================="
 	echo "     Wordpress se instalo correctamente"
 	echo "==============================================="
-	echo "{\"Title\": $title, \"wp_admin\": $wp_admin, \"wp_admin_pass\": $wp_pass }" > wpInfo.json
+	echo "{\"Title\": $title, \"wp_admin\": $wp_admin, \"wp_admin_pass\": $wp_pass }"> wpInfo.json
 }
 
-echo "======Se va a instalar con $1=DBName $2=DBHost $3=DBUser $4=DBPort $5=WPDirRoot $8=DBManager $9=WebServer $10=OS\n"
-instalacion_WP "$1" "$2" "$3" "$4" "$5" "$8" "$9" "$10"
-echo "======Se va a configurar con $6=Url $7=mail\n"
-configuracion_WP "$6" "$7"
+install_dep "$9" "$7"
+instalacion_WP "$1" "$2" "$3" "$4" "$7" "$8" "$9"
+configuracion_WP "$5" "$6"
