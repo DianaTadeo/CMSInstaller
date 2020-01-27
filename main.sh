@@ -118,12 +118,18 @@ CMS(){
 			;;
 		'joomla')
 			echo 'Joomla' $3
+			bash ./Modulos/InstaladoresCMS/Joomla_Instalador_General.sh "$5" "$8" "$6" \
+			"$7" "$9" "$3" "$2" "$4"
 			;;
 		'moodle')
 			echo 'moodle' $3
+			bash ./Modulos/InstaladoresCMS/Moodle_Instalador_General.sh "$5" "$8" "$6" \
+			"7" "$9" "$3" "$2" "$4"
 			;;
 		'wordpress')
 			echo 'wordpress' $3
+			bash ./Modulos/InstaladoresCMS/WP_Instalador_General.sh "$5" "$6:$7" "$8" "$9" \
+			"{$10}" "{$11}" "$4" "{$12}" "$2"
 			;;
 		'ojs')
 			echo 'ojs' $3
