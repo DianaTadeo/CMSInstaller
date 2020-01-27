@@ -43,7 +43,7 @@ log_errors(){
 install_MySQL(){
 	# $1=DBVersion; $2=DBExists; $3=DBName; $4=DBUser; $5=DBHost; $6=DBPort
 	cmd="apt install mariadb-server -y"
-	#$cmd
+	$cmd
 	log_errors $? "Instalacion de MySQL: $cmd"
 	sed -i "s/.*port.*/port = $6/" /etc/mysql/mariadb.conf.d/50-server.cnf
 	systemctl restart mysql.service

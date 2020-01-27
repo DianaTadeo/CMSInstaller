@@ -13,8 +13,9 @@
 # Argumento 4: Puerto de la Base de Datos
 # Argumento 5: Ruta de instalacion de joomla
 # Argumento 6: Version de Joomla
-# Argumento 7: SO
-# Argumento 8: Manejador de DB ['MySQL'|'PostgreSQL']
+# Argumento 7: url de moodle
+# Argumento 8: SO
+# Argumento 9: Manejador de DB ['MySQL'|'PostgreSQL']
 
 LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
 
@@ -90,22 +91,25 @@ install_dep(){
 ## @param $3 Servidor de la base de datos (host)
 ## @param $4 Puerto al que se conecta el manejador de base de datos
 ## @param $5 Ruta del directorio raiz donde se instalara Moodle
-## @param $6 Manejador de la base de datos  ['MySQL'|'PostgreSQL']
+## @param $6 Url de Moodle 
+## @param $7 Manejador de la base de datos  ['MySQL'|'PostgreSQL']
 ##
 install_moodle(){
 	if [[ $6 == 'MySQL' ]]; then 
 		dbtype='mariadb'
 	else
-		dbtype='postgresql'
+		dbtype='pgsql'
 	fi
 	wget https://download.moodle.org/download.php/direct/stable38/moodle-latest-38.zip
 	unzip moodle-latest-38.zip
-	cd moodle
+	rm moodle-latest-38.zip
+	mv moodle /opt/
+	cd /opt/moodle
 	clear
-	echo "Ingresa el password de la base de datos de Joomla"
-	read dbpass
-	echo "Ingresa el nombre completo del sitio"
-	read fullname
+	echo "Ingresa el password de la base de datos de Moodle"
+	read -s dbpass
+	#echo "Ingresa el nombre completo del sitio"
+	#read fullname
 	echo "Ingresa el nombre corto del sitio"
 	read shortname
 	echo "Ingresa el nombre para el administrador de Moodle"
@@ -114,7 +118,13 @@ install_moodle(){
 	read -s adminpass
 	echo "Ingresa el mail del administrador de Moodle"
 	read mail 
-	cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --data-root=$5 --dbtype=m$dbtype --dbpass=$dbpass  --fullname=$fullname --shortname=$shortname --adminuser=$admin --adminpass=$adminpass --adminmail=$mail --non-interactive --agree-license"
+	cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  -- --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dataroot=$5 --dbtype=m$dbtype --dbpass=$dbpass --shortname=$shortname --adminuser=$admin --adminpass=$adminpass --adminemail=$mail --non-interactive --agree-license"
 	$cmd
-	sudo -u www-data /usr/bin/php admin/cli/install_database.php
+	#sudo -u www-data /usr/bin/php admin/cli/install_database.php
 }
+
+echo "==============================================="
+echo "     Inicia la instalacion de Moodle"
+echo "==============================================="
+#install_dep "$8" "$9"
+install_moodle "$1" "$2" "$3" "$4" "$5" "$7" "$9"
