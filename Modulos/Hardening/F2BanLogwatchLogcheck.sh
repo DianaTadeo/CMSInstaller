@@ -137,11 +137,11 @@ install_fail2ban(){
 
 install_logwatch(){
 	if [[ "$1" == "Debian 9"  ]] || [[ "$1" == "Debian 10"  ]]; then
-		cmd="DEBIAN_FRONTEND=noninteractive apt \
+		DEBIAN_FRONTEND=noninteractive apt \
 		-o Dpkg::Options::=--force-confold \
 		-o Dpkg::Options::=--force-confdef \
-		-y install logwatch mailutils postfix"
-		$cmd
+		-y install logwatch mailutils postfix
+		cmd="apt install logwatch mailutils postfix -y"
 		log_errors $? "$cmd"
 	else
 		cmd="yum install -y epel-release"
