@@ -1,8 +1,11 @@
 #!/bin/bash
 
-####################################################################
-# Script 	Main de instalador y configurador de CMS seguros
-# en Debian 9, 10 y CentOS 6, 7
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Script Main de instalador y configurador de CMS seguros en Debian 9, 10 y CentOS 6, 7
+## @version 1.0
+##
 
 # Argumento 1: fileID.json generado desde el sitio web
 
@@ -11,10 +14,12 @@ mkdir -p ./Modulos/Log
 LOG="`pwd`/Modulos/Log/Configuracion_Instalacion_CMS.log"
 
 
-###################### Log de Errores ###########################
-# $1: Salida de error											#
-# $2: Mensaje de la instalacion									#
-#################################################################
+
+## @fn log_errors()
+## Funcion para creacion de bitacora de errores
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
 log_errors(){
 	if [ $1 -ne 0 ]; then
 		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
@@ -23,8 +28,12 @@ log_errors(){
 		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
 	fi
 }
+
+
+## @fn jq_install_OS_detection()
+## @brief Función que instala jq detectando el SO (Debian o CentOS)
+##
 jq_install_OS_detection(){
-	# Función que instala jq detectando el SO (Debian o CentOS)
 	if [ `cat /etc/issue | grep -E 'Debian'| wc -l` == '1' ]; then
 		apt install jq -y
 	elif [ -e "/etc/centos-release" ]; then
@@ -36,8 +45,11 @@ jq_install_OS_detection(){
 	fi
 }
 
+## @fn OS_dependencies()
+## @brief Función que permite instalar las dependencias necesarias
+## @param $1 Sistema Operativo
+##
 OS_dependencies(){
-	# Función que permite instalar las dependencias necesarias
 	case $1 in
 		'Debian 9' | 'Debian 10')
 			echo "Deb9"
@@ -50,6 +62,10 @@ OS_dependencies(){
 	esac
 }
 
+## @fn ip_v4_v6()
+## @brief Función para habilitar soporte de IPv4 e IPv6
+## @param $1 
+##
 ip_v4_v6(){
 	# Función para habilitar soporte de IPv4 e IPv6
 	# $1=IPv4 $2=IPv6
@@ -63,17 +79,26 @@ ip_v4_v6(){
 	log_errors $? "Soporte para IPv6: $2"
 }
 
+## @fn OS_hardening()
+## @brief Instalación y configuración de F2Ban, logwatch y logcheck
+## @param $1 Sistema operativo
+## @param $2 email de notificacion
+##
 OS_hardening(){
 	# $1=SO; $2=EMAIL_NOTIFICATION
-	# Instalación y configuración de F2Ban, logwatch y logcheck
 	bash ./Modulos/Hardening/F2BanLogwatchLogcheck.sh "$1" "$2"
 
 	 # configuraciones generales de hardening (política de contraseñas, sudo, servicios predet., etc.)
 	bash ./Modulos/Hardening/Configuraciones_Generales.sh "$1"
 }
 
+## @fn web_server_installer()
+## @brief Función que instalará el servidor web con la versión elegida.
+## @param $1 Sistema operativo
+## @param $2 Servidor web
+## @param $3 version del servidor web
+##
 web_server_installer(){
-	# Función que instalará el servidor web con la versión elegida.
 	# $1=$SO; $2=$WEBSERVER; $3=$WSVersion;
 	case $1 in
 		'Debian 9' | 'Debian 10')
@@ -87,8 +112,18 @@ web_server_installer(){
 	esac
 }
 
+## @fn data_base_manager_installer()
+## @brief Función que instalará el DBM seleccionado
+## @param $1 Sistema operativo
+## @param $2 Manejador de base de datos 
+## @param $3 Version de manejador de base de datos
+## @param $4 Existe la base de datos
+## @param $5 Usuario de la base de datos
+## @param $6 Servidor de base de datos (Host)
+## @param $7 Puerto del manejador de base de datos
+## @param $8 Nombre de la base de datos 
+##
 data_base_manager_installer(){
-	# Función que instalará el DBM seleccionado
 	# $1=$SO; $2=$DBM; $3=$DB_VERSION; $4=$DB_EXISTS
 	# $5=$DB_USER; $6=$DB_IP; $7=$DB_PORT; $8=$DB_NAME
 	case $1 in
@@ -105,8 +140,23 @@ data_base_manager_installer(){
 	esac
 }
 
+## @fn CMS()
+## @brief Función que instalará el CMS elegido.
+## @param $1 CMS a instalar 'drupal', 'joomla', 'moodle', 'wordpress' y 'ojs'
+## @param $2 Sistema operativo
+## @param $3 Version de CMS a instalar
+## @param $4 Manejador de base de datos 
+## @param $5 Nombre de la base de datos 
+## @param $6 Servidor de base de datos (Host)
+## @param $7 Puerto del manejador de base de datos
+## @param $8 Usuario de la base de datos
+## @param $9 Directorio de instalacion para el CMS
+## @param $10 Nombre de dominio de la pagina
+## @param $11 Correo a donde se enviar[an las notificaciones
+## @param $12 Servidor Web 'Apache' o 'Nginx'
+## @param $13 Existe la base de datos
+##
 CMS(){
-	# Función que instalará el CMS elegido.
 	# $1=CMS; $2=$SO; $3=$CMS_VERSION; $4=$DBM; $5=$DB_NAME; $6=$DB_IP; $7=$DB_PORT;
 	# $8=$DB_USER; $9=$PATH_INSTALL; $10=$DOMAIN_NAME;
 	# $11=EMAIL_NOTIFICATION; $12=WEB_SERVER; $13=DB_EXISTS
@@ -142,11 +192,11 @@ CMS(){
 backups(){
 	echo "backups: TODO"
 }
-###########################################################################
-#																																					#
-#					Main de instalador y configurador de CMS seguros								#
-#																																					#
-###########################################################################
+#===============================================================================================#
+#																								#													#
+#					Main de instalador y configurador de CMS seguros							#
+#																								#													#
+#===============================================================================================#
 
 if [ -z $(which sudo) ]; then
 	echo "Para ejecutar el script primero se instalará sudo:"
