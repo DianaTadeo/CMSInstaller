@@ -1,7 +1,15 @@
 #!/bin/bash
-#######################################################
-#Instalador de joomla para CentOS 6, 7 , Debian 9 y 10#
-#######################################################
+
+## @file NANO
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador de Joomla para CentOS 6, CentOS 7, Debian 9 y Debian 10
+## @version 1.0
+##
+
+#======================================================#
+#Instalador de joomla para CentOS 6, 7 , Debian 9 y 10 #
+#======================================================#
 
 
 # Argumento 1: Nombre de la Base de Datos
@@ -12,10 +20,17 @@
 # Argumento 6: Version de Joomla
 # Argumento 7: SO
 # Argumento 8: Manejador de DB ['MySQL'|'PostgreSQL']
+
 echo "==============================================="
 echo "     Inicia la instalacion de $2 $3"
 echo "==============================================="
 
+
+## @fn install_dep()
+## @brief Funcion que realiza la instalacion de las dependencias de php para Joomla
+## @param $1 El sistema operativo donde se desea instalar Joomla : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+## @param $2 Manejador de base de datos para la instalaci[on de Joomla
+##
 install_dep(){
 	# $1=SO; $2=DBM
 	case $1 in
@@ -43,14 +58,17 @@ install_dep(){
 	esac
 }
 
-
+## @fn install_composer()
+## @brief Funcion que realiza la instalacion de composer
+## 
+## Composer es necesario para poder instalar Joomla de forma remota (Por linea de comando)
 install_composer(){
 	wget https://getcomposer.org/installer
 	mv installer composer-setup.php
 	php composer-setup.php
 	rm composer-setup.php
 	mv composer.phar /usr/bin/composer
-	echo "Instalando composer ###########################################"
+	echo "============ Instalando composer =============="
 	su $SUDO_USER -c "composer global require consolidation/cgr"
 	echo "export PATH="$(su $SUDO_USER -c "composer config -g home")/vendor/bin:$PATH"" >> ~/.bashrc
 	. ~/.bashrc
@@ -59,6 +77,15 @@ install_composer(){
 	composer require nesbot/carbon
 }
 
+## @fn install_joomla()
+## @brief Funcion que realiza la instalacion de Joomla
+## @param $1 Nombre de la base de  para Joomla
+## @param $2 Usuario de la base de datos para Joomla 
+## @param $3 Servidor de la base de datos (host)
+## @param $4 Puerto al que se conecta el manejador de base de datos
+## @param $5 Ruta del directorio raiz donde se instalara Joomla
+## @param $6 Version de Joomla que se desea instalar
+##
 install_joomla(){
 	# $1=dbname $2=dbuser $3=dbhost $4=dbport $5=ruta $6=version
 	composer global require joomlatools/console
@@ -71,6 +98,7 @@ install_joomla(){
 	read site
 	joomla site:create --use-webroot-dir --mysql-login=$2:$passDB --mysql-database=$1 --mysql-host=$3 --mysql-port=$4 $site
 }
+
 install_dep "$7" "$8"
 install_composer
 install_joomla "$1" "$2" "$3" "$4" "$5" "$6" 

@@ -1,8 +1,10 @@
 #!/bin/bash -e
-##############################################################
-# Script para la instalacion de wordpress en Debian 9 y 10 y #
-# CentOS 6 y 7                                               #
-#############################################################
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador de Wordpress para CentOS 6, CentOS 7, Debian 9 y Debian 10
+## @version 1.0
+##
 
 # Argumento 1: Nombre de la Base de Datos
 # Argumento 2: Servidor de base de datos (localhost, ip, etc..) seguido de puerto ej. localhost:2020
@@ -16,6 +18,12 @@
 # Se devuelve un archivo json con la informacion y credenciales 
 # de la instalacion de Wordpress
 
+
+## @fn install_dep()
+## @brief Funcion que realiza la instalacion de las dependencias de php para Wordpress
+## @param $1 El sistema operativo donde se desea instalar Wordpress : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+## @param $2 Manejador de base de datos para la instalacion de Wordpress
+##
 install_dep(){
 	# $1=SO; $2=DBM
 	case $1 in
@@ -43,7 +51,17 @@ install_dep(){
 	esac
 }
 
-instalacion_WP(){
+## @fn install_WP()
+## @brief Funcion que realiza la instalacion de Wordpress
+## @param $1 Nombre de la base de datos para Wordpress
+## @param $2 Servidor de la base de datos seguido del puerto (host:port)
+## @param $3 Usuario de la base de datos para Wordpress
+## @param $4 Ruta del directorio raiz donde se instalara Wordpress
+## @param $5 Manejador de la base de datos 'MySQL' o 'PostgreSQL'
+## @param $6 Tipo de Servidor Web 'Apache' o 'Nginx'
+## @param $7 El sistema operativo donde se desea instalar Wordpress : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+##
+install_WP(){
 	#$1=DBName $2=DBHost:port $3=DBUser $4=WPDirRoot $5=DBManager $6=WebServer $7=OS
 	clear
 	echo "==============================================="
@@ -93,7 +111,13 @@ instalacion_WP(){
 	fi
 }
 
-configuracion_WP(){
+## @fn configure_WP()
+## @brief Funcion que realiza la configuracion de Wordpress
+## @param $1 Url donde se encontrara Wordpress
+## @param $2 correo para el administrador de Wordpress
+##
+## Lo que sea
+configure_WP(){
 	# $1=Url $2=mail
 	echo "==============================================="
 	echo "   Se inicia la configuracion de Wordpress"
@@ -114,5 +138,5 @@ configuracion_WP(){
 }
 
 install_dep "$9" "$7"
-instalacion_WP "$1" "$2" "$3" "$4" "$7" "$8" "$9"
-configuracion_WP "$5" "$6"
+install_WP "$1" "$2" "$3" "$4" "$7" "$8" "$9"
+configure_WP "$5" "$6"
