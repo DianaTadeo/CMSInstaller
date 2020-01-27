@@ -318,7 +318,7 @@ complementos_seguridad(){
 			\$settings['trusted_host_patterns'] = [ \n
 				'^${DOMAIN_NAME//./\\.}\$', \n
 				'^www\.${DOMAIN_NAME//./\\.}\$', \n
-			];" >> settings.php
+			];" >> /sites/default/settings.php
 		else
 			DOM=$(echo $DOMAIN_NAME | cut --complement -f1 -d".")
 			echo -e "
