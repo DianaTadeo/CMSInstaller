@@ -18,6 +18,20 @@
 # Se devuelve un archivo json con la informacion y credenciales 
 # de la instalacion de Wordpress
 
+LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
+
+## @fn log_errors()
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
+log_errors(){
+	if [ $1 -ne 0 ]; then
+		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		exit 1
+	else
+		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+	fi
+}
 
 ## @fn install_dep()
 ## @brief Funcion que realiza la instalacion de las dependencias de php para Wordpress
@@ -33,19 +47,38 @@ install_dep(){
 			wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
 			echo "deb https://packages.sury.org/php/ $VERSION_NAME main" | tee /etc/apt/sources.list.d/php.list
 			apt update
-			apt install php7.3 php7.3-common \
+			cmd="apt install php7.3 php7.3-common \
 			php7.3-gd php7.3-json php7.3-mbstring \
-			php7.3-xml php7.3-zip unzip zip -y
-			if [[ $2 == 'MySQL' ]]; then apt install php7.3-mysql -y;
-			else apt install php7.3-pgsql -y; fi
+			php7.3-xml php7.3-zip unzip zip -y"
+			$cmd
+			log_errors $? "Instalacion de PHP en Wordpress: $cmd"
+			if [[ $2 == 'MySQL' ]]; then 
+				cmd="apt install php7.3-mysql -y"
+				$cmd
+				log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			else 
+				cmd="apt install php7.3-pgsql -y"
+				$cmd
+				log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
-			yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y
-			yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y
-			yum install yum-utils -y
-			yum-config-manager --enable remi-php73 -y
-			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y
+			cmd="yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y"
+			$cmd
+			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			cmd="yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y"
+			$cmd
+			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			cmd="yum install yum-utils -y"
+			$cmd
+			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			cmd="yum-config-manager --enable remi-php73 -y"
+			$cmd
+			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y"
+			$cmd
+			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
 			;;
 	esac
@@ -136,6 +169,10 @@ configure_WP(){
 	echo "==============================================="
 	echo "{\"Title\": $title, \"wp_admin\": $wp_admin, \"wp_admin_pass\": $wp_pass }"> wpInfo.json
 }
+
+echo "==============================================="
+echo "     Inicia la instalacion de Wordpress"
+echo "==============================================="
 
 install_dep "$9" "$7"
 install_WP "$1" "$2" "$3" "$4" "$7" "$8" "$9"

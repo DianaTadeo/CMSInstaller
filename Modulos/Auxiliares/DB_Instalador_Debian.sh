@@ -1,8 +1,11 @@
-#!/bin/bash
-#########################################################
-# Instalador de manejador de base de datos PostgreSQL y #
-# MySQL para Debian 9 y 10                              #
-#########################################################
+#!/bin/bash -e
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador de manejador de base de datos MySQL y PostgreSQL 
+## @version 1.0
+##
+## Con instalacion de una base de datos en Debian 9 y Debian 10
 
 # Argumento 1: Tipo de manejador ['MySQL' o 'PostgreSQL']
 # Argumento 2: Versión del manejador
@@ -15,10 +18,10 @@
 
 LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
-###################### Log de Errores ###########################
-# $1: Salida de error											#
-# $2: Mensaje de la instalacion									#
-#################################################################
+## @fn log_errors()
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
 log_errors(){
 	if [ $1 -ne 0 ]; then
 		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
@@ -28,8 +31,17 @@ log_errors(){
 	fi
 }
 
+## @fn install_MySQL()
+## @brief Funcion que realiza la instalacion de MySQL y creacion de base de datos
+## @param $1 Version de manejador de base de datos a instalar
+## @param $2 Pregunta si la base de datos ya existe 
+## @param $3 Nombre de la base de datos que se desea crear
+## @param $4 Nombre de usuario de la base de datos que se desea crear
+## @param $5 Host de la base de datos que se desea crear
+## @param $6 Puerto al que se conecta el Manejador de la base de datos
+##
 install_MySQL(){
-	# $1=DBVersion; $2=DBExists; $3=DBName; $4=DBUser; $5=DBIP; $6=DBPort
+	# $1=DBVersion; $2=DBExists; $3=DBName; $4=DBUser; $5=DBHost; $6=DBPort
 	cmd="apt install mariadb-server -y"
 	#$cmd
 	log_errors $? "Instalacion de MySQL: $cmd"
@@ -55,8 +67,18 @@ install_MySQL(){
 	fi
 }
 
-install_PostregSQL(){
-	# $1=DBVersion; $2=DBExists; $3=DBName; $4=DBUser; $5=DBIP; $6=DBPort $7=VerDebian
+## @fn install_PostgreSQL()
+## @brief Funcion que realiza la instalacion de PostgreSQL y creacion de base de datos
+## @param $1 Version de manejador de base de datos a instalar
+## @param $2 Pregunta si la base de datos ya existe 
+## @param $3 Nombre de la base de datos que se desea crear
+## @param $4 Nombre de usuario de la base de datos que se desea crear
+## @param $5 Host de la base de datos que se desea crear
+## @param $6 Puerto al que se conecta el Manejador de la base de datos
+## @param $7 Version de sistema operativo 'Debian 9' o 'Debian 10'
+##
+install_PostgreSQL(){
+	# $1=DBVersion; $2=DBExists; $3=DBName; $4=DBUser; $5=DBHost; $6=DBPort $7=VerDebian
 	cmd="apt-get install postgresql -y"
 	$cmd
 	log_errors $? "Instalacion de PostgreSQL: $cmd"
@@ -66,7 +88,7 @@ install_PostregSQL(){
 		log_errors $? "Conexión a la base de datos '$3' en PostgreSQL, servidor $5"
 	else
 		#Si es Debian 9
-		if [[ $7 == '9' ]]; then
+		if [[ $7 == 'Debian 9' ]]; then
 			sed -i "s/.*port.*/port = $6/" /etc/postgresql/9.6/main/postgresql.conf
 			cp /etc/postgresql/9.6/main/pg_hba.conf /etc/postgresql/9.6/main/pg_hba_estable.conf
 			chown postgres:postgres /etc/postgresql/9.6/main/pg_hba.conf
@@ -113,7 +135,7 @@ echo "==============================================="
 
 if [[ $1 == 'PostgreSQL' ]];
 then
-	install_PostregSQL "$2" "$3" "$4" "$5" "$6" "$7" "$8"
+	install_PostgreSQL "$2" "$3" "$4" "$5" "$6" "$7" "$8"
 else
 	install_MySQL "$2" "$3" "$4" "$5" "$6" "$7"
 fi
