@@ -1,0 +1,194 @@
+\hypertarget{main_8sh}{}\section{main.\+sh File Reference}
+\label{main_8sh}\index{main.\+sh@{main.\+sh}}
+
+
+Script Main de instalador y configurador de C\+MS seguros en Debian 9, 10 y Cent\+OS 6, 7.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{main_8sh_a92067b58a8478c9841b2cd9b75ea3565}{log\+\_\+errors} (\$1, \$2)
+\item 
+\mbox{\Hypertarget{main_8sh_a14153ec632198b7643c2d2f1cff3471d}\label{main_8sh_a14153ec632198b7643c2d2f1cff3471d}} 
+\hyperlink{main_8sh_a14153ec632198b7643c2d2f1cff3471d}{jq\+\_\+install\+\_\+\+O\+S\+\_\+detection} ()
+\begin{DoxyCompactList}\small\item\em Función que instala jq detectando el SO (Debian o Cent\+OS) \end{DoxyCompactList}\item 
+\hyperlink{main_8sh_a48e8d18ccca665f9cd6bacd76dcd3d7d}{O\+S\+\_\+dependencies} (\$1)
+\begin{DoxyCompactList}\small\item\em Función que permite instalar las dependencias necesarias. \end{DoxyCompactList}\item 
+\hyperlink{main_8sh_ac44fe97312acf24ba3f09aa09c58cf5a}{ip\+\_\+v4\+\_\+v6} (\$1)
+\begin{DoxyCompactList}\small\item\em Función para habilitar soporte de I\+Pv4 e I\+Pv6. \end{DoxyCompactList}\item 
+\hyperlink{main_8sh_acd33682741fa52b482fbeb09846bd3cb}{O\+S\+\_\+hardening} (\$1, \$2)
+\begin{DoxyCompactList}\small\item\em Instalación y configuración de F2\+Ban, logwatch y logcheck. \end{DoxyCompactList}\item 
+\hyperlink{main_8sh_a8fbc4bde96d235c9985b0d1697e1b552}{web\+\_\+server\+\_\+installer} (\$1, \$2, \$3)
+\begin{DoxyCompactList}\small\item\em Función que instalará el servidor web con la versión elegida. \end{DoxyCompactList}\item 
+\hyperlink{main_8sh_a1978233bd26781aa3df0b7e9ed3cf567}{data\+\_\+base\+\_\+manager\+\_\+installer} (\$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8)
+\begin{DoxyCompactList}\small\item\em Función que instalará el D\+BM seleccionado. \end{DoxyCompactList}\item 
+\hyperlink{main_8sh_ad12ec286dbd629bd87a02fde36e82f94}{C\+MS} (\$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$10, \$11, \$12, \$13)
+\begin{DoxyCompactList}\small\item\em Función que instalará el C\+MS elegido. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Script Main de instalador y configurador de C\+MS seguros en Debian 9, 10 y Cent\+OS 6, 7. 
+
+\begin{DoxyAuthor}{Author}
+Rafael Alejandro Vallejo Fernandez 
+
+Diana G. Tadeo Guillen 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{main_8sh_ad12ec286dbd629bd87a02fde36e82f94}\label{main_8sh_ad12ec286dbd629bd87a02fde36e82f94}} 
+\index{main.\+sh@{main.\+sh}!C\+MS@{C\+MS}}
+\index{C\+MS@{C\+MS}!main.\+sh@{main.\+sh}}
+\subsubsection{\texorpdfstring{C\+M\+S()}{CMS()}}
+{\footnotesize\ttfamily C\+MS (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6,  }\item[{}]{\$7,  }\item[{}]{\$8,  }\item[{}]{\$9,  }\item[{}]{\$10,  }\item[{}]{\$11,  }\item[{}]{\$12,  }\item[{}]{\$13 }\end{DoxyParamCaption})}
+
+
+
+Función que instalará el C\+MS elegido. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & C\+MS a instalar \textquotesingle{}drupal\textquotesingle{}, \textquotesingle{}joomla\textquotesingle{}, \textquotesingle{}moodle\textquotesingle{}, \textquotesingle{}wordpress\textquotesingle{} y \textquotesingle{}ojs\textquotesingle{} \\
+\hline
+{\em \$2} & Sistema operativo \\
+\hline
+{\em \$3} & Version de C\+MS a instalar \\
+\hline
+{\em \$4} & Manejador de base de datos \\
+\hline
+{\em \$5} & Nombre de la base de datos \\
+\hline
+{\em \$6} & Servidor de base de datos (Host) \\
+\hline
+{\em \$7} & Puerto del manejador de base de datos \\
+\hline
+{\em \$8} & Usuario de la base de datos \\
+\hline
+{\em \$9} & Directorio de instalacion para el C\+MS \\
+\hline
+{\em \$10} & Nombre de dominio de la pagina \\
+\hline
+{\em \$11} & Correo a donde se enviar\mbox{[}an las notificaciones \\
+\hline
+{\em \$12} & Servidor Web \textquotesingle{}Apache\textquotesingle{} o \textquotesingle{}Nginx\textquotesingle{} \\
+\hline
+{\em \$13} & Existe la base de datos \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8sh_a1978233bd26781aa3df0b7e9ed3cf567}\label{main_8sh_a1978233bd26781aa3df0b7e9ed3cf567}} 
+\index{main.\+sh@{main.\+sh}!data\+\_\+base\+\_\+manager\+\_\+installer@{data\+\_\+base\+\_\+manager\+\_\+installer}}
+\index{data\+\_\+base\+\_\+manager\+\_\+installer@{data\+\_\+base\+\_\+manager\+\_\+installer}!main.\+sh@{main.\+sh}}
+\subsubsection{\texorpdfstring{data\+\_\+base\+\_\+manager\+\_\+installer()}{data\_base\_manager\_installer()}}
+{\footnotesize\ttfamily data\+\_\+base\+\_\+manager\+\_\+installer (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6,  }\item[{}]{\$7,  }\item[{}]{\$8 }\end{DoxyParamCaption})}
+
+
+
+Función que instalará el D\+BM seleccionado. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & Sistema operativo \\
+\hline
+{\em \$2} & Manejador de base de datos \\
+\hline
+{\em \$3} & Version de manejador de base de datos \\
+\hline
+{\em \$4} & Existe la base de datos \\
+\hline
+{\em \$5} & Usuario de la base de datos \\
+\hline
+{\em \$6} & Servidor de base de datos (Host) \\
+\hline
+{\em \$7} & Puerto del manejador de base de datos \\
+\hline
+{\em \$8} & Nombre de la base de datos \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8sh_ac44fe97312acf24ba3f09aa09c58cf5a}\label{main_8sh_ac44fe97312acf24ba3f09aa09c58cf5a}} 
+\index{main.\+sh@{main.\+sh}!ip\+\_\+v4\+\_\+v6@{ip\+\_\+v4\+\_\+v6}}
+\index{ip\+\_\+v4\+\_\+v6@{ip\+\_\+v4\+\_\+v6}!main.\+sh@{main.\+sh}}
+\subsubsection{\texorpdfstring{ip\+\_\+v4\+\_\+v6()}{ip\_v4\_v6()}}
+{\footnotesize\ttfamily ip\+\_\+v4\+\_\+v6 (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Función para habilitar soporte de I\+Pv4 e I\+Pv6. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{main_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
+\index{main.\+sh@{main.\+sh}!log\+\_\+errors@{log\+\_\+errors}}
+\index{log\+\_\+errors@{log\+\_\+errors}!main.\+sh@{main.\+sh}}
+\subsubsection{\texorpdfstring{log\+\_\+errors()}{log\_errors()}}
+{\footnotesize\ttfamily log\+\_\+errors (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2 }\end{DoxyParamCaption})}
+
+Funcion para creacion de bitacora de errores 
+\begin{DoxyParams}{Parameters}
+{\em \$1} & Salida de error \\
+\hline
+{\em \$2} & Mensaje de error o acierto\\
+\hline
+{\em \$1} & Salida de error \\
+\hline
+{\em \$2} & Mensaje de error o acierto \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8sh_a48e8d18ccca665f9cd6bacd76dcd3d7d}\label{main_8sh_a48e8d18ccca665f9cd6bacd76dcd3d7d}} 
+\index{main.\+sh@{main.\+sh}!O\+S\+\_\+dependencies@{O\+S\+\_\+dependencies}}
+\index{O\+S\+\_\+dependencies@{O\+S\+\_\+dependencies}!main.\+sh@{main.\+sh}}
+\subsubsection{\texorpdfstring{O\+S\+\_\+dependencies()}{OS\_dependencies()}}
+{\footnotesize\ttfamily O\+S\+\_\+dependencies (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Función que permite instalar las dependencias necesarias. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & Sistema Operativo \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8sh_acd33682741fa52b482fbeb09846bd3cb}\label{main_8sh_acd33682741fa52b482fbeb09846bd3cb}} 
+\index{main.\+sh@{main.\+sh}!O\+S\+\_\+hardening@{O\+S\+\_\+hardening}}
+\index{O\+S\+\_\+hardening@{O\+S\+\_\+hardening}!main.\+sh@{main.\+sh}}
+\subsubsection{\texorpdfstring{O\+S\+\_\+hardening()}{OS\_hardening()}}
+{\footnotesize\ttfamily O\+S\+\_\+hardening (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2 }\end{DoxyParamCaption})}
+
+
+
+Instalación y configuración de F2\+Ban, logwatch y logcheck. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & Sistema operativo \\
+\hline
+{\em \$2} & email de notificacion \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8sh_a8fbc4bde96d235c9985b0d1697e1b552}\label{main_8sh_a8fbc4bde96d235c9985b0d1697e1b552}} 
+\index{main.\+sh@{main.\+sh}!web\+\_\+server\+\_\+installer@{web\+\_\+server\+\_\+installer}}
+\index{web\+\_\+server\+\_\+installer@{web\+\_\+server\+\_\+installer}!main.\+sh@{main.\+sh}}
+\subsubsection{\texorpdfstring{web\+\_\+server\+\_\+installer()}{web\_server\_installer()}}
+{\footnotesize\ttfamily web\+\_\+server\+\_\+installer (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3 }\end{DoxyParamCaption})}
+
+
+
+Función que instalará el servidor web con la versión elegida. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & Sistema operativo \\
+\hline
+{\em \$2} & Servidor web \\
+\hline
+{\em \$3} & version del servidor web \\
+\hline
+\end{DoxyParams}
