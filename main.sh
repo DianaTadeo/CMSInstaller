@@ -64,7 +64,7 @@ OS_dependencies(){
 
 ## @fn ip_v4_v6()
 ## @brief Función para habilitar soporte de IPv4 e IPv6
-## @param $1 
+## @param $1
 ##
 ip_v4_v6(){
 	# Función para habilitar soporte de IPv4 e IPv6
@@ -115,13 +115,13 @@ web_server_installer(){
 ## @fn data_base_manager_installer()
 ## @brief Función que instalará el DBM seleccionado
 ## @param $1 Sistema operativo
-## @param $2 Manejador de base de datos 
+## @param $2 Manejador de base de datos
 ## @param $3 Version de manejador de base de datos
 ## @param $4 Existe la base de datos
 ## @param $5 Usuario de la base de datos
 ## @param $6 Servidor de base de datos (Host)
 ## @param $7 Puerto del manejador de base de datos
-## @param $8 Nombre de la base de datos 
+## @param $8 Nombre de la base de datos
 ##
 data_base_manager_installer(){
 	# $1=$SO; $2=$DBM; $3=$DB_VERSION; $4=$DB_EXISTS
@@ -145,8 +145,8 @@ data_base_manager_installer(){
 ## @param $1 CMS a instalar 'drupal', 'joomla', 'moodle', 'wordpress' y 'ojs'
 ## @param $2 Sistema operativo
 ## @param $3 Version de CMS a instalar
-## @param $4 Manejador de base de datos 
-## @param $5 Nombre de la base de datos 
+## @param $4 Manejador de base de datos
+## @param $5 Nombre de la base de datos
 ## @param $6 Servidor de base de datos (Host)
 ## @param $7 Puerto del manejador de base de datos
 ## @param $8 Usuario de la base de datos
@@ -174,12 +174,12 @@ CMS(){
 		'moodle')
 			echo 'moodle' $3
 			bash ./Modulos/InstaladoresCMS/Moodle_Instalador_General.sh "$5" "$8" "$6" \
-			"7" "$9" "$3" "$2" "$4"
+			"$7" "$9" "$3" "$2" "$4"
 			;;
 		'wordpress')
 			echo 'wordpress' $3
 			bash ./Modulos/InstaladoresCMS/WP_Instalador_General.sh "$5" "$6:$7" "$8" "$9" \
-			"{$10}" "{$11}" "$4" "{$12}" "$2"
+			"${10}" "${11}" "$4" "${12}" "$2"
 			;;
 		'ojs')
 			echo 'ojs' $3
