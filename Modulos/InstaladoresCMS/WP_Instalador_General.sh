@@ -15,7 +15,7 @@
 # Argumento 7: 'PostgreSQL' | 'MySQL'
 # Argumento 8: 'Nginx' |'Apache'
 # Argumento 9: 'CentOS 6'| 'CentOS 7' | 'Debian 9' | 'Debian 10'
-# Se devuelve un archivo json con la informacion y credenciales 
+# Se devuelve un archivo json con la informacion y credenciales
 # de la instalacion de Wordpress
 
 LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
@@ -52,11 +52,11 @@ install_dep(){
 			php7.3-xml php7.3-zip unzip zip -y"
 			$cmd
 			log_errors $? "Instalacion de PHP en Wordpress: $cmd"
-			if [[ $2 == 'MySQL' ]]; then 
+			if [[ $2 == 'MySQL' ]]; then
 				cmd="apt install php7.3-mysql -y"
 				$cmd
 				log_errors $? "Instalacion de dependencias Wordpress: $cmd"
-			else 
+			else
 				cmd="apt install php7.3-pgsql -y"
 				$cmd
 				log_errors $? "Instalacion de dependencias Wordpress: $cmd"
@@ -129,12 +129,12 @@ install_WP(){
 		sed -i "s/password_here/$dbpass/" ./wp-config.php
 		sed -i "s/localhost/$2/" ./wp-config.php
 	else
-		wp --allow-root core config --dbhost=$2 --dbname=$1 --dbuser=$3 --dbpass=$dbpass		
+		wp --allow-root core config --dbhost=$2 --dbname=$1 --dbuser=$3 --dbpass=$dbpass
 	fi
 	chmod 644 wp-config.php
 	chown -R www-data:www-data $4
 	if [[ $6 == 'Apache' ]]; then
-		if [[ $7 == 'Debian 9' | $7 == 'Debian 10' ]]; then
+		if [[ $7 == 'Debian 9' ]] || [[ $7 == 'Debian 10' ]]; then
 			systemctl restart apache2
 		else
 			systemctl restart httpd
