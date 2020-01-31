@@ -104,10 +104,12 @@ virtual_host_apache(){
 		log_errors 0 "Instalacion de $(openssl version): "
 		yum install mod_ssl -y
 		SISTEMA="/etc/httpd/sites-available/$2.conf"
+		SECURITY_CONF="/etc/httpd/conf.d/security.conf"
 	else
 		[ -z "$(which openssl)" ] && apt install openssl -y
 		log_errors 0 "Instalacion de $(openssl version): "
 		SISTEMA="/etc/apache2/sites-available/$2.conf"
+		SECURITY_CONF="/etc/apache2/conf-enabled/security.conf"
 	fi
 	if [[ $2 =~ [^www.]* ]]; then SERVERNAME="www.$2"; else SERVERNAME=$2; fi
 
@@ -132,9 +134,12 @@ virtual_host_apache(){
 		los archivos de configuración correspondientes."
 		KEY="/root/$2.key"; CSR="/root/$2.csr"; CRT="/root/$2.crt"
 		openssl genrsa -out $KEY 2048
-		openssl req -new -key $KEY -out $CSR
+		./Modulos/InstaladoresCMS/openssl_req.exp "$KEY" "$CSR" "$2" "temporal@email.com"
+		#openssl req -new -key $KEY -out $CSR
 		openssl x509 -req -days 365 -in $CSR -signkey $KEY -out $CRT
 	fi
+	FINGERPRINT=$(openssl x509 -pubkey < $CRT | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64)
+	log_errors 0 "Se obtiene 'fingerprint' del certificado actual: $FINGERPRINT"
 	echo "
 	<VirtualHost *:80>
 			ServerName $SERVERNAME
@@ -150,6 +155,8 @@ virtual_host_apache(){
 		SSLCertificateFile $CRT
 		SSLCertificateKeyFile $KEY
 
+		Header set Public-Key-Pins \"pin-sha256=\\\"$FINGERPRINT\\\"; max-age=2592000; includeSubDomains\"
+
 		DocumentRoot /var/www/html/$2
 		<Directory /var/www/html/$2>
 				AllowOverride All
@@ -164,6 +171,7 @@ virtual_host_apache(){
 	</VirtualHost>" |  tee $SISTEMA
 		if [ $3 != "/var/www/html" ] && [ $3 != "/var/www/html/" ]; then
 			ln -s $3/$2 /var/www/html/$2
+			log_errors $? "Enlace en /var/www/html/$2: "
 		fi
 
 		if [[ $1 =~ Debian.* ]]; then
@@ -174,6 +182,8 @@ virtual_host_apache(){
 			log_errors $? "Se habilita modulo de Apache: a2enmod rewrite"
 			a2enmod ssl
 			log_errors $? "Se habilita modulo de Apache: a2enmod ssl"
+			a2enmod headers
+			log_errors $? "Se habilita modulos headers: a2enmod headers"
 			cd -
 			systemctl restart apache2
 			log_errors $? "Se reinicia servicio Apache: systemctl restart apache2"
@@ -232,7 +242,7 @@ git_composer_drush(){
 				 su $SUDO_USER -c 'echo "export PATH="$(su $SUDO_USER -c "composer config -g home")/vendor/bin:$PATH"" >> ~/.bashrc'
 				 # . ~/.bashrc  # NOTA: Cargar $PATH para utilizar drush con el usuario que utilizó "sudo"
 	fi
-	log_errors 0 "Instalacion de $(composer --version): "
+	log_errors $? "Instalacion de $(composer --version): "
 	if [ $(which drush) ]
 		then
 				echo $(drush version)
@@ -242,7 +252,7 @@ git_composer_drush(){
 				su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/cgr drush/drush:8.x"
 				#cgr drush/drush:8.x
 	fi
-	log_errors 0 "Instalacion de drush 8.x "
+	log_errors $? "Instalacion de drush 8.x "
 }
 
 
@@ -318,7 +328,7 @@ complementos_seguridad(){
 			\$settings['trusted_host_patterns'] = [ \n
 				'^${DOMAIN_NAME//./\\.}\$', \n
 				'^www\.${DOMAIN_NAME//./\\.}\$', \n
-			];" >> /sites/default/settings.php
+			];" >> ./sites/default/settings.php
 		else
 			DOM=$(echo $DOMAIN_NAME | cut --complement -f1 -d".")
 			echo -e "
@@ -327,6 +337,9 @@ complementos_seguridad(){
 				'^${DOM//./\\.}\$', \n
 				];" >> ./sites/default/settings.php
 		fi
+		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush	\
+		dl remove_http_headers && $(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush \
+		en remove_http_headers -y"
 	else
 		echo
 	fi
@@ -368,7 +381,8 @@ drupal_installer(){
 			mysql -h $4 -P $5 -u $3 --password=$DB_PASS -e "CREATE DATABASE dbtemporal;"
 			log_errors $? "Creación de base de datos 'dbtemporal' (necesaria para la configuración) en MySQL, servidor $5"
 		else
-			su postgres -c "psql -h $5 -p $6 -d $3 -U $4 -c 'CREATE DATABASE dbtemporal;'"
+			su postgres -c "psql -h $4 -p $5 -U $3 -c 'CREATE DATABASE dbtemporal;'"
+			su postgres -c "psql -h $4 -p $5 -U $3 -c 'ALTER DATABASE dbtemporal SET bytea_output = 'escape';'"
 			log_errors $? "Creación de base de datos 'dbtemporal' (necesaria para la configuración) en PostgreSQL, servidor $5"
 		fi
 	else
@@ -384,7 +398,7 @@ drupal_installer(){
 			mysql -h $4 -P $5 -u $3 --password=$DB_PASS -e "DROP DATABASE dbtemporal;"
 			log_errors $? "Se elimina la base de datos 'dbtemporal' de MySQL"
 		else
-			su postgres -c "psql -h $5 -p $6 -d $3 -U $4 -c 'DROP DATABASE dbtemporal;'"
+			su postgres -c "psql -h $4 -p $5 -U $3 -c 'DROP DATABASE dbtemporal;'"
 			log_errors $? "Se elimina la base de datos 'dbtemporal' de PostgreSQL"
 		fi
 	fi
@@ -412,10 +426,14 @@ DOMAIN_NAME=$9
 EMAIL_NOTIFICATION=${10}
 WEB_SERVER=${11}
 DB_EXISTS=${12}
+
+TEMP_PATH="$(su $SUDO_USER -c "pwd")"
+
 mkdir -p $PATH_INSTALL
+
 install_dep "$SO" "$DBM" "$WEB_SERVER" "$DOMAIN_NAME" "$PATH_INSTALL"
 chown $SUDO_USER:$SUDO_USER $PATH_INSTALL
-TEMP_PATH="$(su $SUDO_USER -c "pwd")"
+
 cd $PATH_INSTALL
 drupal_installer "$DRUPAL_VERSION" "$DBM" "$DB_USER" "$DB_IP" "$DB_PORT"\
 									"$DB_NAME" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$DB_EXISTS"\
