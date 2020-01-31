@@ -201,28 +201,28 @@ install_logcheck(){
 	MAILLOG="/var/log/maillog"
 
 	if [ -f "$APACHE_ACCESS" ]; then
-				echo "$APACHE_ACCESS" >> LOGCHECK_LOGFILES
+				echo "$APACHE_ACCESS" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$APACHE_ERROR" ]; then
-				echo "$APACHE_ERROR" >> LOGCHECK_LOGFILES
+				echo "$APACHE_ERROR" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$HTTPD_ACCESS" ]; then
-				echo "$HTTPD_ACCESS" >> LOGCHECK_LOGFILES
+				echo "$HTTPD_ACCESS" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$HTTPD_ERROR" ]; then
-				echo "$HTTPD_ERROR" >> LOGCHECK_LOGFILES
+				echo "$HTTPD_ERROR" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$NGINX_ACCESS" ]; then
-				echo "$NGINX_ACCESS" >> LOGCHECK_LOGFILES
+				echo "$NGINX_ACCESS" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$NGINX_ERROR" ]; then
-				echo "$NGINX_ERROR" >> LOGCHECK_LOGFILES
+				echo "$NGINX_ERROR" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$MAIL_LOG" ]; then
-				echo "$MAIL_LOG" >> LOGCHECK_LOGFILES
+				echo "$MAIL_LOG" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$MAILLOG" ]; then
-				echo "$MAILLOG" >> LOGCHECK_LOGFILES
+				echo "$MAILLOG" >> $LOGCHECK_LOGFILES
 	fi
 }
 
