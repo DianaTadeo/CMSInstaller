@@ -25,7 +25,7 @@ disable_default_services(){
 	# $1=SO
 	# Servicios que no se deshabilitarán
 	SERVICES_NOT_DISABLED="network.* ssh.* cron.* fail2ban.* keyboard.* \
-	console.* r*sync.* r*sys.* system.* d-bus.* apache.* mysql.* pgsql.* \
+	console.* r*sync.* r*sys.* system.* d-bus.* apache.* mysql.* p.*g.*sql.* \
 	mariadb.* httpd.* nginx.* log(check|watch).* postfix.*"
 	case $1 in
 		'Debian 9' | 'Debian 10' | 'CentOS 7')
@@ -57,7 +57,7 @@ disable_user_accounts(){
 	# No deshabilita la cuenta root y la cuenta del usuario que ejecutó "sudo"
 	USER_ACCOUNTS=$(grep "/bin/.*sh" /etc/passwd  | cut -d":" -f1)
 	for ACCOUNT in $USER_ACCOUNTS; do
-		if [[ "$ACCOUNT" != "$SUDO_USER" ]] && [[ "$ACCOUNT" != "root" ]]; then
+		if [[ "$ACCOUNT" != "$SUDO_USER" ]] && [[ "$ACCOUNT" != "root" ]] && [[ "$ACCOUNT" != "postgres" ]]; then
 			usermod -L -e 1 $ACCOUNT  # -L bloquea la contraseña del usuario y -e 1 deshabilita la cuenta
 			# para desbloquear: usermod -U -e "" $ACCOUNT
 			log_errors $? "Esta cuenta fue deshabilitada: $ACCOUNT"
@@ -98,7 +98,11 @@ password_policy(){
 	ACCOUNTS=$(grep "/bin/.*sh" /etc/passwd  | cut -d":" -f1)
 	for ACCOUNT in $ACCOUNTS; do
 		echo "Debes cambiar el password de '$ACCOUNT':"
-		passwd $ACCOUNT
+		if [[ "$ACCOUNT" == "postgres" ]]; then
+			su postgres -c "psql -c '\password'"
+		else
+			passwd $ACCOUNT
+		fi
 		chage -M 90 -m 7 -W 7 $ACCOUNT
 	done
 	log_errors $? "Expiración de contraseñas (usuarios existentes): cada 90 días (se adevertirá 7 días antes) y mínimo 7"
