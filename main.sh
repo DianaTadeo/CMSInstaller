@@ -53,11 +53,11 @@ OS_dependencies(){
 	case $1 in
 		'Debian 9' | 'Debian 10')
 			echo "Deb9"
-			apt install -y sudo vim curl wget
+			apt install -y sudo vim curl wget expect sendmail
 			;;
 		'CentOS 6' | 'CentOS 7')
 			echo "Cent6"
-			yum install sudo vim curl wget -y
+			yum install sudo vim curl wget expect sendmail -y
 			;;
 	esac
 }
@@ -174,12 +174,12 @@ CMS(){
 		'moodle')
 			echo 'moodle' $3
 			bash ./Modulos/InstaladoresCMS/Moodle_Instalador_General.sh "$5" "$8" "$6" \
-			"$7" "$9" "$3" "$2" "$4"
+			"$7" "$9" "$3" "${10}" "$2" "$4" "${12}" "${11}"
 			;;
 		'wordpress')
 			echo 'wordpress' $3
 			bash ./Modulos/InstaladoresCMS/WP_Instalador_General.sh "$5" "$6:$7" "$8" "$9" \
-			"${10}" "${11}" "$4" "${12}" "$2"
+			"${10}" "${11}" "$4" "${12}" "$2" "$3"
 			;;
 		'ojs')
 			echo 'ojs' $3
@@ -187,6 +187,7 @@ CMS(){
 			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}"
 			;;
 	esac
+	bash ./Modulos/Auxiliares/Web_Configuration_Sec.sh "$2" "${12}"
 }
 
 backups(){
@@ -252,7 +253,6 @@ DB_EXISTS=`jq '.DBExists' $JSON_OPTIONS | cut -f2 -d'"'`
 
 OS_dependencies "$SO"
 chmod +x ./Modulos/Auxiliares/* ./Modulos/InstaladoresCMS/* ./Modulos/Hardening/*
-
 web_server_installer "$SO" "$WEB_SERVER" "$WS_VERSION"
 
 # Se asginan valores para conexión a la BD si existe o no
