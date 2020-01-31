@@ -66,11 +66,15 @@ virtual_host_apache(){
 # $1=SO; $2=DomainName; $3=PathInstall
 	if [[ $1 =~ CentOS.* ]]; then
 		[ -z "$(which openssl)" ] && yum install openssl -y
+		log_errors 0 "Instalacion de $(openssl version): "
 		yum install mod_ssl -y
 		SISTEMA="/etc/httpd/sites-available/$2.conf"
+		SECURITY_CONF="/etc/httpd/conf.d/security.conf"
 	else
 		[ -z "$(which openssl)" ] && apt install openssl -y
+		log_errors 0 "Instalacion de $(openssl version): "
 		SISTEMA="/etc/apache2/sites-available/$2.conf"
+		SECURITY_CONF="/etc/apache2/conf-enabled/security.conf"
 	fi
 	if [[ $2 =~ [^www.]* ]]; then SERVERNAME="www.$2"; else SERVERNAME=$2; fi
 
@@ -95,9 +99,12 @@ virtual_host_apache(){
 		los archivos de configuración correspondientes."
 		KEY="/root/$2.key"; CSR="/root/$2.csr"; CRT="/root/$2.crt"
 		openssl genrsa -out $KEY 2048
-		openssl req -new -key $KEY -out $CSR
+		./Modulos/InstaladoresCMS/openssl_req.exp "$KEY" "$CSR" "$2" "temporal@email.com"
+		#openssl req -new -key $KEY -out $CSR
 		openssl x509 -req -days 365 -in $CSR -signkey $KEY -out $CRT
 	fi
+	FINGERPRINT=$(openssl x509 -pubkey < $CRT | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64)
+	log_errors 0 "Se obtiene 'fingerprint' del certificado actual: $FINGERPRINT"
 	echo "
 	<VirtualHost *:80>
 			ServerName $SERVERNAME
@@ -113,6 +120,8 @@ virtual_host_apache(){
 		SSLCertificateFile $CRT
 		SSLCertificateKeyFile $KEY
 
+		Header set Public-Key-Pins \"pin-sha256=\\\"$FINGERPRINT\\\"; max-age=2592000; includeSubDomains\"
+
 		DocumentRoot /var/www/html/$2
 		<Directory /var/www/html/$2>
 				AllowOverride All
@@ -127,22 +136,32 @@ virtual_host_apache(){
 	</VirtualHost>" |  tee $SISTEMA
 		if [ $3 != "/var/www/html" ] && [ $3 != "/var/www/html/" ]; then
 			ln -s $3/$2 /var/www/html/$2
+			log_errors $? "Enlace en /var/www/html/$2: "
 		fi
 
 		if [[ $1 =~ Debian.* ]]; then
 			cd /etc/apache2/sites-available/
 			a2ensite $2.conf
+			log_errors $? "Se habilita sitio $2.conf "
 			a2enmod rewrite
+			log_errors $? "Se habilita modulo de Apache: a2enmod rewrite"
 			a2enmod ssl
+			log_errors $? "Se habilita modulo de Apache: a2enmod ssl"
+			a2enmod headers
+			log_errors $? "Se habilita modulos headers: a2enmod headers"
 			cd -
 			systemctl restart apache2
+			log_errors $? "Se reinicia servicio Apache: systemctl restart apache2"
 		else
 			ln -s /etc/httpd/sites-available/$2.conf  /etc/httpd/sites-enabled/$2.conf
 			setenforce 0
+			log_errors $? "Se habilita sitio $2.conf "
 			if [[ $1 = 'CentOS 6' ]]; then
 				service httpd restart
+				log_errors $? "Se reinicia servicio HTTPD: service httpd restart "
 			else
 				systemctl restart httpd
+				log_errors $? "Se reinicia servicio HTTPD: systemctl restart httpd "
 			fi
 		fi
 }
