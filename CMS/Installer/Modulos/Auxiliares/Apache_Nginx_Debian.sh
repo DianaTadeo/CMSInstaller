@@ -8,7 +8,7 @@
 #Argumento 2: Tipo de web server a instalar ['Nginx' o 'Apache']
 #Argumento 3: Version del web server
 
-LOG="`pwd`/../Log/Aux_Instalacion.log"
+LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
 ###################### Log de Errores ###########################
 # $1: Salida de error											#
@@ -192,8 +192,11 @@ echo "==============================================="
 echo "     Inicia la instalacion de $2 $3"
 echo "==============================================="
 
-apt-get update
-apt-get upgrade
+apt update
+DEBIAN_FRONTEND=noninteractive apt \
+-o Dpkg::Options::=--force-confold \
+-o Dpkg::Options::=--force-confdef \
+-y upgrade
 log_errors $? "Upgrade de paquetes"
 #############################  Se instalan con main.sh
 #apt -y install curl wget
@@ -210,6 +213,11 @@ log_errors $? "Upgrade de paquetes"
 apt -y install lsb-release apt-transport-https ca-certificates
 log_errors $? "Instalacion de extensiones"
 
+if [ $(which git) ]; then
+		echo $(git version)
+else
+		apt install git -y
+fi
 
 if [[ $2 == 'Nginx' ]];
 then
@@ -220,4 +228,3 @@ else
 	install_apache_WAF
 fi
 chown -R www-data:www-data /var/www/html
-#apt-get install  php7.4-intl php7.4-mysql php7.4-curl php7.4-gd php7.4-soap php7.4-xml php7.4-zip php7.4-readline php7.4-opcache php7.4-json php7.4-gd -y apt-get

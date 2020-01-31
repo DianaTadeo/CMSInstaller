@@ -6,7 +6,7 @@
 # Argumento 1: SO
 # Argumento 2: EMAIL_NOTIFICATION
 
-LOG="`pwd`/../Log/Hardening.log"
+LOG="`pwd`/Modulos/Log/Hardening.log"
 
 ###################### Log de Errores ###########################
 # $1: Salida de error											#
@@ -70,9 +70,6 @@ install_fail2ban(){
 	# Se copian archivo jail.conf en jail.local para aplicar este archivo de configuración
 	JAIL_LOCAL="/etc/fail2ban/jail.local"
 	cp /etc/fail2ban/jail.conf $JAIL_LOCAL
-	cmd="sed -i -e "/#.*$/d" -e "/^$/d" prueba.local"
-	$cmd
-	log_errors $? "Se quitan comentarios de archivo fail.local: $cmd"
 
 	sed -i "0,/\(bantime[ \t]*=\).*/s/\(bantime[ \t]*=\).*/\1 $BANTIME/" $JAIL_LOCAL
 	log_errors $? "Se asgina bantime=$BANTIME"
@@ -129,7 +126,7 @@ install_fail2ban(){
 			sed -i "s/\(^port*=\)*ssh$/\1 $ssh_port /" $JAIL_LOCAL
 	fi
 
-	if [[ $1 == 'CentOS 6']]; then
+	if [[ $1 == 'CentOS 6' ]]; then
 		cmd="service fail2ban restart"
 	else
 		cmd="systemctl restart fail2ban"
@@ -140,8 +137,11 @@ install_fail2ban(){
 
 install_logwatch(){
 	if [[ "$1" == "Debian 9"  ]] || [[ "$1" == "Debian 10"  ]]; then
-		cmd="apt -y install logwatch mailutils postfix"
-		$cmd
+		DEBIAN_FRONTEND=noninteractive apt \
+		-o Dpkg::Options::=--force-confold \
+		-o Dpkg::Options::=--force-confdef \
+		-y install logwatch mailutils postfix
+		cmd="apt install logwatch mailutils postfix -y"
 		log_errors $? "$cmd"
 	else
 		cmd="yum install -y epel-release"
@@ -187,7 +187,7 @@ install_logcheck(){
 	LOGCHECK_LOGFILES="/etc/logcheck/logcheck.logfiles"
 
 	#Sets mail that will receive reports
-	sed -i "s/SENDMAILTO=\"logcheck\"/SENDMAILTO=\"$2\"/" $LOGCHECK_CONF
+	sed -i "s/\(SENDMAILTO=\)\"logcheck\"/\1\"$2\"/" $LOGCHECK_CONF
 	log_errors $? "Se asigna correo que recibirá los reportes de logcheck: $2"
 
 	# Archivos log de los servidores web y mail
@@ -201,28 +201,28 @@ install_logcheck(){
 	MAILLOG="/var/log/maillog"
 
 	if [ -f "$APACHE_ACCESS" ]; then
-				echo "$APACHE_ACCESS" >> LOGCHECK_LOGFILES
+				echo "$APACHE_ACCESS" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$APACHE_ERROR" ]; then
-				echo "$APACHE_ERROR" >> LOGCHECK_LOGFILES
+				echo "$APACHE_ERROR" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$HTTPD_ACCESS" ]; then
-				echo "$HTTPD_ACCESS" >> LOGCHECK_LOGFILES
+				echo "$HTTPD_ACCESS" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$HTTPD_ERROR" ]; then
-				echo "$HTTPD_ERROR" >> LOGCHECK_LOGFILES
+				echo "$HTTPD_ERROR" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$NGINX_ACCESS" ]; then
-				echo "$NGINX_ACCESS" >> LOGCHECK_LOGFILES
+				echo "$NGINX_ACCESS" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$NGINX_ERROR" ]; then
-				echo "$NGINX_ERROR" >> LOGCHECK_LOGFILES
+				echo "$NGINX_ERROR" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$MAIL_LOG" ]; then
-				echo "$MAIL_LOG" >> LOGCHECK_LOGFILES
+				echo "$MAIL_LOG" >> $LOGCHECK_LOGFILES
 	fi
 	if [ -f "$MAILLOG" ]; then
-				echo "$MAILLOG" >> LOGCHECK_LOGFILES
+				echo "$MAILLOG" >> $LOGCHECK_LOGFILES
 	fi
 }
 

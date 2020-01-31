@@ -1,24 +1,24 @@
 #!/bin/bash -e
+
 ## @file
 ## @author Rafael Alejandro Vallejo Fernandez
 ## @author Diana G. Tadeo Guillen
-## @brief Instalador de Wordpress para CentOS 6, CentOS 7, Debian 9 y Debian 10
+## @brief Instalador de Joomla para CentOS 6, CentOS 7, Debian 9 y Debian 10
 ## @version 1.0
 ##
 
 # Argumento 1: Nombre de la Base de Datos
-# Argumento 2: Servidor de base de datos (localhost, ip, etc..) seguido de puerto ej. localhost:2020
-# Argumento 3: Usuario de la Base de Datos
-# Argumento 4: Ruta de Instalacion de Wordpress
-# Argumento 5: Url de Wordpress
-# Argumento 6: Correo de notificaciones
-# Argumento 7: 'PostgreSQL' | 'MySQL'
-# Argumento 8: 'Nginx' |'Apache'
-# Argumento 9: 'CentOS 6'| 'CentOS 7' | 'Debian 9' | 'Debian 10'
-# Argumento 10: Version de Wordpress seleccionado
+# Argumento 2: Usuario de la Base de Datos
+# Argumento 3: Servidor de la base de Datos (localhost, ip, etc.)
+# Argumento 4: Puerto de la Base de Datos
+# Argumento 5: Ruta de instalacion de Moodle
+# Argumento 6: Version de Moodle
+# Argumento 7: url de Moodle
+# Argumento 8: SO
+# Argumento 9: Manejador de DB ['MySQL'|'PostgreSQL']
+# Argumento 10: Web server ['Apache'|'Nginx']
+# Argumento 11: Email para notificaciones
 
-# Se devuelve un archivo json con la informacion y credenciales
-# de la instalacion de Wordpress
 
 LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
 
@@ -36,9 +36,9 @@ log_errors(){
 }
 
 ## @fn install_dep()
-## @brief Funcion que realiza la instalacion de las dependencias de php para Wordpress
-## @param $1 El sistema operativo donde se desea instalar Wordpress : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
-## @param $2 Manejador de base de datos para la instalacion de Wordpress
+## @brief Funcion que realiza la instalacion de las dependencias de php para Joomla
+## @param $1 El sistema operativo donde se desea instalar Joomla : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+## @param $2 Manejador de base de datos para la instalaci[on de Joomla
 ##
 install_dep(){
 	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL
@@ -50,18 +50,18 @@ install_dep(){
 			echo "deb https://packages.sury.org/php/ $VERSION_NAME main" | tee /etc/apt/sources.list.d/php.list
 			apt update
 			cmd="apt install php7.3 php7.3-common \
-			php7.3-gd php7.3-json php7.3-mbstring \
-			php7.3-xml php7.3-zip unzip zip -y"
+			php7.3-gd php7.3-json php7.3-mbstring php7.3-intl \
+			php7.3-xml php7.3-zip php7.3-curl unzip zip -y"
 			$cmd
-			log_errors $? "Instalacion de PHP en Wordpress: $cmd"
+			log_errors $? "Instalacion de PHP en Joomla: $cmd"
 			if [[ $2 == 'MySQL' ]]; then
 				cmd="apt install php7.3-mysql -y"
 				$cmd
-				log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+				log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			else
 				cmd="apt install php7.3-pgsql -y"
 				$cmd
-				log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+				log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			fi
 			if [[ $3 == 'Apache' ]]; then
 				apt install libapache2-mod-php7.3 -y
@@ -75,22 +75,24 @@ install_dep(){
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
 			cmd="yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum install yum-utils -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum-config-manager --enable remi-php73 -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
 			log_errors $? "Instalacion de PHP7.3-$2: "
 			if [[ $3 == 'Apache' ]]; then
+#				yum install libapache2-mod-php -y
+#				a2enmod rewrite;
 				site_default_apache "CentOS"
 				virtual_host_apache "$1" "$4" "$5"
 			else
@@ -214,103 +216,64 @@ site_default_nginx(){
 	echo "site_default_nginx: TODO"
 }
 
-## @fn install_WP()
-## @brief Funcion que realiza la instalacion de Wordpress
-## @param $1 Nombre de la base de datos para Wordpress
-## @param $2 Servidor de la base de datos seguido del puerto (host:port)
-## @param $3 Usuario de la base de datos para Wordpress
-## @param $4 Ruta del directorio raiz donde se instalara Wordpress
-## @param $5 Manejador de la base de datos 'MySQL' o 'PostgreSQL'
-## @param $6 Tipo de Servidor Web 'Apache' o 'Nginx'
-## @param $7 El sistema operativo donde se desea instalar Wordpress : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
-##
-install_WP(){
-	#$1=DBName $2=DBHost:port $3=DBUser $4=WPDirRoot $5=DBManager $6=WebServer $7=OS
-	# $8=DomainName; $9=WPVersion
-	clear
-	echo "==============================================="
-	echo "	Se inicia la instalacion de Wordpress"
-	echo "==============================================="
 
-	read -sp "Ingresa el password del usuario '$3' de la base de datos: " dbpass; echo -e "\n"
-	mkdir -p $4
-	cd $4
-	wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-	chmod u+x wp-cli.phar
-	mv wp-cli.phar /usr/local/bin/wp
-	wp --allow-root core download --path="$8" --version="$9"
-	cd $8
-	#apt install php-mysql -y
-	#wp --allow-root core config --dbhost=$2 --dbname=$1 --dbuser=$3 --dbpass=$dbpass
-	echo "====Instalacion con cli terminada"
-	if [[ $5 == 'PostgreSQL' ]]; then
-		echo "==========Se configura PostgreSQL para WordPress"
-		#apt install php-pgsql -y
-		wget https://downloads.wordpress.org/plugin/wppg.1.0.1.zip
-		unzip wppg.1.0.1.zip
-		#cd $4
-		mv wppg ./wp-content/plugins/
-		rm wppg.1.0.1.zip
-		cp ./wp-content/plugins/wppg/pg4wp/db.php ./wp-content/
-		mv ./wp-config-sample.php ./wp-config.php
-		#ls .
-		sed -i "s/wp-content\/pg4wp/wp-content\/plugins\/wppg\/pg4wp/" ./wp-content/db.php
-		sed -i "s/database_name_here/$1/" ./wp-config.php
-		sed -i "s/username_here/$3/" ./wp-config.php
-		sed -i "s/password_here/$dbpass/" ./wp-config.php
-		sed -i "s/localhost/$2/" ./wp-config.php
+## @fn install_moodle()
+## @brief Funcion que realiza la instalacion de Joomla
+## @param $1 Nombre de la base de  para Moodle
+## @param $2 Usuario de la base de datos para Moodle
+## @param $3 Servidor de la base de datos (host)
+## @param $4 Puerto al que se conecta el manejador de base de datos
+## @param $5 Ruta del directorio raiz donde se instalara Moodle
+## @param $6 Url de Moodle
+## @param $7 Manejador de la base de datos  ['MySQL'|'PostgreSQL']
+## @param $8 Version de Moodle
+## @param $9 Email de administrador
+## @param ${10} Ruta del directorio donde fue ejecutado el script main.sh
+install_moodle(){
+	if [[ $7 == 'MySQL' ]]; then
+		dbtype='mariadb'
 	else
-		wp --allow-root core config --dbhost=$2 --dbname=$1 --dbuser=$3 --dbpass=$dbpass
+		dbtype='pgsql'
 	fi
-	chmod 644 wp-config.php
-	chown -R www-data:www-data $4
-	if [[ $6 == 'Apache' ]]; then
-		if [[ $7 == 'Debian 9' ]] || [[ $7 == 'Debian 10' ]]; then
-			systemctl restart apache2
-		else
-			systemctl restart httpd
-		fi
+	moodleVersion=$(echo $8 | cut -d"." -f1,2 | sed "s/\.//")
+	if [[ $8 =~ .*\+ ]]; then
+		moodleName="moodle-latest-$moodleVersion"
 	else
-		systemctl restart nginx
+		moodleName="moodle-$8"
 	fi
-}
+	wget "https://download.moodle.org/download.php/direct/stable$moodleVersion/$moodleName.tgz"
+	tar xzvf $moodleName.tgz
+	rm $moodleName.tgz
+	mv moodle $6
+	cd $6
+	#clear
+	chown www-data:www-data . -R
+	mkdir ../moodledata
+	chown www-data:www-data ../moodledata -R
+	read -sp "Ingresa el password de la base de datos del usuario '$2' para Moodle: " dbpass; echo -e "\n"
+	read -p "Ingresa el nombre completo del sitio ['$6' por defecto]: " fullname
+	if [ -z "$fullname" ]; then fullname="$6"; fi
+	read -p "Ingresa el nombre corto del sitio: " shortname
+	read -p "Ingresa el nombre para el administrador de Moodle: " adminuser
+	read -sp "Ingresa el password para el '$adminuser' de Moodle: " adminpass; echo -e "\n"
+	cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname=$fullname --shortname=$shortname --adminuser=$adminuser --adminpass=$adminpass --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
+	$cmd
+	#sudo -u www-data /usr/bin/php admin/cli/install_database.php
 
-## @fn configure_WP()
-## @brief Funcion que realiza la configuracion de Wordpress
-## @param $1 Url donde se encontrara Wordpress
-## @param $2 correo para el administrador de Wordpress
-##
-## Lo que sea
-configure_WP(){
-	# $1=Url $2=mail
-	# $3=TEMP_PATH
-	echo "==============================================="
-	echo "   Se inicia la configuracion de Wordpress"
-	echo "==============================================="
-
-	read -p "Ingresa el titulo de la pagina ['$1' por defecto]: " title
-	if [ -z "$title" ]; then title="$1"; fi
-	read -p "Ingresa un nombre de usuario para ser administrador: " wp_admin
-	read -sp "Ingresa el password para '$wp_admin': " wp_pass; echo -e "\n"
-	wp --allow-root core install --url=$1 --title=$title --admin_user=$wp_admin --admin_password=$wp_pass --admin_email=$2
-	wp --allow-root plugin install simple-login-captcha --activate
-	echo "==============================================="
-	echo "     Wordpress se instalo correctamente"
-	echo "==============================================="
-
-	jq -c -n --arg title "$title" --arg wp_admin "$wp_admin" --arg wp_pass "$wp_pass" \
-	'{Title: $title, wp_admin:$wp_admin, wp_admin_pass:$wp_pass}' \
-	> $3/wpInfo.json
+	jq -c -n --arg title "$fullname" --arg moodle_admin "$adminuser" --arg moodle_admin_pass "$adminpass" \
+	'{Title: $title, moodle_admin:$moodle_admin, moodle_admin_pass:$moodle_admin_pass}' \
+	> ${10}/moodleInfo.json
 }
 
 echo "==============================================="
-echo "     Inicia la instalacion de Wordpress"
+echo "     Inicia la instalacion de Moodle"
 echo "==============================================="
 
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 
-mkdir -p $PATH_INSTALL
+mkdir -p "$5"
 
-install_dep "$9" "$7" "$8" "$5" "$4"
-install_WP "$1" "$2" "$3" "$4" "$7" "$8" "$9" "$5" "${10}"
-configure_WP "$5" "$6" "$TEMP_PATH"
+install_dep "$8" "$9" "${10}" "$7" "$5"
+
+cd $5
+install_moodle "$1" "$2" "$3" "$4" "$5" "$7" "$9" "$6" "${11}" "$TEMP_PATH"

@@ -18,9 +18,9 @@ jQuery(document).ready(function() {
 		var cmsOptions = {
 			drupal : ["8.8.1", "7.69"],
 			joomla : ["3.9.12"],
-			moodle : ["3.7.2", "3.6.6"],
-			ojs : ["3.1.2-1", "2.4.8-5"],
-			wordpress : ["5.0.2", "4.9.8", "4.8.11", "4.7.15"]
+			moodle : ["3.8.1+", "3.8.1", "3.7.4+", "3.7.4"],
+			ojs : ["3.1.2-4", "3.1.2-1", "2.4.8-5"],
+			wordpress : ["5.3.2", "5.2.5", "5.1.4", "5.0.8", "4.9.13", "4.8.12", "4.7.16", "4.6.17"]
 		}
 		$('#CMSVersion').empty();
 			cmsOptions[$('#CMS').val()].forEach(function(element,index){
