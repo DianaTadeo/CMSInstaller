@@ -2,7 +2,7 @@
 ## @file
 ## @author Rafael Alejandro Vallejo Fernandez
 ## @author Diana G. Tadeo Guillen
-## @brief Instalador de manejador de base de datos MySQL y PostgreSQL 
+## @brief Instalador de manejador de base de datos MySQL y PostgreSQL
 ## @version 1.0
 ##
 ## Con instalacion de una base de datos en Debian 9 y Debian 10
@@ -34,7 +34,7 @@ log_errors(){
 ## @fn install_MySQL()
 ## @brief Funcion que realiza la instalacion de MySQL y creacion de base de datos
 ## @param $1 Version de manejador de base de datos a instalar
-## @param $2 Pregunta si la base de datos ya existe 
+## @param $2 Pregunta si la base de datos ya existe
 ## @param $3 Nombre de la base de datos que se desea crear
 ## @param $4 Nombre de usuario de la base de datos que se desea crear
 ## @param $5 Host de la base de datos que se desea crear
@@ -70,7 +70,7 @@ install_MySQL(){
 ## @fn install_PostgreSQL()
 ## @brief Funcion que realiza la instalacion de PostgreSQL y creacion de base de datos
 ## @param $1 Version de manejador de base de datos a instalar
-## @param $2 Pregunta si la base de datos ya existe 
+## @param $2 Pregunta si la base de datos ya existe
 ## @param $3 Nombre de la base de datos que se desea crear
 ## @param $4 Nombre de usuario de la base de datos que se desea crear
 ## @param $5 Host de la base de datos que se desea crear
@@ -92,15 +92,15 @@ install_PostgreSQL(){
 			sed -i "s/.*port.*/port = $6/" /etc/postgresql/9.6/main/postgresql.conf
 			cp /etc/postgresql/9.6/main/pg_hba.conf /etc/postgresql/9.6/main/pg_hba_estable.conf
 			chown postgres:postgres /etc/postgresql/9.6/main/pg_hba.conf
-		    sed -i "s/peer/trust/" /etc/postgresql/9.6/main/pg_hba.conf
-		    sed -i "s/md5/trust/" /etc/postgresql/9.6/main/pg_hba.conf
+				sed -i "s/peer/trust/" /etc/postgresql/9.6/main/pg_hba.conf
+				sed -i "s/md5/trust/" /etc/postgresql/9.6/main/pg_hba.conf
 		#Si es Debian 10
 		else
 			sed -i "s/.*port.*/port = $6/" /etc/postgresql/11/main/postgresql.conf
 			cp /etc/postgresql/11/main/pg_hba.conf /etc/postgresql/11/main/pg_hba_estable.conf
 			chown postgres:postgres /etc/postgresql/11/main/pg_hba.conf
-		    sed -i "s/peer/trust/" /etc/postgresql/11/main/pg_hba.conf
-		    sed -i "s/md5/trust/" /etc/postgresql/11/main/pg_hba.conf
+				sed -i "s/peer/trust/" /etc/postgresql/11/main/pg_hba.conf
+				sed -i "s/md5/trust/" /etc/postgresql/11/main/pg_hba.conf
 		fi
 		systemctl restart postgresql
 		log_errors $? "Reinicio de PostgreSQL: $cmd"
@@ -108,11 +108,13 @@ install_PostgreSQL(){
 		echo "Inicia la creacion de la base de datos..."
 		su postgres -c "psql -h $5 -p $6 -c 'CREATE DATABASE $3;'"
 		log_errors $? "Creación de la base de datos $3 en PostgreSQL, servidor '$5'"
+		su postgres -c "psql -h $5 -p $6 -c 'ALTER DATABASE '$3' SET bytea_output = 'escape';'"
+		log_errors $? "Se configura bytea_output a 'escape' de la base de datos '$6'"
 		su -c "psql -h $5 -p $6 -c \"CREATE USER $4 WITH PASSWORD '$userPass';\" " - postgres
 		log_errors $? "Creación del usuario '$4' en PostgreSQL, servidor '$5'"
 		su postgres -c "psql -h $5 -p $6 -c 'GRANT ALL PRIVILEGES ON DATABASE $3 TO $4;'"
 		log_errors $? "Privilegios otorgador al usuario '$4' en PostgreSQL, servidor '$5"
-		if [ $7 == 9 ]; then
+		if [[ $7 == 'Debian 9' ]]; then
 			rm /etc/postgresql/9.6/main/pg_hba.conf
 			mv /etc/postgresql/9.6/main/pg_hba_estable.conf /etc/postgresql/9.6/main/pg_hba.conf
 			chown postgres:postgres /etc/postgresql/9.6/main/pg_hba.conf
@@ -121,8 +123,8 @@ install_PostgreSQL(){
 			mv /etc/postgresql/11/main/pg_hba_estable.conf /etc/postgresql/11/main/pg_hba.conf
 			chown postgres:postgres /etc/postgresql/11/main/pg_hba.conf
 		fi
-		
-		cmd = "systemctl restart postgresql"
+
+		cmd="systemctl restart postgresql"
 		$cmd
 		log_errors $? "Reinicio de PostgreSQL: $cmd"
 		echo "Instalacion completada exitosamente"
