@@ -16,10 +16,10 @@ LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 #################################################################
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR] : $2 " >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2 " 	>> $LOG
 	fi
 }
 
@@ -198,18 +198,7 @@ DEBIAN_FRONTEND=noninteractive apt \
 -o Dpkg::Options::=--force-confdef \
 -y upgrade
 log_errors $? "Upgrade de paquetes"
-#############################  Se instalan con main.sh
-#apt -y install curl wget
-################## La version de PHP correspondiente se instala en cada script
-# de instaladorCMS
-#if [[ $1 == 'Debian 9' ]]; #Si es Debian 9
-#then
-#	wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
-#	echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-#	apt update
-#fi
-#apt -y install php php-mysql
-#log_errors $? "Instalacion de utilerias"
+
 apt -y install lsb-release apt-transport-https ca-certificates
 log_errors $? "Instalacion de extensiones"
 
