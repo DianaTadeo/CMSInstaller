@@ -315,10 +315,12 @@ install_joomla(){
 		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/joomla site:create --www=$5 --mysql-driver=$DBM --mysql-login="temp:temp" --release=$6 --clear-cache --sample-data=default --disable-ssl $7 --options=sitio.yaml -q"
 		log_errors $? "Instalacion de joomla"
 
-		sed -i "s/temp_user/$2/g" ${11}/Modulos/InstaladoresCMS/database_conf.pgsql
-		echo "Introduce la contraseña del usuario '$2' de la BD"
-		su -c "psql -U $2 $1 < ${11}/Modulos/InstaladoresCMS/database_conf.pgsql"
-		log_errors $? "Configuracion con PostgreSQL"
+		if [[ $9 == "No" ]]; then
+			sed -i "s/temp_user/$2/g" ${11}/Modulos/InstaladoresCMS/database_conf.pgsql
+			echo "Introduce la contraseña del usuario '$2' de la BD"
+			su -c "psql -U $2 $1 < ${11}/Modulos/InstaladoresCMS/database_conf.pgsql"
+			log_errors $? "Configuracion con PostgreSQL"
+		fi
 
 		sed -i "s/\(.*public.*sitename.*= \)'.*';/\1'$site';/" $7/configuration.php
 		sed -i "s/\(.*public.*dbtype = \)'mysqli';/\1'pgsql';/" $7/configuration.php
