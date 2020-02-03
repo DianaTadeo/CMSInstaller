@@ -169,7 +169,7 @@ CMS(){
 		'joomla')
 			echo 'Joomla' $3
 			bash ./Modulos/InstaladoresCMS/Joomla_Instalador_General.sh "$5" "$8" "$6" \
-			"$7" "$9" "$3" "$2" "$4"
+			"$7" "$9" "$3" "$2" "$4" "${13}" "${11}" "${12}" "${10}"
 			;;
 		'moodle')
 			echo 'moodle' $3
