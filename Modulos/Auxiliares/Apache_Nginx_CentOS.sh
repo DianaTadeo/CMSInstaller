@@ -1,7 +1,12 @@
 #!/bin/bash
-#################################################
-#Instalador de apache y Nginx para CentOS 6 y 7	#
-#################################################
+
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador y configurador de Apache o Nginx en CentOS 6 y CentOS 7
+## @version 1.0
+##
+## Este archivo permite instalar y configurar, ya sea Apache, o Nginx con WAF embebido
 
 
 #Argumento 1: Version de CentOS
@@ -11,10 +16,11 @@
 
 LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
-###################### Log de Errores ###########################
-# $1: Salida de error											#
-# $2: Mensaje de la instalacion									#
-#################################################################
+
+## @fn log_errors()
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
 log_errors(){
 	if [ $1 -ne 0 ]; then
 		echo "[`date +"%F %X"`] : [ERROR] : $2 " >> $LOG
@@ -24,6 +30,10 @@ log_errors(){
 	fi
 }
 
+
+## @fn install_apache()
+## @brief Instalador de apache para CentOS
+##
 install_apache(){
 	cmd="yum -y install httpd"
 	$cmd
@@ -36,6 +46,11 @@ install_apache(){
 	log_errors $? "Habilitando Apache: $cmd"
 }
 
+
+## @fn install_nginx()
+## @brief Instalador de Nginx para CentOS
+## @param $1 version de CentOS
+##
 install_nginx(){
 	if [[ $1 == 'CentOS 7' ]];
 	then
@@ -55,6 +70,9 @@ install_nginx(){
 	log_errors $? "Habilitando Nginx: $cmd"
 }
 
+## @fn install_apache_WAF()
+## @brief Instalador de WAF con ModSecurity para apache
+##
 install_apache_WAF(){
 	if [[ $1 == 'CentOS 7' ]];
 	then
@@ -88,6 +106,9 @@ install_apache_WAF(){
 	cd $locate
 }
 
+## @fn install_nginx_WAF()
+## @brief Instalador de WAF con ModSecurity para Nginx
+##
 install_nginx_WAF(){
 	if [[ $1 == 'CentOS 7' ]];
 	then

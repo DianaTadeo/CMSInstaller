@@ -1,7 +1,13 @@
 #!/bin/bash
-##################################################
-#Instalador de apache y Nginx para Debian 9 y 10 #
-##################################################
+
+
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador y configurador de Apache o Nginx en Debian 9 y 10
+## @version 1.0
+##
+## Este archivo permite instalar y configurar, ya sea Apache, o Nginx con WAF embebido
 
 
 #Argumento 1: Version de Debian
@@ -10,10 +16,11 @@
 
 LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
-###################### Log de Errores ###########################
-# $1: Salida de error											#
-# $2: Mensaje de la instalacion									#
-#################################################################
+
+## @fn log_errors()
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
 log_errors(){
 	if [ $1 -ne 0 ]; then
 		echo "[`date +"%F %X"`] : [ERROR] : $2 " >> $LOG
@@ -23,9 +30,10 @@ log_errors(){
 	fi
 }
 
-################## Instalacion de Nginx #########################
-# $1: Version													#
-#################################################################
+## @fn install_nginx()
+## @brief Instalador de Nginx para Debian 
+## @param $1 version
+##
 install_nginx(){
 		cd /opt
 		wget http://nginx.org/download/nginx-1.12.0.tar.gz
@@ -57,15 +65,13 @@ install_nginx(){
 	#rm nginx_signing.key
 }
 
-#install_modsecurity_nginx(){
-#
-#}
 
 
-################## Instalacion de Apache ##########################
-# $1: Version Debian
-# $2: Version Apache													  #
-###################################################################
+## @fn install_apache()
+## @brief Instalador de Apache para Debian
+## @param $1 Version Debian
+## @param $2 Version Apache
+##
 install_apache(){
 	#if [[ $1 == "Debian 9" ]]; then
 	#echo "deb http://ssecurity.debian.org stretch/updates main \n deb http://security.debian.org buster/updates" >> /etc/apt/sources.list
@@ -83,8 +89,10 @@ install_apache(){
 	log_errors $? "Instalacion de Apache: $cmd"
 
 }
-############# Instalacion de WAF para Apache ######################
-###################################################################
+
+## @fn install_apache_WAF()
+## @brief Instalador de WAF con ModSecurity para apache
+##
 install_apache_WAF(){
 	echo "[`date +"%F %X"`] Instalando ModSecurity para Apache"
 	cmd="apt-get -y install libapache2-mod-security2"
@@ -120,8 +128,10 @@ install_apache_WAF(){
 	$cmd
 	log_errors "$?" "Configuracion OWASP: $cmd"
 }
-############# Instalacion de WAF para Nginx ######################
-###################################################################
+
+## @fn install_nginx_WAF()
+## @brief Instalador de WAF con ModSecurity para Nginx
+##
 install_nginx_WAF(){
 		cd /opt
 		#Downloading ModSecurity
@@ -189,7 +199,7 @@ install_nginx_WAF(){
 }
 
 echo "==============================================="
-echo "     Inicia la instalacion de $2 $3"
+echo "     Inicia la instalacion de $2 "
 echo "==============================================="
 
 apt update

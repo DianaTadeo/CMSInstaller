@@ -1,26 +1,36 @@
 #!/bin/bash
 
-####################################################################
-# Script para la instalación de Fail2ban, Logwatch y Logcheck
-# en Debian 9, 10 y CentOS 6, 7
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador y configurador de Fail2Ban, LogWatch y LogCheck en Debian 9, 10 y CentOS 6, 7
+## @version 1.0
+##
+## Este archivo permite instalar y confirgurar programas que permiten el monitoreo y ciertas configuraciones de seguridad.
+
 # Argumento 1: SO
 # Argumento 2: EMAIL_NOTIFICATION
 
 LOG="`pwd`/Modulos/Log/Hardening.log"
 
-###################### Log de Errores ###########################
-# $1: Salida de error											#
-# $2: Mensaje de la instalacion									#
-#################################################################
+
+## @fn log_errors()
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR] : $2 " >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2 " 	>> $LOG
 	fi
 }
 
+## @fn web_server_ports()
+## @brief Da formato a los puertos de entrada
+## @param $1 Entrada de Puertos del Servidor web
+##
 web_server_ports(){
 	if [[ -n $(echo $1 | grep " ") ]]; then
 		echo $1 | tr " " ","
@@ -29,6 +39,15 @@ web_server_ports(){
 	fi
 }
 
+## @fn install_fail2ban()
+## @brief Realiza la instalacion de Fail2ban
+## @param $1 Sistema operativo donde se instalara
+## @param $2 Mail donde se enviaran las notificaciones
+## @param $3 Tiempo de banneo
+## @param $4 Tiempo de entrada
+## @param $5 Maxima cantidad de intentos
+## Qparam $6 Correo de envio
+##
 install_fail2ban(){
 	DESTEMAIL=$2
 	BANTIME=$3
@@ -135,6 +154,11 @@ install_fail2ban(){
 	log_errors $? "$cmd"
 }
 
+## @fn install_logcheck()
+## @brief Realiza la instalacion de LogWatch
+## @param $1 Sistema operativo donde se instalara
+## @param $2 Correo de notificaciones
+##
 install_logwatch(){
 	if [[ "$1" == "Debian 9"  ]] || [[ "$1" == "Debian 10"  ]]; then
 		DEBIAN_FRONTEND=noninteractive apt \
@@ -165,6 +189,10 @@ install_logwatch(){
 	log_errors $? "Nivel de detalle: Low"
 }
 
+## @fn install_logcheck()
+## @brief Realiza la instalacion de LogCheck
+## @param $1 Sistema operativo donde se instalara
+##
 install_logcheck(){
 	if [[ "$1" == "Debian 9"  ]] || [[ "$1" == "Debian 10"  ]]; then
 		cmd="apt -y install logcheck mailutils postfix"
@@ -226,9 +254,9 @@ install_logcheck(){
 	fi
 }
 
-####################################################
+#====================================================#
 #	main de instalación de f2b, logwatch y logcheck	 #
-####################################################
+#====================================================#
 
 SO=$1
 # Dirección en la que se recibirán las notficaciones -> $2
