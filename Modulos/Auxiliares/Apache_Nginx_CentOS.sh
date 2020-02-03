@@ -37,6 +37,13 @@ install_apache(){
 }
 
 install_nginx(){
+	if [[ $1 == 'CentOS 7' ]];
+	then
+	rpm -Uvh http://nginx.org/packages/centos/7/x86_64/RPMS/nginx-1.16.1-1.el7.ngx.x86_64.rpm
+	else
+	rpm -Uvh http://nginx.org/packages/centos/6/x86_64/RPMS/nginx-1.16.1-1.el6.ngx.x86_64.rpm
+	fi
+	
 	cmd="yum -y install nginx"
 	$cmd
 	log_errors $? "Instalacion de Nginx: $cmd"
@@ -70,10 +77,10 @@ install_apache_WAF(){
 	$cmd
 	log_errors $? "Instalando ModSecurity en Apache: $cmd"
 	
-	cd modsecurity-crs
-    cp modsecurity_crs_10_setup.conf.example modsecurity_crs_10_config.conf
-    echo Include modsecurity-crs/modsecurity_crs_10_config.conf >> /etc/httpd/conf/httpd.conf
-    echo Include modsecurity-crs/base_rules/*.conf >> /etc/httpd/conf/httpd.conf
+	cd owasp-modsecurity-crs
+    cp crs-setup.conf.example crs-setup.conf
+    echo "Include /etc/httpd/owasp-modsecurity-crs/crs-setup.conf" >> /etc/httpd/conf/httpd.conf
+    echo "Include /etc/httpd/owasp-modsecurity-crs/rules/*.conf" >> /etc/httpd/conf/httpd.conf
     
     cmd="service httpd restart"
     $cmd
@@ -84,35 +91,37 @@ install_apache_WAF(){
 install_nginx_WAF(){
 	if [[ $1 == 'CentOS 7' ]];
 	then
-	rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
+	rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-12.noarch.rpm
 	else
 	rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 	fi
 	
-	cmd="yum install -y mod_security mod_security_crs"
+		cmd="yum install -y mod_security mod_security_crs"
 	$cmd
-	log_errors $? "Instalando ModSecurity en Nginx: $cmd"
+	log_errors $? "Instalando Mod Security en Apache: $cmd"
 	
-	sed -i "s/SecRuleEngine DetectionOnly/SecRuleEngine On/" /etc/nginx/conf.d/nginx.conf
-	cmd="service httpd restart"
-	$cmd
-	log_errors $? "Instalando ModSecurity en Nginx: $cmd"
-	locate=`pwd`
-	cd /etc/nginx
-	cmd="git clone https://github.com/SpiderLabs/owasp-modsecurity-crs.git"
-	$cmd
-	log_errors $? "Instalando ModSecurity en Nginx: $cmd"
-	cd modsecurity-crs
-    cp modsecurity_crs_10_setup.conf.example modsecurity_crs_10_config.conf
-    echo Include modsecurity-crs/modsecurity_crs_10_config.conf >> /etc/nginx/conf/modSecurity.conf
-    echo Include modsecurity-crs/base_rules/*.conf >> /etc/nginx/conf/modSecurity.conf
-    ModSecurityEnabled on;
-    ModSecurityConfig /usr/local/nginx/modsecurity.conf;
+	#sed -i "s/locate \/ {/SecRuleEngine DetectionOnly/SecRuleEngine On/" /etc/httpd/conf.d/default.conf
+	#cmd="service httpd restart"
+	#$cmd
+	#log_errors $? "Instalando ModSecurity en Apache: $cmd"
+	#locate=`pwd`
+	#cd /etc/httpd
+	#cmd="git clone https://github.com/SpiderLabs/owasp-modsecurity-crs.git"
+	#$cmd
+	#log_errors $? "Instalando ModSecurity en Apache: $cmd"
+	
+	#cd owasp-modsecurity-crs
+    #cp crs-setup.conf.example crs-setup.conf
+	
+    #echo "Include /etc/httpd/owasp-modsecurity-crs/crs-setup.conf" >> /etc/nginx/conf/modSecurity.conf
+    #echo "Include /etc/httpd/owasp-modsecurity-crs/rules/*.conf" >> /etc/nginx/conf/modSecurity.conf
+    #ModSecurityEnabled on;
+    #ModSecurityConfig /usr/local/nginx/modsecurity.conf;
     
-    cmd="service httpd restart"
-    $cmd
-	log_errors $? "Reinicio de Apache con ModSecurity en Apache: $cmd"
-	cd $locate
+    #cmd="service httpd restart"
+    #$cmd
+	#log_errors $? "Reinicio de Apache con ModSecurity en Apache: $cmd"
+	#cd $locate
 }
 
 
@@ -138,7 +147,7 @@ yum upgrade
 #fi 
 if [[ $2 == 'Nginx' ]];
 then
-	install_nginx
+	install_nginx $1
 	install_nginx_WAF $1
 else
 	install_apache
