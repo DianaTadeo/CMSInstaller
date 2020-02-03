@@ -263,14 +263,18 @@ install_WP(){
 		wp --allow-root core config --dbhost=$2 --dbname=$1 --dbuser=$3 --dbpass=$dbpass
 	fi
 	chmod 644 wp-config.php
-	chown -R www-data:www-data $4
+	
 	if [[ $6 == 'Apache' ]]; then
+		
 		if [[ $7 == 'Debian 9' ]] || [[ $7 == 'Debian 10' ]]; then
+			chown -R www-data:www-data $4
 			systemctl restart apache2
 		else
+			chown -R apache:apache $4
 			systemctl restart httpd
 		fi
 	else
+		chown -R nginx:nginx $4
 		systemctl restart nginx
 	fi
 }
@@ -280,7 +284,6 @@ install_WP(){
 ## @param $1 Url donde se encontrara Wordpress
 ## @param $2 correo para el administrador de Wordpress
 ##
-## Lo que sea
 configure_WP(){
 	# $1=Url $2=mail
 	# $3=TEMP_PATH
@@ -309,7 +312,7 @@ echo "==============================================="
 
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 
-mkdir -p $PATH_INSTALL
+mkdir -p $4
 
 install_dep "$9" "$7" "$8" "$5" "$4"
 install_WP "$1" "$2" "$3" "$4" "$7" "$8" "$9" "$5" "${10}"
