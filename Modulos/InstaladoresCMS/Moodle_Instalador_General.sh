@@ -3,7 +3,7 @@
 ## @file
 ## @author Rafael Alejandro Vallejo Fernandez
 ## @author Diana G. Tadeo Guillen
-## @brief Instalador de Moodle para CentOS 6, CentOS 7, Debian 9 y Debian 10
+## @brief Instalador de Joomla para CentOS 6, CentOS 7, Debian 9 y Debian 10
 ## @version 1.0
 ##
 
@@ -217,6 +217,16 @@ site_default_nginx(){
 }
 
 
+modulos_configuraciones(){
+	chown $USER:$USER ../moodledata/temp -R
+	wget https://moodle.org/plugins/download.php/20823/moosh_moodle38_2019121900.zip
+	unzip moosh_moodle38_2019121900.zip
+	cd moosh
+	ln -s $PWD/moosh.php /usr/local/bin/moosh
+	# Se deshabilita inicio de sesión de usuarios invitados
+	/usr/local/bin/moosh config-set guestloginbutton 0
+}
+
 ## @fn install_moodle()
 ## @brief Funcion que realiza la instalacion de Joomla
 ## @param $1 Nombre de la base de  para Moodle
@@ -256,8 +266,10 @@ install_moodle(){
 	read -p "Ingresa el nombre corto del sitio: " shortname
 	read -p "Ingresa el nombre para el administrador de Moodle: " adminuser
 	read -sp "Ingresa el password para el '$adminuser' de Moodle: " adminpass; echo -e "\n"
-	cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname=$fullname --shortname=$shortname --adminuser=$adminuser --adminpass=$adminpass --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
+	cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
 	$cmd
+
+	modulos_configuraciones
 	#sudo -u www-data /usr/bin/php admin/cli/install_database.php
 
 	jq -c -n --arg title "$fullname" --arg moodle_admin "$adminuser" --arg moodle_admin_pass "$adminpass" \
