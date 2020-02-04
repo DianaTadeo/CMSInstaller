@@ -16,7 +16,7 @@ jQuery(document).ready(function() {
 	// function to set CMS version
 	function cmsVersion(){
 		var cmsOptions = {
-			drupal : ["8.8.1", "7.69"],
+			drupal : ["8.8.2", "8.8.1", "7.69"],
 			joomla : ["3.9.15", "3.9.14", "3.9.13", "3.9.12"],
 			moodle : ["3.8.1+", "3.8.1", "3.7.4+", "3.7.4"],
 			ojs : ["3.1.2-4", "3.1.2-1", "2.4.8-5"],
