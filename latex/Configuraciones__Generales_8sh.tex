@@ -1,0 +1,49 @@
+\hypertarget{Configuraciones__Generales_8sh}{}\section{Modulos/\+Hardening/\+Configuraciones\+\_\+\+Generales.sh File Reference}
+\label{Configuraciones__Generales_8sh}\index{Modulos/\+Hardening/\+Configuraciones\+\_\+\+Generales.\+sh@{Modulos/\+Hardening/\+Configuraciones\+\_\+\+Generales.\+sh}}
+
+
+Script para la configuración general de hardening en Debian 9, 10 y Cent\+OS 6, 7.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{Configuraciones__Generales_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{Configuraciones__Generales_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
+{\bfseries log\+\_\+errors} (\$1, \$2)
+\item 
+\hyperlink{Configuraciones__Generales_8sh_ad83bd5e5089ad1546035126564e2a5d1}{disable\+\_\+default\+\_\+services} (\$1)
+\begin{DoxyCompactList}\small\item\em Función que deshabilita los servicios del sistema predeterminados. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{Configuraciones__Generales_8sh_af9950a47b946dd1e1d14b44a39ad3a7d}\label{Configuraciones__Generales_8sh_af9950a47b946dd1e1d14b44a39ad3a7d}} 
+\hyperlink{Configuraciones__Generales_8sh_af9950a47b946dd1e1d14b44a39ad3a7d}{disable\+\_\+user\+\_\+accounts} ()
+\begin{DoxyCompactList}\small\item\em Función que deshabilita las cuentas de usuario que tienen una shell definida en /etc/passwd. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Script para la configuración general de hardening en Debian 9, 10 y Cent\+OS 6, 7. 
+
+\begin{DoxyAuthor}{Author}
+Rafael Alejandro Vallejo Fernandez 
+
+Diana G. Tadeo Guillen 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0
+\end{DoxyVersion}
+Este archivo permite instalar y confirgurar programas que permiten el monitoreo y ciertas configuraciones de seguridad. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{Configuraciones__Generales_8sh_ad83bd5e5089ad1546035126564e2a5d1}\label{Configuraciones__Generales_8sh_ad83bd5e5089ad1546035126564e2a5d1}} 
+\index{Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}!disable\+\_\+default\+\_\+services@{disable\+\_\+default\+\_\+services}}
+\index{disable\+\_\+default\+\_\+services@{disable\+\_\+default\+\_\+services}!Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}}
+\subsubsection{\texorpdfstring{disable\+\_\+default\+\_\+services()}{disable\_default\_services()}}
+{\footnotesize\ttfamily disable\+\_\+default\+\_\+services (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Función que deshabilita los servicios del sistema predeterminados. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & Sistema operativo \mbox{[}\textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{}\mbox{]} \\
+\hline
+\end{DoxyParams}

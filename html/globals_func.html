@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: File Members</title>
+<title>CMSInstaller: File Members</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">My Project
+   <div id="projectname">CMSInstaller
    </div>
   </td>
  </tr>
@@ -71,6 +71,12 @@ $(function() {
 <li>data_base_manager_installer()
 : <a class="el" href="main_8sh.html#a1978233bd26781aa3df0b7e9ed3cf567">main.sh</a>
 </li>
+<li>disable_default_services()
+: <a class="el" href="Configuraciones__Generales_8sh.html#ad83bd5e5089ad1546035126564e2a5d1">Configuraciones_Generales.sh</a>
+</li>
+<li>disable_user_accounts()
+: <a class="el" href="Configuraciones__Generales_8sh.html#af9950a47b946dd1e1d14b44a39ad3a7d">Configuraciones_Generales.sh</a>
+</li>
 <li>git_composer_drush()
 : <a class="el" href="Drupal__Instalador__General_8sh.html#a3cc44682ce03ae17ac41a78185920c59">Drupal_Instalador_General.sh</a>
 </li>
@@ -78,26 +84,31 @@ $(function() {
 : <a class="el" href="Joomla__Instalador__General_8sh.html#a9cbb91389a71b89c6cab0848d688e423">Joomla_Instalador_General.sh</a>
 </li>
 <li>install_dep()
-: <a class="el" href="Joomla__Instalador__General_8sh.html#a7aff02becf631a8cd3f06f1fc2688670">Joomla_Instalador_General.sh</a>
-, <a class="el" href="Drupal__Instalador__General_8sh.html#a867cb91b69b68d903ea8d2ebcff6ea36">Drupal_Instalador_General.sh</a>
+: <a class="el" href="Joomla__Instalador__General_8sh.html#a867cb91b69b68d903ea8d2ebcff6ea36">Joomla_Instalador_General.sh</a>
+, <a class="el" href="Moodle__Instalador__General_8sh.html#a7aff02becf631a8cd3f06f1fc2688670">Moodle_Instalador_General.sh</a>
+</li>
+<li>install_fail2ban()
+: <a class="el" href="F2BanLogwatchLogcheck_8sh.html#a63476174140e4513bd22005ca9679602">F2BanLogwatchLogcheck.sh</a>
 </li>
 <li>install_joomla()
-: <a class="el" href="Joomla__Instalador__General_8sh.html#a2fe507c06e35ed263e2e999b75609e70">Joomla_Instalador_General.sh</a>
+: <a class="el" href="Joomla__Instalador__General_8sh.html#a43fed5b5e461aa386546fdcc766aa29e">Joomla_Instalador_General.sh</a>
 </li>
 <li>install_moodle()
-: <a class="el" href="Moodle__Instalador__General_8sh.html#ae4c090c13511e5adcc7243e0a861bec0">Moodle_Instalador_General.sh</a>
+: <a class="el" href="Moodle__Instalador__General_8sh.html#ac4e3fbb1b121107ddd781ab2fe3d034a">Moodle_Instalador_General.sh</a>
 </li>
 <li>install_MySQL()
 : <a class="el" href="DB__Instalador__Debian_8sh.html#ac8bff836d4f7d263dbcf02890f2c025d">DB_Instalador_Debian.sh</a>
+, <a class="el" href="DB__Instalador__CentOS_8sh.html#ad5fcd4a31738d363887eefeb4d743a56">DB_Instalador_CentOS.sh</a>
 </li>
 <li>install_PostgreSQL()
 : <a class="el" href="DB__Instalador__Debian_8sh.html#a56ea9a82dabc1a9f02e4d35cec23e802">DB_Instalador_Debian.sh</a>
+, <a class="el" href="DB__Instalador__CentOS_8sh.html#a2beea69eb7cbab84d383356299dfd1aa">DB_Instalador_CentOS.sh</a>
 </li>
 <li>install_WP()
 : <a class="el" href="WP__Instalador__General_8sh.html#ab8bd4095cd5a5c54fa9256d3064f6d0f">WP_Instalador_General.sh</a>
 </li>
 <li>ip_v4_v6()
-: <a class="el" href="main_8sh.html#ac44fe97312acf24ba3f09aa09c58cf5a">main.sh</a>
+: <a class="el" href="main_8sh.html#a7257eec52c0bd74e8cf1d671c0cba810">main.sh</a>
 </li>
 <li>jq_install_OS_detection()
 : <a class="el" href="main_8sh.html#a14153ec632198b7643c2d2f1cff3471d">main.sh</a>
@@ -108,6 +119,9 @@ $(function() {
 <li>modulos_configuraciones()
 : <a class="el" href="Drupal__Instalador__General_8sh.html#ae5ce76ad68690ff00cb63811e18c8a37">Drupal_Instalador_General.sh</a>
 </li>
+<li>modulos_joomla()
+: <a class="el" href="Joomla__Instalador__General_8sh.html#a3a17cfb1d7aa0bd1433900e4d4141cdb">Joomla_Instalador_General.sh</a>
+</li>
 <li>OS_dependencies()
 : <a class="el" href="main_8sh.html#a48e8d18ccca665f9cd6bacd76dcd3d7d">main.sh</a>
 </li>
@@ -115,10 +129,13 @@ $(function() {
 : <a class="el" href="main_8sh.html#acd33682741fa52b482fbeb09846bd3cb">main.sh</a>
 </li>
 <li>virtual_host_apache()
-: <a class="el" href="Drupal__Instalador__General_8sh.html#a2ea632f8e04de9564521b12cf10c47f4">Drupal_Instalador_General.sh</a>
+: <a class="el" href="Joomla__Instalador__General_8sh.html#a2ea632f8e04de9564521b12cf10c47f4">Joomla_Instalador_General.sh</a>
 </li>
 <li>web_server_installer()
 : <a class="el" href="main_8sh.html#a8fbc4bde96d235c9985b0d1697e1b552">main.sh</a>
+</li>
+<li>web_server_ports()
+: <a class="el" href="F2BanLogwatchLogcheck_8sh.html#a5c1106882b059a6588637f440e6b5758">F2BanLogwatchLogcheck.sh</a>
 </li>
 </ul>
 </div><!-- contents -->

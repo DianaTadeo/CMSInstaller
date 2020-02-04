@@ -1,0 +1,71 @@
+\hypertarget{F2BanLogwatchLogcheck_8sh}{}\section{Modulos/\+Hardening/\+F2\+Ban\+Logwatch\+Logcheck.sh File Reference}
+\label{F2BanLogwatchLogcheck_8sh}\index{Modulos/\+Hardening/\+F2\+Ban\+Logwatch\+Logcheck.\+sh@{Modulos/\+Hardening/\+F2\+Ban\+Logwatch\+Logcheck.\+sh}}
+
+
+Instalador y configurador de Fail2\+Ban, Log\+Watch y Log\+Check en Debian 9, 10 y Cent\+OS 6, 7.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{F2BanLogwatchLogcheck_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{F2BanLogwatchLogcheck_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
+{\bfseries log\+\_\+errors} (\$1, \$2)
+\item 
+\hyperlink{F2BanLogwatchLogcheck_8sh_a5c1106882b059a6588637f440e6b5758}{web\+\_\+server\+\_\+ports} (\$1)
+\begin{DoxyCompactList}\small\item\em Da formato a los puertos de entrada. \end{DoxyCompactList}\item 
+\hyperlink{F2BanLogwatchLogcheck_8sh_a63476174140e4513bd22005ca9679602}{install\+\_\+fail2ban} (\$1, \$2, \$3, \$4, \$5)
+\begin{DoxyCompactList}\small\item\em Realiza la instalacion de Fail2ban. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Instalador y configurador de Fail2\+Ban, Log\+Watch y Log\+Check en Debian 9, 10 y Cent\+OS 6, 7. 
+
+\begin{DoxyAuthor}{Author}
+Rafael Alejandro Vallejo Fernandez 
+
+Diana G. Tadeo Guillen 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0
+\end{DoxyVersion}
+Este archivo permite instalar y confirgurar programas que permiten el monitoreo y ciertas configuraciones de seguridad. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{F2BanLogwatchLogcheck_8sh_a63476174140e4513bd22005ca9679602}\label{F2BanLogwatchLogcheck_8sh_a63476174140e4513bd22005ca9679602}} 
+\index{F2\+Ban\+Logwatch\+Logcheck.\+sh@{F2\+Ban\+Logwatch\+Logcheck.\+sh}!install\+\_\+fail2ban@{install\+\_\+fail2ban}}
+\index{install\+\_\+fail2ban@{install\+\_\+fail2ban}!F2\+Ban\+Logwatch\+Logcheck.\+sh@{F2\+Ban\+Logwatch\+Logcheck.\+sh}}
+\subsubsection{\texorpdfstring{install\+\_\+fail2ban()}{install\_fail2ban()}}
+{\footnotesize\ttfamily install\+\_\+fail2ban (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5 }\end{DoxyParamCaption})}
+
+
+
+Realiza la instalacion de Fail2ban. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & Sistema operativo donde se instalara \\
+\hline
+{\em \$2} & Mail donde se enviaran las notificaciones \\
+\hline
+{\em \$3} & Tiempo de banneo \\
+\hline
+{\em \$4} & Tiempo de entrada \\
+\hline
+{\em \$5} & Maxima cantidad de intentos Qparam \$6 Correo de envio \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{F2BanLogwatchLogcheck_8sh_a5c1106882b059a6588637f440e6b5758}\label{F2BanLogwatchLogcheck_8sh_a5c1106882b059a6588637f440e6b5758}} 
+\index{F2\+Ban\+Logwatch\+Logcheck.\+sh@{F2\+Ban\+Logwatch\+Logcheck.\+sh}!web\+\_\+server\+\_\+ports@{web\+\_\+server\+\_\+ports}}
+\index{web\+\_\+server\+\_\+ports@{web\+\_\+server\+\_\+ports}!F2\+Ban\+Logwatch\+Logcheck.\+sh@{F2\+Ban\+Logwatch\+Logcheck.\+sh}}
+\subsubsection{\texorpdfstring{web\+\_\+server\+\_\+ports()}{web\_server\_ports()}}
+{\footnotesize\ttfamily web\+\_\+server\+\_\+ports (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Da formato a los puertos de entrada. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & Entrada de Puertos del Servidor web \\
+\hline
+\end{DoxyParams}

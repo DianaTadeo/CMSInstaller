@@ -5,7 +5,8 @@
 ## @author Diana G. Tadeo Guillen
 ## @brief Script Main de instalador y configurador de CMS seguros en Debian 9, 10 y CentOS 6, 7
 ## @version 1.0
-##
+## @includes Modulos/Auxiliares/DB_Instalador_Debian.sh
+## @includes Modulos/Auxiliares/DB_Instalador_CentOS.sh
 
 # Argumento 1: fileID.json generado desde el sitio web
 

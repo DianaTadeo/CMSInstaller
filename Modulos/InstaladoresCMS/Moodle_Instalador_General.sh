@@ -3,7 +3,7 @@
 ## @file
 ## @author Rafael Alejandro Vallejo Fernandez
 ## @author Diana G. Tadeo Guillen
-## @brief Instalador de Joomla para CentOS 6, CentOS 7, Debian 9 y Debian 10
+## @brief Instalador de Moodle para CentOS 6, CentOS 7, Debian 9 y Debian 10
 ## @version 1.0
 ##
 

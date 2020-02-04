@@ -11,10 +11,12 @@ Instalador de Joomla para Cent\+OS 6, Cent\+OS 7, Debian 9 y Debian 10.
 \mbox{\Hypertarget{Moodle__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{Moodle__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
 {\bfseries log\+\_\+errors} (\$1, \$2)
 \item 
-\mbox{\Hypertarget{Moodle__Instalador__General_8sh_a7aff02becf631a8cd3f06f1fc2688670}\label{Moodle__Instalador__General_8sh_a7aff02becf631a8cd3f06f1fc2688670}} 
-{\bfseries install\+\_\+dep} (\$1, \$2)
+\hyperlink{Moodle__Instalador__General_8sh_a7aff02becf631a8cd3f06f1fc2688670}{install\+\_\+dep} (\$1, \$2)
+\begin{DoxyCompactList}\small\item\em Funcion que realiza la instalacion de las dependencias de php para Joomla. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{Moodle__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}\label{Moodle__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}} 
+{\bfseries virtual\+\_\+host\+\_\+apache} (\$1, \$2, \$3)
 \item 
-\hyperlink{Moodle__Instalador__General_8sh_ae4c090c13511e5adcc7243e0a861bec0}{install\+\_\+moodle} (\$1, \$2, \$3, \$4, \$5, \$6, \$7)
+\hyperlink{Moodle__Instalador__General_8sh_ac4e3fbb1b121107ddd781ab2fe3d034a}{install\+\_\+moodle} (\$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$\{10\})
 \begin{DoxyCompactList}\small\item\em Funcion que realiza la instalacion de Joomla. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -32,11 +34,34 @@ Diana G. Tadeo Guillen
 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{Moodle__Instalador__General_8sh_ae4c090c13511e5adcc7243e0a861bec0}\label{Moodle__Instalador__General_8sh_ae4c090c13511e5adcc7243e0a861bec0}} 
+\mbox{\Hypertarget{Moodle__Instalador__General_8sh_a7aff02becf631a8cd3f06f1fc2688670}\label{Moodle__Instalador__General_8sh_a7aff02becf631a8cd3f06f1fc2688670}} 
+\index{Moodle\+\_\+\+Instalador\+\_\+\+General.\+sh@{Moodle\+\_\+\+Instalador\+\_\+\+General.\+sh}!install\+\_\+dep@{install\+\_\+dep}}
+\index{install\+\_\+dep@{install\+\_\+dep}!Moodle\+\_\+\+Instalador\+\_\+\+General.\+sh@{Moodle\+\_\+\+Instalador\+\_\+\+General.\+sh}}
+\subsubsection{\texorpdfstring{install\+\_\+dep()}{install\_dep()}}
+{\footnotesize\ttfamily install\+\_\+dep (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2 }\end{DoxyParamCaption})}
+
+
+
+Funcion que realiza la instalacion de las dependencias de php para Joomla. 
+
+Funcion que realiza la instalacion de las dependencias de php para Wordpress.
+
+
+\begin{DoxyParams}{Parameters}
+{\em \$1} & El sistema operativo donde se desea instalar Joomla \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
+\hline
+{\em \$2} & Manejador de base de datos para la instalaci\mbox{[}on de Joomla\\
+\hline
+{\em \$1} & El sistema operativo donde se desea instalar Wordpress \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
+\hline
+{\em \$2} & Manejador de base de datos para la instalacion de Wordpress \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{Moodle__Instalador__General_8sh_ac4e3fbb1b121107ddd781ab2fe3d034a}\label{Moodle__Instalador__General_8sh_ac4e3fbb1b121107ddd781ab2fe3d034a}} 
 \index{Moodle\+\_\+\+Instalador\+\_\+\+General.\+sh@{Moodle\+\_\+\+Instalador\+\_\+\+General.\+sh}!install\+\_\+moodle@{install\+\_\+moodle}}
 \index{install\+\_\+moodle@{install\+\_\+moodle}!Moodle\+\_\+\+Instalador\+\_\+\+General.\+sh@{Moodle\+\_\+\+Instalador\+\_\+\+General.\+sh}}
 \subsubsection{\texorpdfstring{install\+\_\+moodle()}{install\_moodle()}}
-{\footnotesize\ttfamily install\+\_\+moodle (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6,  }\item[{}]{\$7 }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily install\+\_\+moodle (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6,  }\item[{}]{\$7,  }\item[{}]{\$8,  }\item[{}]{\$9,  }\item[{}]{\$\{10\} }\end{DoxyParamCaption})}
 
 
 
@@ -57,5 +82,31 @@ Funcion que realiza la instalacion de Joomla.
 {\em \$6} & Url de Moodle \\
 \hline
 {\em \$7} & Manejador de la base de datos \mbox{[}\textquotesingle{}My\+S\+QL\textquotesingle{}$\vert$\textquotesingle{}Postgre\+S\+QL\textquotesingle{}\mbox{]} \\
+\hline
+{\em \$8} & Version de Moodle \\
+\hline
+{\em \$9} & Email de administrador \\
+\hline
+{\em \$\{10\}} & Ruta del directorio donde fue ejecutado el script \hyperlink{main_8sh}{main.\+sh}\\
+\hline
+{\em \$1} & Version de drupal que se va a instalar \\
+\hline
+{\em \$2} & Manejador de la base de datos \mbox{[}\textquotesingle{}My\+S\+QL\textquotesingle{}$\vert$\textquotesingle{}Postgre\+S\+QL\textquotesingle{}\mbox{]} \\
+\hline
+{\em \$3} & Usuario de la base de datos para Drupal \\
+\hline
+{\em \$4} & Servidor de la base de datos (host) \\
+\hline
+{\em \$5} & Puerto al que se conecta el manejador de base de datos \\
+\hline
+{\em \$6} & Nombre de la base de datos con la que se establecera la conexion \\
+\hline
+{\em \$7} & Nombre de dominio que tendra el sitio \\
+\hline
+{\em \$8} & Corrreo de administracion y notificacion del sitio \\
+\hline
+{\em \$9} & Indica si se especifico que se tiene una base de datos existente \\
+\hline
+{\em \$\{10\}} & Ruta del directorio donde fue ejecutado el script \hyperlink{main_8sh}{main.\+sh} \\
 \hline
 \end{DoxyParams}

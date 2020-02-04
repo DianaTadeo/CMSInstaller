@@ -1,6 +1,4 @@
 #!/bin/bash
-
-
 ## @file
 ## @author Rafael Alejandro Vallejo Fernandez
 ## @author Diana G. Tadeo Guillen

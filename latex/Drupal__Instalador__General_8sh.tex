@@ -11,10 +11,12 @@ Instalador de Drupal para Cent\+OS 6, Cent\+OS 7, Debian 9 y Debian 10.
 \mbox{\Hypertarget{Drupal__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{Drupal__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
 {\bfseries log\+\_\+errors} (\$1, \$2)
 \item 
-\hyperlink{Drupal__Instalador__General_8sh_a867cb91b69b68d903ea8d2ebcff6ea36}{install\+\_\+dep} (\$1, \$2, \$3, \$4, \$5)
-\begin{DoxyCompactList}\small\item\em Funcion que realiza la instalacion de las dependencias de php para Drupal. \end{DoxyCompactList}\item 
-\hyperlink{Drupal__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}{virtual\+\_\+host\+\_\+apache} (\$1, \$2, \$3)
-\begin{DoxyCompactList}\small\item\em Funcion que realiza la configuracion del sitio, la configuracion con https y se permite .htaccess para Drupal. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{Drupal__Instalador__General_8sh_a867cb91b69b68d903ea8d2ebcff6ea36}\label{Drupal__Instalador__General_8sh_a867cb91b69b68d903ea8d2ebcff6ea36}} 
+{\bfseries install\+\_\+dep} (\$1, \$2, \$3, \$4, \$5)
+\item 
+\mbox{\Hypertarget{Drupal__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}\label{Drupal__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}} 
+{\bfseries virtual\+\_\+host\+\_\+apache} (\$1, \$2, \$3)
+\item 
 \hyperlink{Drupal__Instalador__General_8sh_a3cc44682ce03ae17ac41a78185920c59}{git\+\_\+composer\+\_\+drush} (\$1)
 \begin{DoxyCompactList}\small\item\em Funcion que verifica la existencia o instala git, composer y drush. \end{DoxyCompactList}\item 
 \hyperlink{Drupal__Instalador__General_8sh_ae5ce76ad68690ff00cb63811e18c8a37}{modulos\+\_\+configuraciones} (\$1)
@@ -70,29 +72,6 @@ Funcion que verifica la existencia o instala git, composer y drush.
 {\em \$1} & El sistema operativo donde se esta instalando Drupal \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{Drupal__Instalador__General_8sh_a867cb91b69b68d903ea8d2ebcff6ea36}\label{Drupal__Instalador__General_8sh_a867cb91b69b68d903ea8d2ebcff6ea36}} 
-\index{Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh@{Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh}!install\+\_\+dep@{install\+\_\+dep}}
-\index{install\+\_\+dep@{install\+\_\+dep}!Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh@{Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh}}
-\subsubsection{\texorpdfstring{install\+\_\+dep()}{install\_dep()}}
-{\footnotesize\ttfamily install\+\_\+dep (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5 }\end{DoxyParamCaption})}
-
-
-
-Funcion que realiza la instalacion de las dependencias de php para Drupal. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em \$1} & El sistema operativo donde se desea instalar Drupal \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
-\hline
-{\em \$2} & Manejador de base de datos para la instalacion de Drupal \\
-\hline
-{\em \$3} & Servidor web con el que se realiza la instalacion \+: \textquotesingle{}Apache\textquotesingle{} o \textquotesingle{}Nginx\textquotesingle{} \\
-\hline
-{\em \$4} & Nombre de dominio del sitio \\
-\hline
-{\em \$5} & Ruta donde se instalara Drupal \\
-\hline
-\end{DoxyParams}
 \mbox{\Hypertarget{Drupal__Instalador__General_8sh_ae5ce76ad68690ff00cb63811e18c8a37}\label{Drupal__Instalador__General_8sh_ae5ce76ad68690ff00cb63811e18c8a37}} 
 \index{Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh@{Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh}!modulos\+\_\+configuraciones@{modulos\+\_\+configuraciones}}
 \index{modulos\+\_\+configuraciones@{modulos\+\_\+configuraciones}!Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh@{Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh}}
@@ -106,24 +85,5 @@ Funcion que instala y configura los modulos para habilitar C\+A\+P\+T\+C\+HA, de
 
 \begin{DoxyParams}{Parameters}
 {\em \$1} & La version de Drupal que se esta configurando \+: \textquotesingle{}7.\+x\textquotesingle{} u \textquotesingle{}8.\+x\textquotesingle{} \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{Drupal__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}\label{Drupal__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}} 
-\index{Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh@{Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh}!virtual\+\_\+host\+\_\+apache@{virtual\+\_\+host\+\_\+apache}}
-\index{virtual\+\_\+host\+\_\+apache@{virtual\+\_\+host\+\_\+apache}!Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh@{Drupal\+\_\+\+Instalador\+\_\+\+General.\+sh}}
-\subsubsection{\texorpdfstring{virtual\+\_\+host\+\_\+apache()}{virtual\_host\_apache()}}
-{\footnotesize\ttfamily virtual\+\_\+host\+\_\+apache (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3 }\end{DoxyParamCaption})}
-
-
-
-Funcion que realiza la configuracion del sitio, la configuracion con https y se permite .htaccess para Drupal. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em \$1} & El sistema operativo donde se esta instalando Drupal \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
-\hline
-{\em \$2} & Nombre de dominio del sitio \\
-\hline
-{\em \$3} & Ruta donde se instalara Drupal \\
 \hline
 \end{DoxyParams}

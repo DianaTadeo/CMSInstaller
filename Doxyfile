@@ -32,7 +32,7 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "My Project"
+PROJECT_NAME           = "CMSInstaller"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
@@ -792,10 +792,20 @@ WARN_LOGFILE           =
 
 INPUT                  = /home/lilium/CMSInstaller/main.sh \
 						 /home/lilium/CMSInstaller/Modulos/Auxiliares/DB_Instalador_Debian.sh \
+						 /home/lilium/CMSInstaller/Modulos/Auxiliares/DB_Instalador_CentOS.sh \
 						 /home/lilium/CMSInstaller/Modulos/InstaladoresCMS/Joomla_Instalador_General.sh \
 						 /home/lilium/CMSInstaller/Modulos/InstaladoresCMS/Moodle_Instalador_General.sh \
 						 /home/lilium/CMSInstaller/Modulos/InstaladoresCMS/WP_Instalador_General.sh \
-						 /home/lilium/CMSInstaller/Modulos/InstaladoresCMS/Drupal_Instalador_General.sh 
+						 /home/lilium/CMSInstaller/Modulos/InstaladoresCMS/Drupal_Instalador_General.sh \
+						 /home/lilium/CMSInstaller/Modulos/InstaladoresCMS/OJS_Instalador_General.sh \
+						 /home/lilium/CMSInstaller/Modulos/Hardening/F2BanLogwatchLogcheck.sh \
+						 /home/lilium/CMSInstaller/Modulos/Hardening/Configuraciones_Generales.sh \
+						 /home/lilium/CMSInstaller/Modulos/Modulos/Auxiliares/Web_Configuration_Sec.sh \
+						 /home/lilium/CMSInstaller/Modulos/Modulos/Auxiliares/Apache_Nginx_Debian.sh \
+						 /home/lilium/CMSInstaller/Modulos/Modulos/Auxiliares/Apache_Nginx_CentOS.sh
+						 
+						 
+						 
 						 
 
 # This tag can be used to specify the character encoding of the source files
@@ -827,7 +837,7 @@ FILE_PATTERNS          = *.sh
 # be searched for input files as well.
 # The default value is: NO.
 
-RECURSIVE              = NO
+RECURSIVE              = YES
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a
