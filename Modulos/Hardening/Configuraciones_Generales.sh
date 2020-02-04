@@ -1,25 +1,34 @@
 #!/bin/bash
 
-####################################################################
-# Script para la configuración general de hardening
-# en Debian 9, 10 y CentOS 6, 7
-# Argumento 1: SO
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Script para la configuración general de hardening en Debian 9, 10 y CentOS 6, 7
+## @version 1.0
+##
+## Este archivo permite instalar y confirgurar programas que permiten el monitoreo y ciertas configuraciones de seguridad.
 
+# Argumento 1: SO
+# Argumento 2: EMAIL_NOTIFICATION
 LOG="`pwd`/Modulos/Log/Hardening.log"
 
-###################### Log de Errores ###########################
-# $1: Salida de error											#
-# $2: Mensaje de la instalacion									#
-#################################################################
+## @fn log_errors()
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR] : $2 " >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2 " 	>> $LOG
 	fi
 }
 
+## @fn disable_default_services()
+## @brief Función que deshabilita los servicios del sistema predeterminados
+## @param $1 Sistema operativo ['Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7']
+##
 disable_default_services(){
 	# Función que deshabilita los servicios del sistema predeterminados
 	# $1=SO
@@ -52,6 +61,9 @@ disable_default_services(){
 	done
 }
 
+## @fn disable_user_accounts()
+## @brief Función que deshabilita las cuentas de usuario que tienen una shell definida en /etc/passwd
+##
 disable_user_accounts(){
 	# Función que deshabilita las cuentas de usuario que tienen una shell definida en /etc/passwd
 	# No deshabilita la cuenta root y la cuenta del usuario que ejecutó "sudo"
@@ -65,6 +77,10 @@ disable_user_accounts(){
 	done
 }
 
+## @fn disable_user_accounts()
+## @brief Función que establece la política de conteseñas para los usuarios del sistema.
+## @param $1 Sistema operativo ['Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7']
+##
 password_policy(){
 	# Función que establece la política de conteseñas para los usuarios del sistema.
 	# $1=SO
@@ -109,6 +125,10 @@ password_policy(){
 
 }
 
+## @fn disable_user_accounts()
+## @brief Función que establece los permisos y dueños de archivos relevantes en el sistema
+## @param $1 Sistema operativo ['Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7']
+##
 users_and_privileges(){
 	# Función que establece los permisos y dueños de archivos relevantes en el sistema
 	# $1=SO
@@ -135,12 +155,87 @@ users_and_privileges(){
 	log_errors $? "Se establecen permisos \"rwx------\" y a \"root:root\" dueño de los archivos \"passwd,group,shadow,gshadow\""
 }
 
+## @fn disable_user_accounts()
+## @brief Función que realiza las políticas de sudo y agrega usuarios a ese grupo
+## @param $1 Sistema operativo ['Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7']
+##
 sudo_policy(){
-	echo "sudo_policy: TODO"
+	# Función que realiza las políticas de sudo y agrega usuarios a ese grupo
+	# $1=SO
+	USER_ACCOUNTS=$(grep "/bin/.*sh" /etc/passwd  | cut -d":" -f1)
+	if [[ $1 =~ Debian.* ]]; then
+		GROUP="sudo"; INSTALL="apt"
+		SERVICES="/usr/bin/systemctl,/usr/sbin/service"
+	else
+		GROUP="wheel"; INSTALL="yum"
+		if [[$1 == 'CentOS 6']]; then
+			SERVICES="/usr/sbin/service"
+		else
+			SERVICES="/usr/bin/systemctl,/usr/sbin/service"
+		fi
+	fi
+	usermod -aG $GROUP $SUDO_USER
+	log_errors $? "El usuario '$SUDO_USER' fue agregado al grupo '$GROUP'"
+	echo "El usuario '$SUDO_USER' fue agregado al grupo '$GROUP'"
+	while true; do
+		read -p "Quieres agregar otros usuarios? [N/s]: " RESP
+		if [ -z "$RESP" ]; then RESP="N"; fi
+		if [[ $RESP =~ s|S ]]; then
+			read -p "Indica el usuario que quieres añadir: " USER_NAME
+			if [[ -n "$(echo $USER_ACCOUNTS | grep "$USER_NAME")" ]]; then
+				usermod -aG $GROUP $USER_NAME
+				log_errors $? "El usuario '$USER_NAME' fue agregado al grupo '$GROUP'"
+			else
+				echo "No existe el usuario '$USER_NAME'"
+			fi
+		else break;
+		fi
+	done
+	mv /etc/sudoers /etc/sudoers.original
+	SUDOERS_FILE="/etc/sudoers"
+	echo '# /etc/sudoers' >> $SUDOERS_FILE
+	echo "# This file MUST be edited with the 'visudo' command as root." >> $SUDOERS_FILE
+	echo "Cmnd_Alias ALLOWED_EXEC = /usr/sbin/visudo, /usr/bin/$INSTALL, $SERVICES" >> $SUDOERS_FILE
+	log_errors $? "Comandos que permiten ejecutarse con sudo: visudo y $INSTALL"
+	echo 'Cmnd_Alias BLACKLIST = /usr/bin/su' >> $SUDOERS_FILE
+	log_errors $? "Comandos que no permiten ejecutarse con sudo: su"
+	echo 'Cmnd_Alias SHELLS = /usr/bin/sh, /usr/bin/bash' >> $SUDOERS_FILE
+	log_errors $? "Intérpretes de comandos que no serán permitidas para evitar 'escape shell': bash y sh"
+	echo 'Cmnd_Alias USER_WRITEABLE = /home/*, /tmp/*, /var/tmp/*' >> $SUDOERS_FILE
+	log_errors $? "Directorios donde no se permitirá ejecutar scripts:  /home/*, /tmp/*, /var/tmp/*"
+	echo 'Cmnd_Alias PAGERS = /usr/bin/less, /usr/bin/tail, /usr/bin/head, /usr/bin/more' >> $SUDOERS_FILE
+	log_errors $? "Utilerías que no solicitarán contraseña cuando se utilicen: less, tail, head, more"
+
+	echo 'Defaults env_reset, noexec, requiretty, use_pty' >> $SUDOERS_FILE
+	log_errors $? "Defaults: env_reset, noexec, requiretty, use_pty"
+	echo 'Defaults !visiblepw' >> $SUDOERS_FILE
+	log_errors $? "Defaults: !visiblepw"
+
+	echo 'Defaults editor = /usr/bin/vim' >> $SUDOERS_FILE
+	log_errors $? "Se utiliza como editor para visudo: vim"
+	echo 'Defaults secure_path = /sbin:/bin:/usr/sbin:/usr/bin' >> $SUDOERS_FILE
+	log_errors $? "Directorios donde es posible ejecutar archivos: /sbin:/bin:/usr/sbin:/usr/bin"
+	echo 'Defaults  log_host, log_year, logfile="/var/log/sudo.log"' >> $SUDOERS_FILE
+	log_errors $? "Se indica archivo donde se escribirá el log de sudo: /var/log/sudo.log"
+
+
+	echo 'Defaults!ALLOWED_EXEC,SHELLS !noexec' >> $SUDOERS_FILE
+	log_errors $? "Comandos que se permiten ejecutar y shells que no permiten 'escape shell': ALLOWED_EXEC, SHELLS"
+	echo 'Defaults!SHELLS log_output' >> $SUDOERS_FILE
+	log_errors $? "Se hara registro de la salida en pseudo tty: log_output"
+
+	echo 'root    ALL=(ALL)   ALL' >> $SUDOERS_FILE
+	log_errors $? "Se permite al usuario root ejecutar todos los comandos: ALL"
+	echo "%$GROUP  ALL=(root)  ALL,!BLACKLIST,!USER_WRITEABLE, NOPASSWD: PAGERS" >> $SUDOERS_FILE
+	log_errors $? "Se permiten a los usuarios del grupo '$GROUP' ejecutar los comandos como el usuario root: ALL,!BLACKLIST,!USER_WRITEABLE, NOPASSWD: READ"
+
+	# sudo -s no reinicia el entorno y pueden conservar sus preferencias en la shell;
+	# admins can enforce permitted root shells just like whitelisting or blacklisting any other binary on the system
+	echo -e "IMPORTANTE:\nPara cambiar a usuario root ejecutar: sudo -s "
 }
 
 disable_default_services "$1"
 disable_user_accounts
 password_policy "$1"
 users_and_privileges "$1"
-sudo_policy
+sudo_policy "$1"
