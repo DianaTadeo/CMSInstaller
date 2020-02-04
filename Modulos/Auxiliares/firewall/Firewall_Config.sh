@@ -41,7 +41,7 @@ install_iptables_Centos(){
 	cmd="systemctl mask --now firewalld"
 	$cmd
 	log_errors $? "Deshabilitando firewalld: $cmd"
-	cmd="yum install iptables-services"
+	cmd="yum install -y iptables-services"
 	$cmd
 	log_errors $? "Instalando iptables: $cmd"
 	cmd="systemctl start iptables"
@@ -100,7 +100,7 @@ echo "==============================================="
 echo "            Configurando Firewall"
 echo "==============================================="
 
-if [[ $1 == 'Debian ' ]] || [[ $1 == 'Debian 10' ]]; then
+if [[ $1 == 'Debian 9' ]] || [[ $1 == 'Debian 10' ]]; then
 	install_iptables_Debian
 else
 	install_iptables_Centos
