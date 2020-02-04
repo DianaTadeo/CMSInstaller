@@ -58,7 +58,7 @@ OS_dependencies(){
 			;;
 		'CentOS 6' | 'CentOS 7')
 			echo "Cent6"
-			yum install sudo vim curl wget expect sendmail -y
+			yum install sudo vim curl wget expect sendmail lsof -y
 			;;
 	esac
 }
@@ -191,9 +191,6 @@ CMS(){
 	bash ./Modulos/Auxiliares/Web_Configuration_Sec.sh "$2" "${12}"
 }
 
-backups(){
-	echo "backups: TODO"
-}
 #===============================================================================================#
 #																								#													#
 #					Main de instalador y configurador de CMS seguros							#
@@ -245,7 +242,7 @@ IPV_6=`jq '.IPV6' $JSON_OPTIONS | cut -f2 -d'"'`
 PATH_INSTALL=`jq '.PathInstall' $JSON_OPTIONS | cut -f2 -d'"'`
 EMAIL_NOTIFICATION=`jq '.EmailTo' $JSON_OPTIONS | cut -f2 -d'"'`
 
-BACKUP_DAYS=`jq '.BackupDays' *.json -c | tr ',[]' ' ()'`  # revisar como pasar a array
+BACKUP_DAYS=`jq '.BackupDays' *.json -c | tr '["]' ' ' | sed -e 's/ //g'`
 BACKUP_TIME=`jq '.BackupTime' $JSON_OPTIONS | cut -f2 -d'"'`
 
 DB_EXISTS=`jq '.DBExists' $JSON_OPTIONS | cut -f2 -d'"'`
@@ -255,7 +252,7 @@ DB_EXISTS=`jq '.DBExists' $JSON_OPTIONS | cut -f2 -d'"'`
 OS_dependencies "$SO"
 chmod +x ./Modulos/Auxiliares/* ./Modulos/InstaladoresCMS/* ./Modulos/Hardening/*
 web_server_installer "$SO" "$WEB_SERVER" "$WS_VERSION"
-
+TEMP_PATH="$PWD"
 # Se asginan valores para conexión a la BD si existe o no
 if [ $DB_EXISTS = "Yes" ]; then
 	DB_USER=`jq '.DBUser' $JSON_OPTIONS | cut -f2 -d'"'`
@@ -280,5 +277,9 @@ CMS "$CMS" "$SO"  "$CMS_VERSION" "$DBM" "$DB_NAME" "$DB_IP" "$DB_PORT" \
 "$DB_EXISTS"
 
 OS_hardening "$SO" "$EMAIL_NOTIFICATION"
-backups
+
+bash ./Modulos/Auxiliares/Backup_Files_General.sh "$BACKUP_DAYS" "$SO" \
+"$WEB_SERVER" "$DBM" "$PATH_INSTALL" "$DOMAIN_NAME" "$DB_USER" "$DB_IP" \
+"$DB_PORT" "$DB_NAME" "$BACKUP_TIME" "$TEMP_PATH" "$EMAIL_NOTIFICATION"
+
 echo -e "Recarga las variables de entorno.\n Ejecute: . ~/.bashrc"
