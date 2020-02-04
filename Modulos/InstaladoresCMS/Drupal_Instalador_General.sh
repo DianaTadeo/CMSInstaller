@@ -81,7 +81,6 @@ install_dep(){
 			if [[ $3 == 'Apache' ]]; then
 #				yum install libapache2-mod-php -y
 #				a2enmod rewrite;
-				site_default_apache "CentOS"
 				virtual_host_apache "$1" "$4" "$5"
 			else
 				site_default_nginx "CentOS"
@@ -268,7 +267,7 @@ backup(){
 modulos_configuraciones(){
 	if [[ $1 =~ 7.* ]]; then
 		 su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush \
-		 vset drupal_http_request_fails 1"
+		 vset drupal_http_request_fails 0"
 		 # Se incluye captcha en inicio de sesión
 		 su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush \
 		 dl captcha && $(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush \
@@ -404,7 +403,12 @@ drupal_installer(){
 	fi
 
 	chown www-data:www-data sites/default/files/
-
+	if [[ $1 =~ 7.* ]]; then
+		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush @none dl file_permissions"
+		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush cc drush"
+		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush fp -y"
+	fi
+	log_errors $? "Permisos en carpetas"
 	modulos_configuraciones "$1"
 	complementos_seguridad "$7" "$1"
 
