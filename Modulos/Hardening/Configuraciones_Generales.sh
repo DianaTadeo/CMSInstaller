@@ -203,8 +203,8 @@ sudo_policy(){
 	log_errors $? "Intérpretes de comandos que no serán permitidas para evitar 'escape shell': bash y sh"
 	echo 'Cmnd_Alias USER_WRITEABLE = /home/*, /tmp/*, /var/tmp/*' >> $SUDOERS_FILE
 	log_errors $? "Directorios donde no se permitirá ejecutar scripts:  /home/*, /tmp/*, /var/tmp/*"
-	echo 'Cmnd_Alias PAGERS = /usr/bin/less, /usr/bin/tail, /usr/bin/head, /usr/bin/more' >> $SUDOERS_FILE
-	log_errors $? "Utilerías que no solicitarán contraseña cuando se utilicen: less, tail, head, more"
+	echo 'Cmnd_Alias PAGERS = /usr/bin/less, /usr/bin/tail, /usr/bin/head, /usr/bin/more, /usr/bin/cat' >> $SUDOERS_FILE
+	log_errors $? "Utilerías que no solicitarán contraseña cuando se utilicen: less, tail, head, more, cat"
 
 	echo 'Defaults env_reset, noexec, requiretty, use_pty' >> $SUDOERS_FILE
 	log_errors $? "Defaults: env_reset, noexec, requiretty, use_pty"
