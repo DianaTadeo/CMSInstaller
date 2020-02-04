@@ -227,7 +227,7 @@ sudo_policy(){
 	echo 'root    ALL=(ALL)   ALL' >> $SUDOERS_FILE
 	log_errors $? "Se permite al usuario root ejecutar todos los comandos: ALL"
 	echo "%$GROUP  ALL=(root)  ALL,!BLACKLIST,!USER_WRITEABLE, NOPASSWD: PAGERS" >> $SUDOERS_FILE
-	log_errors $? "Se permiten a los usuarios del grupo '$GROUP' ejecutar los comandos como el usuario root: ALL,!BLACKLIST,!USER_WRITEABLE, NOPASSWD: READ"
+	log_errors $? "Se permiten a los usuarios del grupo '$GROUP' ejecutar los comandos como el usuario root: ALL,!BLACKLIST,!USER_WRITEABLE, NOPASSWD: PAGERS"
 
 	# sudo -s no reinicia el entorno y pueden conservar sus preferencias en la shell;
 	# admins can enforce permitted root shells just like whitelisting or blacklisting any other binary on the system
