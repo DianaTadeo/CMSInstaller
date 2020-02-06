@@ -282,4 +282,4 @@ bash ./Modulos/Auxiliares/Backup_Files_General.sh "$BACKUP_DAYS" "$SO" \
 "$WEB_SERVER" "$DBM" "$PATH_INSTALL" "$DOMAIN_NAME" "$DB_USER" "$DB_IP" \
 "$DB_PORT" "$DB_NAME" "$BACKUP_TIME" "$TEMP_PATH" "$EMAIL_NOTIFICATION"
 
-echo -e "Recarga las variables de entorno.\n Ejecute: . ~/.bashrc"
+echo -e "Recarga las variables de entorno.\n Ejecute los siguientes comandos: . /etc/profile\n\t\t\t\t  . ~/.bashrc"
