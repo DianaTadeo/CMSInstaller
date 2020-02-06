@@ -40,10 +40,12 @@ disable_default_services(){
 		'Debian 9' | 'Debian 10' | 'CentOS 7')
 			DEFAULT_SERVICES_ENABLED=$(systemctl list-unit-files --state=enabled --type=service | grep enabled | cut -f1 -d" " | tr '\n' ' ')
 			DISABLE_CMD="systemctl disable"
+			RESTART_SSH="systemctl restart ssh"
 			;;
 		'CentOS 6')
 			DEFAULT_SERVICES_ENABLED=$(chkconfig --list | grep '3:\(activo\|on\)' | cut -d"0" -f1 | cut -d" " -f1 | tr '[[:space:]]' ' ')
 			DISABLE_CMD="chkconfig --del"
+			RESTART_SSH="service ssh restart"
 			;;
 	esac
 	for SERVICE in $DEFAULT_SERVICES_ENABLED; do
@@ -59,6 +61,9 @@ disable_default_services(){
 			log_errors $? "Servicio deshabilitado: $SERVICE"
 		fi
 	done
+	sed -i "s/.*\(PermitRootLogin\s*\)yes/\1no/" /etc/ssh/sshd_config
+	log_errors 0 "Se deshabilita acceso root por ssh"
+	$RESTART_SSH
 }
 
 ## @fn disable_user_accounts()
@@ -77,7 +82,7 @@ disable_user_accounts(){
 	done
 }
 
-## @fn disable_user_accounts()
+## @fn password_policy()
 ## @brief Función que establece la política de conteseñas para los usuarios del sistema.
 ## @param $1 Sistema operativo ['Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7']
 ##
@@ -107,10 +112,10 @@ password_policy(){
 			;;
 	esac
 	LOGIN_DEFS="/etc/login.defs"
-	sed -i "s/\(PASS_MAX_DAYS[\t\s]*\).*/\190/" $LOGIN_DEFS
+	sed -i "s/\(PASS_MAX_DAYS[\t\s]*\).*/\1180/" $LOGIN_DEFS
 	sed -i "s/\(PASS_MIN_DAYS[\t\s]*\).*/\17/" $LOGIN_DEFS
-	sed -i "s/\(PASS_WARN_AGE[\t\s]*\).*/\17/" $LOGIN_DEFS
-	log_errors $? "Expiración de contraseñas (nuevos usuarios): cada 90 días (se advertirá 7 días antes) y mínimo 7"
+	sed -i "s/\(PASS_WARN_AGE[\t\s]*\).*/\130/" $LOGIN_DEFS
+	log_errors $? "Expiración de contraseñas (nuevos usuarios): cada 180 días (se advertirá 90 días antes) y mínimo 7"
 	ACCOUNTS=$(grep "/bin/.*sh" /etc/passwd  | cut -d":" -f1)
 	for ACCOUNT in $ACCOUNTS; do
 		echo "Debes cambiar el password de '$ACCOUNT':"
@@ -119,13 +124,13 @@ password_policy(){
 		else
 			passwd $ACCOUNT
 		fi
-		chage -M 90 -m 7 -W 7 $ACCOUNT
+		chage -M 180 -m 7 -W 30 $ACCOUNT
 	done
-	log_errors $? "Expiración de contraseñas (usuarios existentes): cada 90 días (se adevertirá 7 días antes) y mínimo 7"
+	log_errors $? "Expiración de contraseñas (usuarios existentes): cada 180 días (se adevertirá 30 días antes) y mínimo 7"
 
 }
 
-## @fn disable_user_accounts()
+## @fn users_and_privileges()
 ## @brief Función que establece los permisos y dueños de archivos relevantes en el sistema
 ## @param $1 Sistema operativo ['Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7']
 ##
@@ -155,7 +160,7 @@ users_and_privileges(){
 	log_errors $? "Se establecen permisos \"rwx------\" y a \"root:root\" dueño de los archivos \"passwd,group,shadow,gshadow\""
 }
 
-## @fn disable_user_accounts()
+## @fn sudo_policy()
 ## @brief Función que realiza las políticas de sudo y agrega usuarios a ese grupo
 ## @param $1 Sistema operativo ['Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7']
 ##
@@ -164,14 +169,14 @@ sudo_policy(){
 	# $1=SO
 	USER_ACCOUNTS=$(grep "/bin/.*sh" /etc/passwd  | cut -d":" -f1)
 	if [[ $1 =~ Debian.* ]]; then
-		GROUP="sudo"; INSTALL="apt"
-		SERVICES="/usr/bin/systemctl,/usr/sbin/service"
+		GROUP="sudo"; INSTALL="/usr/sbin/apt, /usr/sbin/apt-*"
+		SERVICES="/usr/bin/systemctl, /usr/sbin/service"
 	else
-		GROUP="wheel"; INSTALL="yum"
+		GROUP="wheel"; INSTALL="/usr/sbin/yum"
 		if [[$1 == 'CentOS 6']]; then
 			SERVICES="/usr/sbin/service"
 		else
-			SERVICES="/usr/bin/systemctl,/usr/sbin/service"
+			SERVICES="/usr/bin/systemctl, /usr/sbin/service"
 		fi
 	fi
 	usermod -aG $GROUP $SUDO_USER
@@ -195,24 +200,24 @@ sudo_policy(){
 	SUDOERS_FILE="/etc/sudoers"
 	echo '# /etc/sudoers' >> $SUDOERS_FILE
 	echo "# This file MUST be edited with the 'visudo' command as root." >> $SUDOERS_FILE
-	echo "Cmnd_Alias ALLOWED_EXEC = /usr/sbin/visudo, /usr/bin/$INSTALL, $SERVICES" >> $SUDOERS_FILE
-	log_errors $? "Comandos que permiten ejecutarse con sudo: visudo y $INSTALL"
+	echo "Cmnd_Alias ALLOWED_EXEC = /usr/sbin/visudo, $INSTALL, $SERVICES" >> $SUDOERS_FILE
+	log_errors $? "Comandos que permiten ejecutarse con sudo: /usr/sbin/visudo, $INSTALL, $SERVICES"
 	echo 'Cmnd_Alias BLACKLIST = /usr/bin/su' >> $SUDOERS_FILE
 	log_errors $? "Comandos que no permiten ejecutarse con sudo: su"
 	echo 'Cmnd_Alias SHELLS = /usr/bin/sh, /usr/bin/bash' >> $SUDOERS_FILE
 	log_errors $? "Intérpretes de comandos que no serán permitidas para evitar 'escape shell': bash y sh"
 	echo 'Cmnd_Alias USER_WRITEABLE = /home/*, /tmp/*, /var/tmp/*' >> $SUDOERS_FILE
 	log_errors $? "Directorios donde no se permitirá ejecutar scripts:  /home/*, /tmp/*, /var/tmp/*"
-	echo 'Cmnd_Alias PAGERS = /usr/bin/less, /usr/bin/tail, /usr/bin/head, /usr/bin/more, /usr/bin/cat' >> $SUDOERS_FILE
-	log_errors $? "Utilerías que no solicitarán contraseña cuando se utilicen: less, tail, head, more, cat"
+	echo 'Cmnd_Alias PAGERS = /usr/bin/less, /usr/bin/tail, /usr/bin/head, /usr/bin/more, /usr/bin/cat, /usr/bin/tac' >> $SUDOERS_FILE
+	log_errors $? "Utilerías que no solicitarán contraseña cuando se utilicen: less, tail, head, more, cat, tac"
 
 	echo 'Defaults env_reset, noexec, requiretty, use_pty' >> $SUDOERS_FILE
 	log_errors $? "Defaults: env_reset, noexec, requiretty, use_pty"
 	echo 'Defaults !visiblepw' >> $SUDOERS_FILE
 	log_errors $? "Defaults: !visiblepw"
 
-	echo 'Defaults editor = /usr/bin/vim' >> $SUDOERS_FILE
-	log_errors $? "Se utiliza como editor para visudo: vim"
+	echo 'Defaults editor = /usr/bin/vim:/usr/bin/vi:/usr/bin/nano' >> $SUDOERS_FILE
+	log_errors $? "Se utiliza como editor para visudo: vim, vi, nano"
 	echo 'Defaults secure_path = /sbin:/bin:/usr/sbin:/usr/bin' >> $SUDOERS_FILE
 	log_errors $? "Directorios donde es posible ejecutar archivos: /sbin:/bin:/usr/sbin:/usr/bin"
 	echo 'Defaults  log_host, log_year, logfile="/var/log/sudo.log"' >> $SUDOERS_FILE
@@ -234,8 +239,19 @@ sudo_policy(){
 	echo -e "IMPORTANTE:\nPara cambiar a usuario root ejecutar: sudo -s "
 }
 
+## @fn additional_preferences()
+## @brief Función que añade elementos adicionales de hardening y preferencias a los usuarios del sistema
+##
+additional_preferences(){
+	echo "export HISTTIMEFORMAT=\"%F %T \"" >> /etc/profile
+	log_errors $? "Se agrega marca de tiempo para el comando 'history' de los usuarios del sistema"
+	sed -i 's/^\(tty\([5-9]\|[1-9][0-9]\)\+\)/#\1/' /etc/securetty
+	log_errors $? "Se deja habilitado el uso de 4 tty"
+
+}
 disable_default_services "$1"
 disable_user_accounts
 password_policy "$1"
 users_and_privileges "$1"
+additional_preferences
 sudo_policy "$1"
