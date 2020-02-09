@@ -50,6 +50,7 @@ install_PostgreSQL(){
 	sed -i "s/ident/trust/" /var/lib/pgsql/data/pg_hba.conf
 	sed -i "s/peer/trust/" /var/lib/pgsql/data/pg_hba.conf
 	sed -i "s/md5/trust/" /var/lib/pgsql/data/pg_hba.conf
+	sed -i "s/Environment=PGPORT=5432/Environment=PGPORT=$2/" /lib/systemd/system/postgresql.service
 	systemctl restart postgresql
 	su postgres -c "psql -h $4 -p $2 -c 'CREATE DATABASE $1;'"
     read  -sp "Ingresa el password para ese usuario: " userPass; echo -e "\n"
@@ -74,9 +75,11 @@ install_MySQL(){
 	systemctl enable mariadb
 	if [[ $(cat /etc/my.cnf | grep port) ]];
 	then
-		sed -i "s/.*port.*/port=$1/" /etc/my.cnf
+	       sed -i "s/.*port.*/port=$1/" /etc/my.cnf
+               sed -i "s/[mysqld]/[mysqld]\nport= 3306/" /etc/my.cnf.d/server.cnf
 	else
-		echo "port=$2" >> /etc/my.cnf
+	       echo "[mysqld]\nport=$2" >> /etc/my.cnf
+               sed -i "s/[mysqld]/[mysqld]\nport=$2/" /etc/my.cnf.d/server.cnf
 	fi
 	systemctl restart mysql.service
 	mysql_secure_installation
@@ -93,7 +96,7 @@ install_MySQL(){
 if [[ $1 == 'PostgreSQL' ]];
 then
 	
-    install_postgresql $2 $3 $4 $5 
+    install_PostgreSQL $2 $3 $4 $5 
 else
     install_MySQL $2 $3 $4 $5 
 fi
