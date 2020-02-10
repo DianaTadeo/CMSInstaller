@@ -68,9 +68,9 @@ install_dep(){
 			if [[ $3 == 'Apache' ]]; then
 				apt install libapache2-mod-php7.3 -y
 				log_errors $? "Instalacion de libapache2-mod-php7.3: "
-				bash ./Modulos/InstaladoresCMS/virtual_host_apache "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
@@ -93,9 +93,9 @@ install_dep(){
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
 			log_errors $? "Instalacion de PHP7.3-$2: "
 			if [[ $3 == 'Apache' ]]; then
-				bash ./Modulos/InstaladoresCMS/virtual_host_apache "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
 			fi
 			;;
 	esac
