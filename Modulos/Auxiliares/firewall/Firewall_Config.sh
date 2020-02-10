@@ -81,24 +81,35 @@ install_iptables_Debian(){
 ##
 rewrite(){
 	SSH_PORT=$(lsof -nP -iTCP -sTCP:LISTEN | grep "ssh\|sshd" | cut -d":" -f2 | sort -n | uniq  | cut -d" " -f1)
-	sed -i "/SSHPORT/$SSH_PORT/g" iptables.v4
+	sed -i "s/SSHPORT/$SSH_PORT/g" iptables.v4
 	if [[ $1 == 'localhost' ]];
 	then
-		sed -i "/DBPORT/$2/g" iptables.v4
+		sed -i "s/DBPORT/$2/g" iptables.v4
 	else
-		sed -i "/-A INPUT -i eth0 -p tcp -m tcp --dport DBPORT -m state --state ESTABLISHED -j ACCEPT/-A INPUT -i eth0 -p tcp -m tcp --sport $2 -m state --state ESTABLISHED -j ACCEPT/g" iptables.v4
-		sed -i "/-A OUTPUT -o eth0 -p tcp -m tcp --sport DBPORT -m state --state NEW,ESTABLISHED -j ACCEPT/-A OUTPUT -o eth0 -p tcp -m tcp --dport $2 -m state --state NEW,ESTABLISHED -j ACCEPT/g" iptables.v4
+		sed -i "s/-A INPUT -p tcp -m tcp --dport DBPORT -j ACCEPT/-A INPUT -p tcp -m tcp -s $1 --sport $2 -j ACCEPT/g" iptables.v4
+		sed -i "s/-A OUTPUT -p tcp -m tcp --sport DBPORT -j ACCEPT/-A OUTPUT -p tcp -m tcp -d $1 --dport $2 -j ACCEPT/g" iptables.v4
 	fi
-	read -p "Ingresa el nombre de la interfaz de la red (eth0 default): " iface; echo -e "\n"
-	if [[ $iface ]];
-	then
-		sed -i "/eth0/$iface/g" iptables.v4
-	fi
+	
+	total=`/sbin/route | wc -l`
+	total=$((total-2))
+	i=1
+	while [ $i -lt $total ];
+	do
+		ip=`/sbin/route | tail -n -$i | head -n 1 | cut -d ' ' -f 1`
+		netmask=`/sbin/route | tail -n -$i | head -n 1 | egrep -o "255.*" | cut -d ' ' -f 1`
+		echo "# RED local " >>  iptables.v4
+		echo "-A INPUT -s $ip/$netmask -p tcp -m tcp -j ACCEPT" >>  iptables.v4
+		echo "-A OUTPUT -d $ip/$netmask -p tcp -m tcp -j ACCEPT" >>  iptables.v4
+		((i++))	
+	done
 }
+
+
 
 echo "==============================================="
 echo "            Configurando Firewall"
 echo "==============================================="
+
 
 if [[ $1 == 'Debian 9' ]] || [[ $1 == 'Debian 10' ]]; then
 	install_iptables_Debian
@@ -106,5 +117,11 @@ else
 	install_iptables_Centos
 fi
 rewrite $3 $2
+echo "COMMIT" >>  iptables.v4
+echo "ATENCION: Se aplicaran las reglas de firewall por defecto. Revisar el archivo"
+echo "          CMSInstaller/Modulos/Auxiliares/firewall/iptables.v4 si se desea"
+echo "          asegurar de que las reglas sean correctas antes de aplicarse."
+echo "-----------------------------Para proceder, presione [Enter]------------------"
+read
 iptables-restore < iptables.v4
 
