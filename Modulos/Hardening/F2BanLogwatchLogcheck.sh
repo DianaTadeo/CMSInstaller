@@ -109,32 +109,32 @@ install_fail2ban(){
 	sed -i "s/\(^action[ \t]*=\).*/\1 %(action_mwl)s/" $JAIL_LOCAL
 	log_errors $? "Se asigna action= %(action_mwl)s para enviar email con contenido whois y log"
 
-	sed -i 's/\(\[sshd\]\)/\1 \nenabled = true/' $JAIL_LOCAL
+	sed -i 's/\(^\[sshd\]\)/\1 \nenabled = true\nfilter = sshd/' $JAIL_LOCAL
 	log_errors $? "Se habilita protección sshd"
 
 	if [[ $(which $APACHE_NAME) ]]; then
-		sed -i 's/\(\[apache-auth\]\)/\1 \nenabled = true/' $JAIL_LOCAL
-		sed -i 's/\(\[apache-badbots\]\)/\1 \nenabled = true/' $JAIL_LOCAL
-		sed -i 's/\(\[apache-shellshock\]\)/\1 \nenabled = true/' $JAIL_LOCAL
+		#sed -i 's/\(\[apache-auth\]\)/\1 \nenabled = true\nfilter = apache-auth/' $JAIL_LOCAL
+		sed -i 's/\(\[apache-badbots\]\)/\1 \nenabled = true\nfilter = apache-badbots/' $JAIL_LOCAL
+		sed -i 's/\(\[apache-shellshock\]\)/\1 \nenabled = true\nfilter = apache-shellshock/' $JAIL_LOCAL
 		log_errors $? "Se habilita protección de $APACHE_NAME"
 		APACHE_PORT=$(lsof -nP -iTCP -sTCP:LISTEN | grep "apache2" | cut -d":" -f2 | sort -n | uniq | cut -d" " -f1)
 		HTTPD_PORT=$(lsof -nP -iTCP -sTCP:LISTEN | grep "httpd" | cut -d":" -f2 | sort -n | uniq | cut -d" " -f1)
 
 		if [[ -n "$APACHE_PORT" ]];then
-			sed -i "s/\(^port*=\)*http*/\1 $(web_server_ports "$APACHE_PORT") /" $JAIL_LOCAL
+			sed -i "s/\(^port\s\+=\)\s\+http.*/\1 $(web_server_ports "$APACHE_PORT") /" $JAIL_LOCAL
 		fi
 
 		if [[ -n "$HTTPD_PORT" ]];then
-			sed -i "s/\(^port*=\)*http*/\1 $(web_server_ports "$HTTPD_PORT") /" $JAIL_LOCAL
+			sed -i "s/\(^port\s\+=\)\s\+http.*/\1 $(web_server_ports "$HTTPD_PORT") /" $JAIL_LOCAL
 		fi
 	fi
 
 	if [[ $(which $NGINX_NAME) ]]; then
-		sed -i 's/\(\[nginx-http-auth\]\)/\1 \nenabled = true/' $JAIL_LOCAL
-		log_errors "$?" "Se habilita protección de $NGINX_NAME"
+		#sed -i 's/\(\[nginx-http-auth\]\)/\1 \nenabled = true\nfilter = nginx-http-auth/' $JAIL_LOCAL
+		#log_errors "$?" "Se habilita protección de $NGINX_NAME"
 		NGINX_PORT=$(lsof -nP -iTCP -sTCP:LISTEN | grep "nginx" | cut -d":" -f2 | sort -n | uniq | cut -d" " -f1)
 		if [[ -n "$NGINX_PORT" ]];then
-			sed -i "s/\(^port*=\)*http*/\1 $(web_server_ports "$APACHE_PORT") /" $JAIL_LOCAL
+			sed -i "s/\(^port\s\+=\)\s\+http.*/\1 $(web_server_ports "$NGINX_PORT") /" $JAIL_LOCAL
 		fi
 
 	fi
@@ -142,7 +142,7 @@ install_fail2ban(){
 	SSH_PORT=$(lsof -nP -iTCP -sTCP:LISTEN | grep "ssh\|sshd" | cut -d":" -f2 | sort -n | uniq  | cut -d" " -f1)
 
 	if [[ -n "$SSH_PORT" ]];then
-			sed -i "s/\(^port*=\)*ssh$/\1 $ssh_port /" $JAIL_LOCAL
+			sed -i "s/\(^port*=\)*ssh$/\1 $SSH_PORT /" $JAIL_LOCAL
 	fi
 
 	if [[ $1 == 'CentOS 6' ]]; then
