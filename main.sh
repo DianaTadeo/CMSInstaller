@@ -135,8 +135,8 @@ data_base_manager_installer(){
 		;;
 		'CentOS 6' | 'CentOS 7')
 			# Se ejecuta script para instalación de base de datos en centos
-			bash ./Modulos/Auxiliares/DB_Instalador_CentOS.sh "$2" "$3" "$4" "$DB_NAME" \
-			"$DB_USER" "$DB_IP" "$DB_PORT"
+			bash ./Modulos/Auxiliares/DB_Instalador_CentOS.sh "$2" "$DB_NAME" "$DB_PORT"  \
+			"$DB_USER" "$DB_IP" 
 		;;
 	esac
 }
@@ -281,5 +281,5 @@ OS_hardening "$SO" "$EMAIL_NOTIFICATION"
 bash ./Modulos/Auxiliares/Backup_Files_General.sh "$BACKUP_DAYS" "$SO" \
 "$WEB_SERVER" "$DBM" "$PATH_INSTALL" "$DOMAIN_NAME" "$DB_USER" "$DB_IP" \
 "$DB_PORT" "$DB_NAME" "$BACKUP_TIME" "$TEMP_PATH" "$EMAIL_NOTIFICATION"
-
+bash ./Modulos/Auxiliares/firewall/Firewall_Config.sh "$SO" "$DB_PORT" "$DB_IP"
 echo -e "Recarga las variables de entorno.\n Ejecute los siguientes comandos: . /etc/profile\n\t\t\t\t  . ~/.bashrc"
