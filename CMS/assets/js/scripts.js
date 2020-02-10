@@ -47,16 +47,22 @@ jQuery(document).ready(function() {
 	// function to set web server version
 	function webServerVersion(){
 		var a_versions = [];
-		if ($('#SO').val() == 'Debian 9')
+		var n_versions = [];
+		if ($('#SO').val() == 'Debian 9'){
 			a_versions = ["2.4.25"];
-		else if ($('#SO').val() == 'Debian 10')
+			n_versions = ["1.10.3"];
+		} else if ($('#SO').val() == 'Debian 10'){
 			a_versions = ["2.4.38"];
-		else if ($('#SO').val() == 'CentOS 6')
+			n_versions = ["1.14.2"];
+		} else if ($('#SO').val() == 'CentOS 6'){
 			a_versions = ["2.2.15"];
-		else
+			n_versions = ["1.10"];
+		} else{
 			a_versions = ["2.4.6"];
+			n_versions = ["1.10"];
+		}
 		var webServerOptions = {
-			Nginx : ["8.x", "7.x"],
+			Nginx : n_versions,
 			Apache : a_versions,
 		}
 		$('#webServerVersion').empty();
