@@ -22,10 +22,10 @@ LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 ##
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`]: [ERROR] : $2" >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`]: [OK] : $2" 	>> $LOG
 	fi
 }
 
@@ -44,8 +44,12 @@ echo "==============================================="
 install_PostgreSQL(){
 	yum -y install postgresql-server postgresql-contrib
 	postgresql-setup initdb
-	systemctl start postgresql
-	systemctl enable postgresql
+	cmd="systemctl start postgresql"
+	$cmd
+	log_errors $? "Instalacion de PostgreSQL: $cmd"
+	cmd="systemctl enable postgresql"
+	$cmd
+	log_errors $? "Instalacion de PostgreSQL: $cmd"
 	cp /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf-aux
 	sed -i "s/ident/trust/" /var/lib/pgsql/data/pg_hba.conf
 	sed -i "s/peer/trust/" /var/lib/pgsql/data/pg_hba.conf
@@ -53,14 +57,24 @@ install_PostgreSQL(){
 	sed -i "s/Environment=PGPORT=5432/Environment=PGPORT=$2/" /lib/systemd/system/postgresql.service
 	/usr/sbin/semanage port -a -t postgresql_port_t -p tcp $2
 	chown postgres:postgres /var/lib/pgsql/data/pg_hba.conf
-	systemctl daemon-reload
-	systemctl restart postgresql
-	su postgres -c "psql -h $4 -p $2 -c 'CREATE DATABASE $1;'"
+	cmd="systemctl daemon-reload"
+	$cmd
+	log_errors $? "Configuracion de PostgreSQL: $cmd"
+	cmd="systemctl restart postgresql"
+	$cmd
+	log_errors $? "Configuracion de PostgreSQL: $cmd"
 	read  -sp "Ingresa el password para ese usuario: " userPass; echo -e "\n"
+	su postgres -c "psql -h $4 -p $2 -c 'CREATE DATABASE $1;'"
 	su -c "psql -h $4 -p $2 -c \"CREATE USER $3 WITH PASSWORD '$userPass'\" " postgres
 	su postgres -c "psql -h $4 -p $2 -c 'GRANT ALL PRIVILEGES ON DATABASE $1 TO $3;'"	
 	rm /var/lib/pgsql/data/pg_hba.conf
 	mv /var/lib/pgsql/data/pg_hba.conf-aux /var/lib/pgsql/data/pg_hba.conf
+	chown postgres:postgres /var/lib/pgsql/data/pg_hba.conf
+        cmd="systemctl daemon-reload"
+        $cmd
+	log_errors $? "Configuracion de PostgreSQL: $cmd [Revise archivo pg_hba.conf]"
+        cmd="systemctl restart postgresql"
+        $cmd
 }
 
 
@@ -73,9 +87,15 @@ install_PostgreSQL(){
 ## @param $4 Host de la base de datos que se desea crear
 ##
 install_MySQL(){
-	yum -y install mariadb-server
-	systemctl start mariadb
-	systemctl enable mariadb
+	cmd="yum -y install mariadb-server"
+	$cmd
+	log_errors $? "Instalacion de MySQL: $cmd"
+	cmd="systemctl start mariadb"
+	$cmd
+	log_errors $? "Instalacion de MySQL: $cmd"
+	cmd="systemctl enable mariadb"
+	$cmd
+	log_errors $? "Instalacion de MySQL: $cmd"
 	if [[ $(cat /etc/my.cnf | grep port) ]];
 	then
 	       sed -i "s/.*port.*/port=$1/" /etc/my.cnf
@@ -85,15 +105,24 @@ install_MySQL(){
                sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
 	fi
 	/usr/sbin/semanage port -a -t mysqld_port_t -p tcp $2
-        systemctl daemon-reload
-	systemctl restart mariadb.service
+        cmd="systemctl daemon-reload"
+	$cmd
+	log_errors $? "Configuracion de MySQL: $cmd"
+	cmd="systemctl restart mariadb.service"
+	$cmd
+	log_errors $? "Configuracion de MySQL: $cmd [Revise archivos /etc/my.cnf y /etc/my.cnf.d/server.cnf]"
 	mysql_secure_installation
-        read -sp "Ingresa el password para el usuario de la Base de Datos: " userPass; echo -e "\n"
-	read -sp "Ingresa el password de root en MySQL: " rootPass; echo -e "\n"
+        echo "Ingresa el password para el usuario de la Base de Datos: " 
+	read -s userPass
+	echo "\n"
+	echo "ALGO mysql -h $4 -P $2 -u root --password=$rootPass -e CREATE USER '$3' IDENTIFIED BY $userPass "
+	echo "Ingresa el password de root en MySQL: " 
+	read -s rootPass 
+	echo "\n"
 	mysql -h $4 -P $2 -u root --password=$rootPass -e "CREATE USER '$3' IDENTIFIED BY '$userPass';"
-        mysql -h $4 -P $2 -u $userName --password=$userPass -e "CREATE DATABASE $1;"
         mysql -h $4 -P $2 -u root --password=$rootPass -e "GRANT ALL PRIVILEGES ON *.* TO $3;"
-        mysql -h $4 -P $2 -u root --password=$rootPass -e "FLUSH PRIVILEGES;"	
+	mysql -h $4 -P $2 -u $3 --password=$userPass -e "CREATE DATABASE $1;"
+	mysql -h $4 -P $2 -u root --password=$rootPass -e "FLUSH PRIVILEGES;"	
 }
 
 
