@@ -66,11 +66,11 @@ backups(){
 			WAF_CONFIG="/etc/modsecurity/modsecurity.conf"
 			WAF_CONFIG_MOD="/etc/apache2/mods-enabled/security2.conf"
 		else
-			WEB_CONFIG="/usr/local/nginx/conf/nginx.conf"
-			SECURITY_CONF=""
-			VH_CONFIG="/etc/....../$6.conf"
-			WAF_CONFIG="/usr/local/nginx/conf/modsecurity.conf"
-			WAF_CONFIG_MOD="/usr/local/nginx/conf/crs-setup.conf"
+			WEB_CONFIG="/etc/nginx/nginx.conf"
+			SECURITY_CONF="/etc/nginx/conf.d/security.conf"
+			VH_CONFIG="/etc/nginx/sites-available/$6.conf"
+			WAF_CONFIG="/etc/nginx/modsec/modsecurity.conf"
+			WAF_CONFIG_MOD="/etc/nginx/modsec/crs-setup.conf"
 		fi
 		if [[ $4 == "MySQL" ]]; then
 			DBM_CONFIG="/etc/mysql/mariadb.conf.d/50-server.cnf"
@@ -90,15 +90,14 @@ backups(){
 			SECURITY_CONF="/etc/httpd/conf.d/security.conf"
 			VH_CONFIG="/etc/httpd/sites-available/$6.conf"
 			WAF_CONFIG="/etc/httpd/conf.d/mod_security.conf"
-			WAF_CONFIG_MOD=""
+			WAF_CONFIG_MOD="/etc/apache2/mods-enabled/security2.conf"
 
 		else
-			WEB_CONFIG=""
-			SECURITY_CONF=""
-			VH_CONFIG="/.../$6.conf"
-			WAF_CONFIG=""
-			WAF_CONFIG_MOD=""
-
+			WEB_CONFIG="/etc/nginx/nginx.conf"
+			SECURITY_CONF="/etc/nginx/conf.d/security.conf"
+			VH_CONFIG="/etc/nginx/sites-available/$6.conf"
+			WAF_CONFIG="/etc/nginx/modsec/modsecurity.conf"
+			WAF_CONFIG_MOD="/etc/nginx/modsec/crs-setup.conf"
 		fi
 		if [[ $4 == "MySQL" ]]; then
 			DBM_CONFIG="/etc/my.cnf"
@@ -141,14 +140,16 @@ backups(){
 	log_errors $? "Programación de respaldos de configuraciones de BD agregada en '$CRON_SCRIPT'"
 
 	# Respaldo de config de WAF
-	tar -czvf "$CURR_DIR/$DATE-config_files_waf.tar.gz" \
-	-C $(dirname $WAF_CONFIG) $(basename $WAF_CONFIG) \
-	-C $(dirname $WAF_CONFIG_MOD) $(basename $WAF_CONFIG_MOD)
-	log_errors $? "Respaldo de configuraciones WAF actuales: $DATE-config_files_waf.tar.gz"
-	echo "tar -czvf "$CURR_DIR/'$DATE'-config_files_waf.tar.gz" \
-	-C $(dirname $WAF_CONFIG) $(basename $WAF_CONFIG) \
-	-C $(dirname $WAF_CONFIG_MOD) $(basename $WAF_CONFIG_MOD)" >> $CRON_SCRIPT
-	log_errors $? "Programación de respaldos de WAF de BD agregada en '$CRON_SCRIPT'"
+	if [[ -e $WAF_CONFIG ]]; then
+		tar -czvf "$CURR_DIR/$DATE-config_files_waf.tar.gz" \
+		-C $(dirname $WAF_CONFIG) $(basename $WAF_CONFIG) \
+		-C $(dirname $WAF_CONFIG_MOD) $(basename $WAF_CONFIG_MOD)
+		log_errors $? "Respaldo de configuraciones WAF actuales: $DATE-config_files_waf.tar.gz"
+		echo "tar -czvf "$CURR_DIR/'$DATE'-config_files_waf.tar.gz" \
+		-C $(dirname $WAF_CONFIG) $(basename $WAF_CONFIG) \
+		-C $(dirname $WAF_CONFIG_MOD) $(basename $WAF_CONFIG_MOD)" >> $CRON_SCRIPT
+		log_errors $? "Programación de respaldos de WAF de BD agregada en '$CRON_SCRIPT'"
+	fi
 
 	# Respaldo de config de Firewall
 	if [[ -e $FIREWALL_CONFIG ]]; then
