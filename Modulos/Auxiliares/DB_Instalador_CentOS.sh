@@ -51,10 +51,13 @@ install_PostgreSQL(){
 	sed -i "s/peer/trust/" /var/lib/pgsql/data/pg_hba.conf
 	sed -i "s/md5/trust/" /var/lib/pgsql/data/pg_hba.conf
 	sed -i "s/Environment=PGPORT=5432/Environment=PGPORT=$2/" /lib/systemd/system/postgresql.service
+	/usr/sbin/semanage port -a -t postgresql_port_t -p tcp $2
+	chown postgres:postgres /var/lib/pgsql/data/pg_hba.conf
+	systemctl daemon-reload
 	systemctl restart postgresql
 	su postgres -c "psql -h $4 -p $2 -c 'CREATE DATABASE $1;'"
-    read  -sp "Ingresa el password para ese usuario: " userPass; echo -e "\n"
-    su -c "psql -h $4 -p $2 -c \"CREATE USER $3 WITH PASSWORD '$userPass'\" " postgres
+	read  -sp "Ingresa el password para ese usuario: " userPass; echo -e "\n"
+	su -c "psql -h $4 -p $2 -c \"CREATE USER $3 WITH PASSWORD '$userPass'\" " postgres
 	su postgres -c "psql -h $4 -p $2 -c 'GRANT ALL PRIVILEGES ON DATABASE $1 TO $3;'"	
 	rm /var/lib/pgsql/data/pg_hba.conf
 	mv /var/lib/pgsql/data/pg_hba.conf-aux /var/lib/pgsql/data/pg_hba.conf
@@ -82,9 +85,9 @@ install_MySQL(){
                sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
 	fi
 	/usr/sbin/semanage port -a -t mysqld_port_t -p tcp $2
-        systemctl restart mysql.service
+        systemctl daemon-reload
+	systemctl restart mysql.service
 	mysql_secure_installation
-	
         read -sp "Ingresa el password para el usuario de la Base de Datos: " userPass; echo -e "\n"
 	read -sp "Ingresa el password de root en MySQL: " rootPass; echo -e "\n"
 	mysql -h $4 -p $2 -u root --password=$rootPass -e "CREATE USER '$3' IDENTIFIED BY '$userPass';"
