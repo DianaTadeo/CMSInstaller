@@ -15,7 +15,7 @@
 -A OUTPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
 ############### Dependencia ###############
 # Dependencia - SSH
--A INPUT -s 132.247.1.0/24 -p tcp -m tcp --dport SSHPORT -j ACCEPT
+-A INPUT -s 132.247.1.0/24 -p tcp -m multiport --dports SSHPORT -j fail2ban-s
 -A OUTPUT -d 132.247.1.0/24 -p tcp -m tcp --sport SSHPORT -j ACCEPT
 # Dependencia - HTTP
 -A INPUT -s 132.247.1.0/24 -p tcp -m tcp --dport 80 -j ACCEPT
@@ -42,14 +42,18 @@
 
 ############### Publico ###############
 # Publico - SSH
--A INPUT -p tcp -m tcp --dport SSHPORT -j ACCEPT
+-A INPUT -p tcp -m multiport --dports SSHPORT -j fail2ban-s
 -A OUTPUT -p tcp -m tcp --sport SSHPORT -j ACCEPT
 # Publico - HTTP
 -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 80 -j ACCEPT
+-A INPUT -p tcp -m tcp --sport 80 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --dport 80 -j ACCEPT
 # Publico - HTTP
 -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 443 -j ACCEPT
+-A INPUT -p tcp -m tcp --sport 443 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --dport 443 -j ACCEPT
 # Publico - Ping
 -A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
 -A OUTPUT -p icmp -m icmp --icmp-type 0 -j ACCEPT
