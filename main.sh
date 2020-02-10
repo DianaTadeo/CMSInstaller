@@ -36,8 +36,10 @@ log_errors(){
 ##
 jq_install_OS_detection(){
 	if [ `cat /etc/issue | grep -E 'Debian'| wc -l` == '1' ]; then
+		apt update -y
 		apt install jq -y
 	elif [ -e "/etc/centos-release" ]; then
+		yum update -y
 		yum install epel-release -y
 		yum install jq -y
 # Para script final se habilita exit
@@ -131,12 +133,12 @@ data_base_manager_installer(){
 		'Debian 9' | 'Debian 10')
 			# Se ejecuta script para instalación de base de datos en debian
 			bash ./Modulos/Auxiliares/DB_Instalador_Debian.sh "$2" "$3" "$4" "$DB_NAME" \
-			"$DB_USER" "$DB_IP" "$DB_PORT"
+			"$DB_USER" "$DB_IP" "$DB_PORT" "$1"
 		;;
 		'CentOS 6' | 'CentOS 7')
 			# Se ejecuta script para instalación de base de datos en centos
 			bash ./Modulos/Auxiliares/DB_Instalador_CentOS.sh "$2" "$DB_NAME" "$DB_PORT"  \
-			"$DB_USER" "$DB_IP" 
+			"$DB_USER" "$DB_IP"
 		;;
 	esac
 }
@@ -188,7 +190,7 @@ CMS(){
 			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}"
 			;;
 	esac
-	bash ./Modulos/Auxiliares/Web_Configuration_Sec.sh "$2" "${12}"
+	bash ./Modulos/Auxiliares/Web_Configuration_Sec.sh "$2" "${12}" "${10}"
 }
 
 #===============================================================================================#
