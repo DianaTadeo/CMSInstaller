@@ -86,14 +86,14 @@ install_MySQL(){
 	fi
 	/usr/sbin/semanage port -a -t mysqld_port_t -p tcp $2
         systemctl daemon-reload
-	systemctl restart mysql.service
+	systemctl restart mariadb.service
 	mysql_secure_installation
         read -sp "Ingresa el password para el usuario de la Base de Datos: " userPass; echo -e "\n"
 	read -sp "Ingresa el password de root en MySQL: " rootPass; echo -e "\n"
-	mysql -h $4 -p $2 -u root --password=$rootPass -e "CREATE USER '$3' IDENTIFIED BY '$userPass';"
-        mysql -h $4 -p $2 -u $userName --password=$userPass -e "CREATE DATABASE $1;"
-        mysql -h $4 -p $2 -u root --password=$rootPass -e "GRANT ALL PRIVILEGES ON *.* TO $3;"
-        mysql -h $4 -p $2 -u root --password=$rootPass -e "FLUSH PRIVILEGES;"	
+	mysql -h $4 -P $2 -u root --password=$rootPass -e "CREATE USER '$3' IDENTIFIED BY '$userPass';"
+        mysql -h $4 -P $2 -u $userName --password=$userPass -e "CREATE DATABASE $1;"
+        mysql -h $4 -P $2 -u root --password=$rootPass -e "GRANT ALL PRIVILEGES ON *.* TO $3;"
+        mysql -h $4 -P $2 -u root --password=$rootPass -e "FLUSH PRIVILEGES;"	
 }
 
 
