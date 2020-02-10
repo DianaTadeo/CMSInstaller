@@ -76,12 +76,13 @@ install_MySQL(){
 	if [[ $(cat /etc/my.cnf | grep port) ]];
 	then
 	       sed -i "s/.*port.*/port=$1/" /etc/my.cnf
-               sed -i "s/[mysqld]/[mysqld]\nport= 3306/" /etc/my.cnf.d/server.cnf
+               sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
 	else
 	       echo "[mysqld]\nport=$2" >> /etc/my.cnf
-               sed -i "s/[mysqld]/[mysqld]\nport=$2/" /etc/my.cnf.d/server.cnf
+               sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
 	fi
-	systemctl restart mysql.service
+	/usr/sbin/semanage port -a -t mysqld_port_t -p tcp $2
+        systemctl restart mysql.service
 	mysql_secure_installation
 	
         read -sp "Ingresa el password para el usuario de la Base de Datos: " userPass; echo -e "\n"
