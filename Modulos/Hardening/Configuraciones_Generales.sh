@@ -35,7 +35,7 @@ disable_default_services(){
 	# Servicios que no se deshabilitarán
 	SERVICES_NOT_DISABLED="network.* ssh.* cron.* fail2ban.* keyboard.* \
 	console.* r*sync.* r*sys.* system.* d-bus.* apache.* mysql.* p.*g.*sql.* \
-	mariadb.* httpd.* nginx.* log(check|watch).* postfix.*"
+	mariadb.* httpd.* nginx.* log(check|watch).* postfix.* php.*"
 	case $1 in
 		'Debian 9' | 'Debian 10' | 'CentOS 7')
 			DEFAULT_SERVICES_ENABLED=$(systemctl list-unit-files --state=enabled --type=service | grep enabled | cut -f1 -d" " | tr '\n' ' ')
