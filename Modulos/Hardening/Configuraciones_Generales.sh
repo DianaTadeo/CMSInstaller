@@ -171,6 +171,7 @@ sudo_policy(){
 	if [[ $1 =~ Debian.* ]]; then
 		GROUP="sudo"; INSTALL="/usr/sbin/apt, /usr/sbin/apt-*"
 		SERVICES="/usr/bin/systemctl, /usr/sbin/service"
+		[[ $1 == 'Debian 10' ]] && NOEXEC="noexec, "
 	else
 		GROUP="wheel"; INSTALL="/usr/sbin/yum"
 		if [[$1 == 'CentOS 6']]; then
@@ -211,8 +212,8 @@ sudo_policy(){
 	echo 'Cmnd_Alias PAGERS = /usr/bin/less, /usr/bin/tail, /usr/bin/head, /usr/bin/more, /usr/bin/cat, /usr/bin/tac' >> $SUDOERS_FILE
 	log_errors $? "Utilerías que no solicitarán contraseña cuando se utilicen: less, tail, head, more, cat, tac"
 
-	echo 'Defaults env_reset, noexec, requiretty, use_pty' >> $SUDOERS_FILE
-	log_errors $? "Defaults: env_reset, noexec, requiretty, use_pty"
+	echo "Defaults env_reset, $NOEXEC requiretty, use_pty" >> $SUDOERS_FILE
+	log_errors $? "Defaults: env_reset,$NOEXEC requiretty, use_pty"
 	echo 'Defaults !visiblepw' >> $SUDOERS_FILE
 	log_errors $? "Defaults: !visiblepw"
 
