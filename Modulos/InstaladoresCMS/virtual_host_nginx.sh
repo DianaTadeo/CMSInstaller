@@ -26,7 +26,7 @@ log_errors(){
 	fi
 }
 
-# $1=SO; $2=DomainName; $3=PathInstall; $4=IPv6
+# $1=SO; $2=DomainName; $3=PathInstall; $4=IPv6; $5=drupal
 sed -i 's/;\(cgi.fix_pathinfo=\)1/\10/' /etc/php/7.3/fpm/php.ini
 if [[ $1 =~ CentOS.* ]]; then
 	[ -z "$(which openssl)" ] && yum install openssl -y
@@ -77,6 +77,87 @@ if [[ $IPv6 == "Yes" ]]; then
 	$IPv6_HTTP="listen [::]:80;"
 	$IPv6_HTTPS="listen [::]:443 ssl http2;"
 fi
+if [[ $5 == "drupal" ]]; then
+	DATA="location ~ \..*/.*\.php\$ {
+				 return 403;
+			}
+
+			location ~ ^/sites/.*/private/ {
+				 return 403;
+			}
+
+			location ~ ^/sites/[^/]+/files/.*\.php\$ {
+				 deny all;
+			}
+
+		 location ~* ^/.well-known/ {
+				 allow all;
+			}
+
+			location ~ (^|/)\. {
+					return 403;
+			}
+
+			location / {
+					try_files \$uri /index.php?\$query_string; # For Drupal >= 7
+			}
+
+			location @rewrite {
+					rewrite ^/(.*)\$ /index.php?q=\$1;
+			}
+
+			location ~ /vendor/.*\.php\$ {
+					deny all;
+					return 404;
+			}
+
+			location ~ '\.php\$|^/update.php' {
+					try_files \$uri =404;
+					fastcgi_split_path_info ^(.+?\.php)(|/.*)\$;
+					include fastcgi_params;
+					fastcgi_param HTTP_PROXY "";
+					fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+					fastcgi_param PATH_INFO \$fastcgi_path_info;
+					fastcgi_param QUERY_STRING \$query_string;
+					fastcgi_intercept_errors on;
+					fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+			}
+
+			location ~ ^/sites/.*/files/styles/ {
+					try_files \$uri @rewrite;
+			}
+
+			location ~ ^(/[a-z\-]+)?/system/files/ {
+					try_files \$uri /index.php?\$query_string;
+		 }
+
+			location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)\$ {
+					try_files \$uri @rewrite;
+					expires max;
+					log_not_found off;
+			}
+			if (\$request_uri ~* \"^(.*/)index\.php(.*)\") {
+					return 307 \$1\$2;
+			}
+"
+else
+	DATA="location / {
+		try_files \$uri \$uri/ /index.php?\$args / =404;
+		autoindex off;
+	}
+
+	#location ~* /.*((README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t(ar.*|ar\.gz|gz)|z(.*|ip)|~)\$)){
+	#		deny all;
+	#		error_page 403 http://$2;
+	#}
+
+	location ~ \.php\$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_intercept_errors on;
+		fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+	}
+"
+fi
 echo "
 proxy_cookie_path / \"/; HTTPOnly; Secure\";
 server {
@@ -97,28 +178,14 @@ server {
 	root  $ROOT_PATH/$2;
 	index index.php index.html index.htm;
 
-	# SSL
 	ssl on;
 	ssl_certificate $CRT;
 	ssl_certificate_key $KEY;
 
 	add_header Public-Key-Pins \"pin-sha256=\\\"$FINGERPRINT\\\"; max-age=2592000; includeSubDomains\";
 
-	location / {
-		try_files \$uri \$uri/ /index.php?\$args / =404;
-		autoindex off;
-	}
+	$DATA
 
-	#location ~* /.*((README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t(ar.*|ar\.gz|gz)|z(.*|ip)|~)\$)){
-	#		deny all;
-	#		error_page 403 http://$2;
-	#}
-
-	location ~ \.php\$ {
-		include snippets/fastcgi-php.conf;
-		fastcgi_intercept_errors on;
-		fastcgi_pass unix:/run/php/php7.3-fpm.sock;
-	}
 	access_log /var/log/nginx/$2-access.log;
 	error_log /var/log/nginx/$2-error.log;
 
