@@ -99,7 +99,7 @@ if [[ $5 == "drupal" ]]; then
 			}
 
 			location / {
-					try_files \$uri /index.php?\$query_string; # For Drupal >= 7
+					try_files \$uri /index.php?\$query_string;
 			}
 
 			location @rewrite {
