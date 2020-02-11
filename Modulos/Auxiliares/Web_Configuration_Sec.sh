@@ -126,7 +126,7 @@ else  # Nginx
 	echo 'add_header Allow "GET, POST, HEAD" always;' >> $SECURITY_CONF
 	echo -e 'server {\nif ( $request_method !~ ^(GET|POST|HEAD)$ ) {\nreturn 405;\n}\n}' >> $SECURITY_CONF
 	log_errors $? "Se deshabilitan metodos HTTP excepto: GET, HEAD, POST"
-	sed -i '/^\s\+server_tokens off/i 		more_clear_headers Server;' $WEB_SERVER_CONF
+	sed -i '/^\s\+server_tokens off;/i 		more_clear_headers Server;' $WEB_SERVER_CONF
 	log_errors $? "ServerSignature Off -> more_clear_headers Server"
 
 	sed -i '/^\s\+try_files $uri $uri\/ =404;/a 		autoindex off;' /etc/nginx/sites-available/default # Se aplica para todos
