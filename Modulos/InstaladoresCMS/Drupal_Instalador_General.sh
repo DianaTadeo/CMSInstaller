@@ -17,6 +17,9 @@
 # Argumento 9: Url de Drupal
 # Argumento 10: Correo de notificaciones
 # Argumento 11: Web Server
+# Argumento 12: Existencia de BD
+# Argumento 13: Compatibilidad con IPv6
+
 
 # Se devuelve un archivo json con la informacion y credenciales
 # de la instalacion de Drupal
@@ -43,9 +46,10 @@ log_errors(){
 ## @param $3 Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
 ## @param $4 Nombre de dominio del sitio
 ## @param $5 Ruta donde se instalara Drupal
+## @param $5 Compatibilidad con IPv6
 ##
 install_dep(){
-	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL
+	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL; $6=IPv6
 	case $1 in
 		'Debian 9' | 'Debian 10')
 			[[ $3 == "Apache" ]] && PHP="php7.3"
@@ -67,7 +71,7 @@ install_dep(){
 				log_errors $? "Instalacion de libapache2-mod-php7.3: "
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "No" "drupal"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6" "drupal"
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
@@ -83,7 +87,7 @@ install_dep(){
 			if [[ $3 == 'Apache' ]]; then
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "No" "drupal"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6" "drupal"
 			fi
 			;;
 	esac
@@ -316,12 +320,13 @@ DOMAIN_NAME=$9
 EMAIL_NOTIFICATION=${10}
 WEB_SERVER=${11}
 DB_EXISTS=${12}
+IPv6=${13}
 
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 
 mkdir -p $PATH_INSTALL
 
-install_dep "$SO" "$DBM" "$WEB_SERVER" "$DOMAIN_NAME" "$PATH_INSTALL"
+install_dep "$SO" "$DBM" "$WEB_SERVER" "$DOMAIN_NAME" "$PATH_INSTALL" "$IPv6"
 chown $SUDO_USER:$SUDO_USER $PATH_INSTALL
 
 cd $PATH_INSTALL
