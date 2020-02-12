@@ -18,7 +18,7 @@
 # Argumento 9: Manejador de DB ['MySQL'|'PostgreSQL']
 # Argumento 10: Web server ['Apache'|'Nginx']
 # Argumento 11: Email para notificaciones
-
+# Argumento 12: Compatibilidad con IPv6
 
 LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
 
@@ -28,20 +28,24 @@ LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
 ##
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR] : $2 " >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2 " 	>> $LOG
 	fi
 }
 
 ## @fn install_dep()
 ## @brief Funcion que realiza la instalacion de las dependencias de php para Joomla
 ## @param $1 El sistema operativo donde se desea instalar Joomla : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
-## @param $2 Manejador de base de datos para la instalaci[on de Joomla
+## @param $2 Manejador de base de datos para la instalaci[on de Moodle
+## @param $3 Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
+## @param $4 Nombre de dominio del sitio
+## @param $5 Ruta donde se instalara Moodle
+## @param $6 Compatibilidad con IPv6
 ##
 install_dep(){
-	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL
+	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL; $6=IPv6
 	case $1 in
 		'Debian 9' | 'Debian 10')
 			[[ $3 == "Apache" ]] && PHP="php7.3"
@@ -70,7 +74,7 @@ install_dep(){
 				log_errors $? "Instalacion de libapache2-mod-php7.3: "
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6" "moodle"
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
@@ -95,7 +99,7 @@ install_dep(){
 			if [[ $3 == 'Apache' ]]; then
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6" "moodle"
 			fi
 			;;
 	esac
@@ -172,7 +176,7 @@ TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 
 mkdir -p "$5"
 
-install_dep "$8" "$9" "${10}" "$7" "$5"
+install_dep "$8" "$9" "${10}" "$7" "$5" "${12}"
 
 cd $5
 install_moodle "$1" "$2" "$3" "$4" "$5" "$7" "$9" "$6" "${11}" "$TEMP_PATH"
