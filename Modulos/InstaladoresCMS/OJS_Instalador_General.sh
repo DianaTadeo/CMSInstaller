@@ -61,10 +61,13 @@ install_dep(){
 			apt install $PHP php7.3-common \
 			php7.3-gd php7.3-json php7.3-mbstring \
 			php7.3-xml php7.3-zip unzip zip -y
+			log_errors $? "Instalación de PHP7.3"
 			if [[ $2 == 'MySQL' ]]; then apt install php7.3-mysqli -y; systemctl restart mysql.service;
 		else apt install php7.3-pgsql -y; systemctl restart postgresql.service;  fi
+			log_errors $? "Instalación de PHP7.3-$2"
 			if [[ $3 == 'Apache' ]]; then
 				apt install libapache2-mod-php7.3 -y
+				log_errors $? "Instalación de libapache2-mod-php7.3"
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
 				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6"
@@ -77,7 +80,9 @@ install_dep(){
 			yum install yum-utils -y
 			yum-config-manager --enable remi-php73 -y
 			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y
+			log_errors $? "Instalación de PHP7.3"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql php-mysqli -y; else yum install php-pgsql -y; fi
+			log_errors $? "Instalación de PHP7.3-$2"
 			if [[ $3 == 'Apache' ]]; then
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
@@ -102,6 +107,7 @@ git_existence(){
 				apt install git -y
 			fi
 	fi
+	log_errors 0 "Instalacion de $(git version)"
 }
 
 ## @fn modulos_configuraciones()
@@ -112,8 +118,11 @@ modulos_configuraciones(){
 	if [[ $1 =~ ^2.* ]]; then
 		# Se incluye captcha en inicio de sesión
 		sed -i 's/;*\(.*captcha\s*=\s*\).*/\1on/' config.inc.php
+		log_errors $? "Se habilita captcha"
 		sed -i 's/;*\(.*captcha_on_register\s*=\s*\).*/\1on/' config.inc.php
+		log_errors $? "Se incluye captcha en registro de usuarios"
 		sed -i 's/;*\(.*captcha_on_comments\s*=\s*\).*/\1on/' config.inc.php
+		log_errors $? "Se incluye captcha en comentarios"
 	else
 		# Se incluye captcha en inicio de sesión
 		echo "Para habilitar CAPTCHA en esta versión de OJS es necesario contar con \
@@ -121,7 +130,7 @@ modulos_configuraciones(){
 		read -p "Continuar con la configuración del CAPTCHA [S\n]: " RESP
 		if [ -z "$RESP" ]; then RESP="S"; fi
 		if [[ $RESP =~ s|S ]]; then
-			echo -e "A continuación se muestran las instrucciones para obtener el par de claves \
+			echo -e "A continuación se muestran las instrucciones para obtener el par de llaves \
 			(pública y privada) necesarias para la configuración.\n\
 			Inicia sesión en el siguiente sitio con tu cuenta de Google y rellena el formulario: \
 			https://www.google.com/u/2/recaptcha/admin/create\n
@@ -139,13 +148,20 @@ modulos_configuraciones(){
 				[ -n "$reCAPTCHA_pub_key" ] && break
 			done
 			sed -i 's/;*\(.*allow_url_fopen\s*=\s*\).*/\1on/' config.inc.php config.TEMPLATE.inc.php
+			log_errors $? "Se habilita url_open para comptabilidad con recaptcha"
 			sed -i 's/;*\(.*recaptcha\s*=\s*\).*/\1on/' config.inc.php
+			log_errors $? "Se habilita recaptcha"
 			sed -i "s/;*\(.*recaptcha_public_key\s*=\s*\).*/\1$reCAPTCHA_pub_key/" config.inc.php
+			log_errors $? "Se configuró: recaptcha_public_key"
 			sed -i "s/;*\(.*recaptcha_private_key\s*=\s*\).*/\1$reCAPTCHA_priv_key/" config.inc.php
+			log_errors $? "Se configuró: recaptcha_private_key"
 			sed -i 's/;*\(.*captcha_on_register\s*=\s*\).*/\1on/' config.inc.php
+			log_errors $? "Se incluye captcha en comentarios"
 			sed -i 's/;*\(.*captcha_on_comments\s*=\s*\).*/\1on/' config.inc.php
+			log_errors $? "Se incluye captcha en comentarios"
 		else
 			echo "Deberás configurar el CAPTCHA de forma manual."
+			log_errors $? "Deberás configurar el CAPTCHA de forma manual una vez que tengas el par de claves: https://www.google.com/u/2/recaptcha/admin/create"
 		fi
 	fi
 		# Se deshabilita creación de cuentas de forma pública
@@ -166,26 +182,35 @@ modulos_configuraciones(){
 ## @param $8 Corrreo de administracion y notificacion del sitio
 ## @param $9 Indica si se especifico que se tiene una base de datos existente
 ## @param ${10} Ruta del directorio donde fue ejecutado el script main.sh
+## @param ${11} Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
 ##
 ojs_installer(){
 	# $1=CMS_VERSION; $2=DBM; $3=DB_USER; $4=DB_IP; $5=DB_PORT; $6=DB_NAME;
-	# $7=DOMAIN_NAME; $8=EMAIL_NOTIFICATION; $9=DB_EXISTS; ${10}=TEMP_PATH
+	# $7=DOMAIN_NAME; $8=EMAIL_NOTIFICATION; $9=DB_EXISTS; ${10}=TEMP_PATH;
+	# ${11}=WEB_SERVER
 	if [[ $2 == 'MySQL' ]]; then DBM="mysqli"; else DBM="postgres"; fi
 	git_existence
 	echo "Instalando ojs ######################################################"
 
 	wget pkp.sfu.ca/ojs/download/ojs-$1.tar.gz
+	log_errors $? "Descarga de ojs-$1"
 	tar -xzvf ojs-$1.tar.gz
+	log_errors $? "Se extrae contenido de ojs-$1.tar.gz"
 	rm ojs-$1.tar.gz
 	mv ojs-$1 $7
+	log_errors $? "Se renombra 'ojs-$1' a '$7'"
 
 	mkdir /var/www/files
+	log_errors $? "Se crea directorio /var/www/files"
 	chown www-data:www-data -R /var/www/files/
+	log_errors $? "Se asigna www-data dueño del directorio /var/www/files"
 
 	cd $7
 
 	chgrp -R www-data cache public config.inc.php
+	log_errors $? "Se asigna al grupo www-data (para configuración) los directorios y archivos: cache public config.inc.php"
 	chmod -R ug+w cache public config.inc.php
+	log_errors $? "Se asigna permisos de escritura (para configuración) los directorios y archivos: cache public config.inc.php"
 
 
 	read -sp "Ingresa la contraseña del usuario '$3' de la BD: " DB_PASS; echo -e "\n"
@@ -194,6 +219,10 @@ ojs_installer(){
 	read -p "Ingresa el nombre que tendrá el sitio ['$7' por defecto]: " SITE_NAME
 	if [ -z "$SITE_NAME" ]; then SITE_NAME="$7"; fi
 
+	# URL con la que se instala el CMS ojs para Apache o Nginx
+	URL="https://$7/index.php/index/install/install"
+	[[ ${11} == 'Nginx' ]] && sed -i "s/\(disable_path_info = \)Off/\1On/" config.inc.php && URL="https://$7/index.php?journal=index&page=install&op=install"
+	log_errors $? "Se utiliza la URL para realizar la instalación de ojs: $URL"
 	# Se cambia puerto de servidor de BD por el seleccionado en el formulario o en la instalación
 	sed -i "s/;\(.*port.*=\s*\).*/\1$5/" config.inc.php
 
@@ -214,16 +243,20 @@ ojs_installer(){
 	else
 		DATA="installing=0&locale=en_US&additionalLocales%5B%5D=es_ES&clientCharset=utf-8&connectionCharset=utf8&databaseCharset=utf8&createDatabase=0&enableBeacon=0"
 	fi
-	curl -k \
-	--data $DATA \
-	--data-urlencode "$adminUsername" --data-urlencode "$adminPassword" \
-	--data-urlencode "$adminPassword2" --data-urlencode "$adminEmail" \
-	--data-urlencode "$filesDir" --data-urlencode "$databaseDriver" \
-	--data-urlencode "$databaseHost" --data-urlencode "$databaseUsername" \
-	--data-urlencode "$databasePassword" --data-urlencode "$databaseName" \
-	--data-urlencode "$oaiRepositoryId" \
-	"https://$7/index.php/index/install/install"  --trace-ascii - #> /dev/null
 
+	while true; do
+		curl -k \
+		--data $DATA \
+		--data-urlencode "$adminUsername" --data-urlencode "$adminPassword" \
+		--data-urlencode "$adminPassword2" --data-urlencode "$adminEmail" \
+		--data-urlencode "$filesDir" --data-urlencode "$databaseDriver" \
+		--data-urlencode "$databaseHost" --data-urlencode "$databaseUsername" \
+		--data-urlencode "$databasePassword" --data-urlencode "$databaseName" \
+		--data-urlencode "$oaiRepositoryId" \
+		$URL  --trace-ascii - | grep "Errors occurred"#> /dev/null
+		[[ $? == '1' ]] && break
+	done
+	log_errors 0 "Termina instalación de ojs"
 	modulos_configuraciones "$1"
 	cd -
 	jq -c -n --arg title "$SITE_NAME" --arg ojs_admin "$CMS_USER" --arg ojs_admin_pass "$CMS_PASS" \
@@ -253,5 +286,5 @@ TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 cd $PATH_INSTALL
 ojs_installer "$OJS_VERSION" "$DBM" "$DB_USER" "$DB_IP" "$DB_PORT"\
 									"$DB_NAME" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$DB_EXISTS"\
-									"$TEMP_PATH"
+									"$TEMP_PATH" "$WEB_SERVER"
 cd -
