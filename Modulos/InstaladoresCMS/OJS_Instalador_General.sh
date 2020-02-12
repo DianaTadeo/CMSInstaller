@@ -1,8 +1,10 @@
 #!/bin/bash -e
-##############################################################
-# Script para la instalacion de OJS en Debian 9 y 10 y 	 #
-# CentOS 6 y 7                                               #
-##############################################################
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador de OJS para CentOS 6, CentOS 7, Debian 9 y Debian 10
+## @version 1.0
+##
 
 # Argumento 1: Sistema Operativo
 # Argumento 2: Versión de OJS a instalar
@@ -15,21 +17,48 @@
 # Argumento 9: Url de OJS
 # Argumento 10: Correo de notificaciones
 # Argumento 11: Web Server
+# Argumento 12: Existencia de BD
+# Argumento 13: Compatibilidad con IPv6
 
 # Se devuelve un archivo json con la informacion y credenciales
 # de la instalacion de OJS
 
-#Requisitos
+LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
+
+## @fn log_errors()
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
+log_errors(){
+	if [ $1 -ne 0 ]; then
+		echo "[`date +"%F %X"`] : [ERROR] : $2 " >> $LOG
+		exit 1
+	else
+		echo "[`date +"%F %X"`] : [OK] : $2 " 	>> $LOG
+	fi
+}
+
+## @fn install_dep()
+## @brief Funcion que realiza la instalacion de las dependencias de php para OJS
+## @param $1 El sistema operativo donde se desea instalar Drupal : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+## @param $2 Manejador de base de datos para la instalacion de OJS
+## @param $3 Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
+## @param $4 Nombre de dominio del sitio
+## @param $5 Ruta donde se instalara OJS
+## @param $6 Compatibilidad con IPv6
+##
 install_dep(){
-	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL
+	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL; $6=IPv6
 	case $1 in
 		'Debian 9' | 'Debian 10')
+			[[ $3 == "Apache" ]] && PHP="php7.3"
+			[[ $3 == "Nginx" ]] && PHP="php7.3-fpm"
 			if [[ $1 == 'Debian 9' ]]; then VERSION_NAME="stretch"; else VERSION_NAME="buster"; fi
 			apt install ca-certificates apt-transport-https gnupg -y
 			wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
 			echo "deb https://packages.sury.org/php/ $VERSION_NAME main" | tee /etc/apt/sources.list.d/php.list
 			apt update
-			apt install php7.3 php7.3-common \
+			apt install $PHP php7.3-common \
 			php7.3-gd php7.3-json php7.3-mbstring \
 			php7.3-xml php7.3-zip unzip zip -y
 			if [[ $2 == 'MySQL' ]]; then apt install php7.3-mysqli -y; systemctl restart mysql.service;
@@ -38,7 +67,7 @@ install_dep(){
 				apt install libapache2-mod-php7.3 -y
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6"
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
@@ -52,14 +81,17 @@ install_dep(){
 			if [[ $3 == 'Apache' ]]; then
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6"
 			fi
 			;;
 	esac
 }
 
-# Verifica existencia de git, composer, drush
-existencia(){
+## @fn git_existence()
+## @brief Funcion que verifica la existencia o instala git
+## @param $1 El sistema operativo donde se esta instalando OJS : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+##
+git_existence(){
 	# $1=$SO
 	if [ $(which git) ]; then
 			echo $(git version)
@@ -72,13 +104,10 @@ existencia(){
 	fi
 }
 
-
-# Se hace respaldo del sitio
-backup(){
-	su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush archive-dump --root=$1 --destination=$1.tar.gz -v --overwrite"
-}
-
-# Módulos
+## @fn modulos_configuraciones()
+## @brief Funcion que instala y configura los modulos para habilitar CAPTCHA, deshabilitar creacion de cuentas anonimas y comentarios de anonimos
+## @param $1 La version de OJS que se esta configurando : '3.x' u '2.x'
+##
 modulos_configuraciones(){
 	if [[ $1 =~ ^2.* ]]; then
 		# Se incluye captcha en inicio de sesión
@@ -125,12 +154,24 @@ modulos_configuraciones(){
 
 }
 
-
+## @fn ojs_installer()
+## @brief Funcion que realiza la instalacion de OJS
+## @param $1 Version de ojs que se va a instalar
+## @param $2 Manejador de la base de datos  ['MySQL'|'PostgreSQL']
+## @param $3 Usuario de la base de datos para ojs
+## @param $4 Servidor de la base de datos (host)
+## @param $5 Puerto al que se conecta el manejador de base de datos
+## @param $6 Nombre de la base de datos con la que se establecera la conexion
+## @param $7 Nombre de dominio que tendra el sitio
+## @param $8 Corrreo de administracion y notificacion del sitio
+## @param $9 Indica si se especifico que se tiene una base de datos existente
+## @param ${10} Ruta del directorio donde fue ejecutado el script main.sh
+##
 ojs_installer(){
 	# $1=CMS_VERSION; $2=DBM; $3=DB_USER; $4=DB_IP; $5=DB_PORT; $6=DB_NAME;
 	# $7=DOMAIN_NAME; $8=EMAIL_NOTIFICATION; $9=DB_EXISTS; ${10}=TEMP_PATH
 	if [[ $2 == 'MySQL' ]]; then DBM="mysqli"; else DBM="postgres"; fi
-	existencia
+	git_existence
 	echo "Instalando ojs ######################################################"
 
 	wget pkp.sfu.ca/ojs/download/ojs-$1.tar.gz
@@ -173,7 +214,7 @@ ojs_installer(){
 	else
 		DATA="installing=0&locale=en_US&additionalLocales%5B%5D=es_ES&clientCharset=utf-8&connectionCharset=utf8&databaseCharset=utf8&createDatabase=0&enableBeacon=0"
 	fi
-	curl \
+	curl -k \
 	--data $DATA \
 	--data-urlencode "$adminUsername" --data-urlencode "$adminPassword" \
 	--data-urlencode "$adminPassword2" --data-urlencode "$adminEmail" \
@@ -181,7 +222,7 @@ ojs_installer(){
 	--data-urlencode "$databaseHost" --data-urlencode "$databaseUsername" \
 	--data-urlencode "$databasePassword" --data-urlencode "$databaseName" \
 	--data-urlencode "$oaiRepositoryId" \
-	"localhost/$7/index.php/index/install/install" --trace-ascii - > /dev/null
+	"https://$7/index.php/index/install/install"  --trace-ascii - #> /dev/null
 
 	modulos_configuraciones "$1"
 	cd -
@@ -202,9 +243,11 @@ DOMAIN_NAME=$9
 EMAIL_NOTIFICATION=${10}
 WEB_SERVER=${11}
 DB_EXISTS=${12}
+IPv6=${13}
+
 mkdir -p $PATH_INSTALL
 chown $SUDO_USER:$SUDO_USER -R $PATH_INSTALL
-install_dep "$SO" "$DBM" "$WEB_SERVER" "$DOMAIN_NAME" "$PATH_INSTALL"
+install_dep "$SO" "$DBM" "$WEB_SERVER" "$DOMAIN_NAME" "$PATH_INSTALL" "$IPv6"
 chown $SUDO_USER:$SUDO_USER $PATH_INSTALL
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 cd $PATH_INSTALL
