@@ -16,6 +16,8 @@
 # Argumento 8: 'Nginx' |'Apache'
 # Argumento 9: 'CentOS 6'| 'CentOS 7' | 'Debian 9' | 'Debian 10'
 # Argumento 10: Version de Wordpress seleccionado
+# Argumento 11: Compatibilidad con IPv6
+
 
 # Se devuelve un archivo json con la informacion y credenciales
 # de la instalacion de Wordpress
@@ -39,9 +41,13 @@ log_errors(){
 ## @brief Funcion que realiza la instalacion de las dependencias de php para Wordpress
 ## @param $1 El sistema operativo donde se desea instalar Wordpress : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
 ## @param $2 Manejador de base de datos para la instalacion de Wordpress
+## @param $3 Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
+## @param $4 Nombre de dominio del sitio
+## @param $5 Ruta donde se instalara WordPress
+## @param $6 Compatibilidad con IPv6
 ##
 install_dep(){
-	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL
+	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL; $6=IPv6
 	case $1 in
 		'Debian 9' | 'Debian 10')
 			[[ $3 == "Apache" ]] && PHP="php7.3"
@@ -70,7 +76,7 @@ install_dep(){
 				log_errors $? "Instalacion de libapache2-mod-php7.3: "
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6"
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
@@ -95,7 +101,7 @@ install_dep(){
 			if [[ $3 == 'Apache' ]]; then
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6"
 			fi
 			;;
 	esac
@@ -235,6 +241,6 @@ echo "==============================================="
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 
 mkdir -p $4
-install_dep "$9" "$7" "$8" "$5" "$4"
+install_dep "$9" "$7" "$8" "$5" "$4" "${11}"
 install_WP "$1" "$2" "$3" "$4" "$7" "$8" "$9" "$5" "${10}"
 configure_WP "$5" "$6" "$TEMP_PATH" "$7"
