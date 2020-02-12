@@ -158,36 +158,37 @@ data_base_manager_installer(){
 ## @param $11 Correo a donde se enviar[an las notificaciones
 ## @param $12 Servidor Web 'Apache' o 'Nginx'
 ## @param $13 Existe la base de datos
+## @param $14 Compatibilidad con IPv6
 ##
 CMS(){
 	# $1=CMS; $2=$SO; $3=$CMS_VERSION; $4=$DBM; $5=$DB_NAME; $6=$DB_IP; $7=$DB_PORT;
 	# $8=$DB_USER; $9=$PATH_INSTALL; $10=$DOMAIN_NAME;
-	# $11=EMAIL_NOTIFICATION; $12=WEB_SERVER; $13=DB_EXISTS
+	# $11=EMAIL_NOTIFICATION; $12=WEB_SERVER; $13=DB_EXISTS; $14=IPv6
 	case $1 in
 		'drupal')
 			echo 'Drupal' $3
 			bash ./Modulos/InstaladoresCMS/Drupal_Instalador_General.sh "$2" "$3" "$4" \
-			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}"
+			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}"
 			;;
 		'joomla')
 			echo 'Joomla' $3
 			bash ./Modulos/InstaladoresCMS/Joomla_Instalador_General.sh "$5" "$8" "$6" \
-			"$7" "$9" "$3" "$2" "$4" "${13}" "${11}" "${12}" "${10}"
+			"$7" "$9" "$3" "$2" "$4" "${13}" "${11}" "${12}" "${10}" "${14}"
 			;;
 		'moodle')
 			echo 'moodle' $3
 			bash ./Modulos/InstaladoresCMS/Moodle_Instalador_General.sh "$5" "$8" "$6" \
-			"$7" "$9" "$3" "${10}" "$2" "$4" "${12}" "${11}"
+			"$7" "$9" "$3" "${10}" "$2" "$4" "${12}" "${11}" "${14}"
 			;;
 		'wordpress')
 			echo 'wordpress' $3
 			bash ./Modulos/InstaladoresCMS/WP_Instalador_General.sh "$5" "$6:$7" "$8" "$9" \
-			"${10}" "${11}" "$4" "${12}" "$2" "$3"
+			"${10}" "${11}" "$4" "${12}" "$2" "$3" "${14}"
 			;;
 		'ojs')
 			echo 'ojs' $3
 			bash ./Modulos/InstaladoresCMS/OJS_Instalador_General.sh "$2" "$3" "$4" \
-			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}"
+			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}"
 			;;
 	esac
 	bash ./Modulos/Auxiliares/Web_Configuration_Sec.sh "$2" "${12}" "${10}"
@@ -276,7 +277,7 @@ data_base_manager_installer "$SO" "$DBM" "$DB_VERSION" "$DB_EXISTS" \
 
 CMS "$CMS" "$SO"  "$CMS_VERSION" "$DBM" "$DB_NAME" "$DB_IP" "$DB_PORT" \
 "$DB_USER" "$PATH_INSTALL" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$WEB_SERVER" \
-"$DB_EXISTS"
+"$DB_EXISTS" "$IPV_6"
 
 OS_hardening "$SO" "$EMAIL_NOTIFICATION"
 
