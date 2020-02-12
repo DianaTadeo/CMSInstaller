@@ -147,18 +147,50 @@ install_moodle(){
 	rm $moodleName.tgz
 	mv moodle $6
 	cd $6
-	#clear
-	chown www-data:www-data . -R
 	mkdir ../moodledata
-	chown www-data:www-data ../moodledata -R
 	read -sp "Ingresa el password de la base de datos del usuario '$2' para Moodle: " dbpass; echo -e "\n"
 	read -p "Ingresa el nombre completo del sitio ['$6' por defecto]: " fullname
 	if [ -z "$fullname" ]; then fullname="$6"; fi
 	read -p "Ingresa el nombre corto del sitio: " shortname
 	read -p "Ingresa el nombre para el administrador de Moodle: " adminuser
 	read -sp "Ingresa el password para el '$adminuser' de Moodle: " adminpass; echo -e "\n"
-	cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
-	$cmd
+	
+	if [[ $6 == 'Apache' ]]; then
+
+		if [[ $7 == 'Debian 9' ]] || [[ $7 == 'Debian 10' ]]; then
+			chown www-data:www-data . -R
+			chown www-data:www-data ../moodledata -R
+			/usr/bin/php7.3 --version  2> /dev/null
+			if [ $? == 0 ]; then
+				cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
+			else
+				cmd="sudo -u www-data /usr/bin/php admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
+			fi
+			$cmd
+		else
+			chown apache:apache . -R
+			chown apache:apache ../moodledata -R
+			/usr/bin/php7.3 --version  2> /dev/null
+			if [ $? == 0 ]; then
+				cmd="sudo -u apache /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
+			else
+				cmd="sudo -u apache /usr/bin/php admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
+			fi
+			$cmd
+		fi
+	else
+		#chown -R nginx:nginx $4
+		chown www-data:www-data . -R
+		chown www-data:www-data ../moodledata -R
+		/usr/bin/php7.3 --version  2> /dev/null
+		if [ $? == 0 ]; then
+			cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
+		else
+			cmd="sudo -u www-data /usr/bin/php admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
+		fi
+		$cmd
+	fi
+	
 
 	modulos_configuraciones
 	#sudo -u www-data /usr/bin/php admin/cli/install_database.php
