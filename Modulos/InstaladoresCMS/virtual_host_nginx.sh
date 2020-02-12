@@ -26,7 +26,7 @@ log_errors(){
 	fi
 }
 
-# $1=SO; $2=DomainName; $3=PathInstall; $4=IPv6; $5=drupal
+# $1=SO; $2=DomainName; $3=PathInstall; $4=IPv6; $5=CMS
 sed -i 's/;\(cgi.fix_pathinfo=\)1/\10/' /etc/php/7.3/fpm/php.ini
 if [[ $1 =~ CentOS.* ]]; then
 	[ -z "$(which openssl)" ] && yum install openssl -y
@@ -77,6 +77,7 @@ if [[ $IPv6 == "Yes" ]]; then
 	$IPv6_HTTP="listen [::]:80;"
 	$IPv6_HTTPS="listen [::]:443 ssl http2;"
 fi
+
 if [[ $5 == "drupal" ]]; then
 	DATA="location ~ \..*/.*\.php\$ {
 				 return 403;
@@ -100,6 +101,7 @@ if [[ $5 == "drupal" ]]; then
 
 			location / {
 					try_files \$uri /index.php?\$query_string;
+					autoindex off;
 			}
 
 			location @rewrite {
@@ -112,14 +114,10 @@ if [[ $5 == "drupal" ]]; then
 			}
 
 			location ~ '\.php\$|^/update.php' {
-					try_files \$uri =404;
 					fastcgi_split_path_info ^(.+?\.php)(|/.*)\$;
-					include fastcgi_params;
-					fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-					fastcgi_param PATH_INFO \$fastcgi_path_info;
-					fastcgi_param QUERY_STRING \$query_string;
+					include snippets/fastcgi-php.conf;
 					fastcgi_intercept_errors on;
-					fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+					fastcgi_pass unix:/run/php/php7.3-fpm.sock;
 			}
 
 			location ~ ^/sites/.*/files/styles/ {
@@ -140,6 +138,10 @@ if [[ $5 == "drupal" ]]; then
 			}
 "
 else
+	PHP_LOC="location ~ \.php\$ {"
+	FASTCGI="include snippets/fastcgi-php.conf;"
+	[[ $5 == 'joomla' ]] && FASTCGI="include /etc/nginx/fastcgi.conf;" && ADMIN_LOC="location = /administrator { return 302 https://$2/administrator/;	}"
+	[[ $5 == 'moodle' ]] && PHP_LOC="location ~ [^/]\.php(/|\$) {"
 	DATA="location / {
 		try_files \$uri \$uri/ /index.php?\$args / =404;
 		autoindex off;
@@ -149,9 +151,9 @@ else
 	#		deny all;
 	#		error_page 403 http://$2;
 	#}
-
-	location ~ \.php\$ {
-		include snippets/fastcgi-php.conf;
+	$ADMIN_LOC
+	$PHP_LOC
+		$FASTCGI
 		fastcgi_intercept_errors on;
 		fastcgi_pass unix:/run/php/php7.3-fpm.sock;
 	}
