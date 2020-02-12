@@ -19,6 +19,7 @@
 # Argumento 10: Correo de administrador
 # Argumento 11: Web server ['Apache'|'Nginx']
 # Argumento 12: Nombre de dominio del sitio
+# Argumento 13: Compatibilidad con IPv6
 
 LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
 
@@ -42,9 +43,10 @@ log_errors(){
 ## @param $3 Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
 ## @param $4 Nombre de dominio del sitio
 ## @param $5 Ruta donde se instalara Joomla
+## @param $6 Compatibilidad con IPv6
 ##
 install_dep(){
-	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL
+	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL: $6=IPv6
 	case $1 in
 		'Debian 9' | 'Debian 10')
 			[[ $3 == "Apache" ]] && PHP="php7.3"
@@ -73,7 +75,8 @@ install_dep(){
 				log_errors $? "Instalacion de libapache2-mod-php7.3: "
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
+				apt install apache2-utils -y
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6" "joomla"
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
@@ -98,7 +101,7 @@ install_dep(){
 			if [[ $3 == 'Apache' ]]; then
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6" "joomla"
 			fi
 			;;
 	esac
@@ -170,8 +173,10 @@ install_joomla(){
 		if [[ ${12} =~ Debian.* ]]; then
 			apt install mariadb-server -y
 			if [[ ${12} == "Debian 10" ]]; then
+				DB_CONF_PGSQL="database_conf.pgsql"
 				sed -i "s/\(^local\s.*all\s.*all\s.*\)peer/\1md5/" /etc/postgresql/11/main/pg_hba.conf
 			else
+				DB_CONF_PGSQL="database_conf_d9.pgsql"
 				sed -i "s/\(^local\s.*all\s.*all\s.*\)peer/\1md5/" /etc/postgresql/9.6/main/pg_hba.conf
 			fi
 			systemctl restart postgresql
@@ -201,9 +206,9 @@ install_joomla(){
 		log_errors $? "Instalacion de joomla"
 
 		if [[ $9 == "No" ]]; then
-			sed -i "s/temp_user/$2/g" ${11}/Modulos/InstaladoresCMS/database_conf.pgsql
-			echo "Introduce la contraseña del usuario '$2' de la BD"
-			su -c "psql -U $2 $1 < ${11}/Modulos/InstaladoresCMS/database_conf.pgsql"
+			sed -i "s/temp_user/$2/g" "${11}/Modulos/InstaladoresCMS/$DB_CONF_PGSQL"
+			#echo "Introduce la contraseña del usuario '$2' de la BD"
+			su -c "PGPASSWORD=$passDB psql -U $2 $1 < ${11}/Modulos/InstaladoresCMS/$DB_CONF_PGSQL"
 			log_errors $? "Configuracion con PostgreSQL"
 		fi
 
@@ -216,6 +221,7 @@ install_joomla(){
 		sed -i "s/\(.*public.*mailfrom.*= \)'.*';/\1'${10}';/" $7/configuration.php
 		sed -i "s/\(.*public.*debug = \).*;/\10;/" $7/configuration.php
 		sed -i "s/\(.*public.*sef = \).*;/\10;/" $7/configuration.php
+		sed -i "s/\(.*public.*dbprefix = \).*;/\1'j_';/" $7/configuration.php
 
 		log_errors $? "Actualizacion de BD y elementos adicionales del sitio"
 	else
@@ -234,9 +240,9 @@ install_joomla(){
 	if [[ "$8" == "MySQL" ]]; then
 		mysql -h $3 -P $4 -u $2 --password=$passDB $1 -e "update j_users set username=\"$adminuser\", password=\"$adminpass_hash\",email=\"${10}\" where name=\"Super User\";"
 	else
-		echo "Introduce la contraseña del usuario '$2' de la BD"
-		su -c "psql -U $2 $1 -c \"update j_users set username='$adminuser', password='${adminpass_hash//\$/\\$}', email='${10}' where name='Super User';\""
-		rm ${11}/Modulos/InstaladoresCMS/database_conf.pgsql
+		#echo "Introduce la contraseña del usuario '$2' de la BD"
+		su -c "PGPASSWORD=$passDB psql -U $2 $1 -c \"update j_users set username='$adminuser', password='${adminpass_hash//\$/\\$}', email='${10}' where name='Super User';\""
+		rm "${11}/Modulos/InstaladoresCMS/$DB_CONF_PGSQL"
 		if [[ ${12} =~ Debian.* ]]; then apt purge mariadb-server -y; else	yum -y remove mariadb-server; fi
 	fi
 	log_errors $? "Configuracion de administrador '$adminuser' para joomla"
@@ -259,7 +265,7 @@ echo "==============================================="
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 mkdir -p "$5"
 
-install_dep "$7" "$8" "${11}" "${12}" "$5"
+install_dep "$7" "$8" "${11}" "${12}" "$5" "${13}"
 
 install_composer
 cd $5
