@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.5 (Debian 11.5-1+deb10u1)
--- Dumped by pg_dump version 11.5 (Debian 11.5-1+deb10u1)
+-- Dumped from database version 11.6 (Debian 11.6-0+deb10u1)
+-- Dumped by pg_dump version 11.6 (Debian 11.6-0+deb10u1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -3332,11 +3332,6 @@ COPY public.j_action_log_config (id, type_title, type_alias, id_holder, title_ho
 --
 
 COPY public.j_action_logs (id, message_language_key, message, log_date, extension, user_id, item_id, ip_address) FROM stdin;
-1	PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN	{"action":"login","userid":"923","username":"temp_user","accountlink":"index.php?option=com_users&task=user.edit&id=923","app":"PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR"}	2020-02-03 05:57:13	com_users	923	0	COM_ACTIONLOGS_DISABLED
-2	PLG_ACTIONLOG_JOOMLA_USER_LOGIN_FAILED	{"action":"login","id":"923","userid":"923","username":"admin","accountlink":"index.php?option=com_users&task=user.edit&id=923","app":"PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE"}	2020-02-03 06:58:03	com_users	923	923	COM_ACTIONLOGS_DISABLED
-3	PLG_ACTIONLOG_JOOMLA_USER_LOGIN_FAILED	{"action":"login","id":923,"userid":923,"username":"admin","accountlink":"index.php?option=com_users&task=user.edit&id=923","app":"PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE"}	2020-02-03 07:23:52	com_users	923	923	COM_ACTIONLOGS_DISABLED
-4	PLG_ACTIONLOG_JOOMLA_USER_LOGIN_FAILED	{"action":"login","id":923,"userid":923,"username":"admin","accountlink":"index.php?option=com_users&task=user.edit&id=923","app":"PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR"}	2020-02-03 07:24:00	com_users	923	923	COM_ACTIONLOGS_DISABLED
-5	PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN	{"action":"login","userid":923,"username":"admin","accountlink":"index.php?option=com_users&task=user.edit&id=923","app":"PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR"}	2020-02-03 07:26:01	com_users	923	0	COM_ACTIONLOGS_DISABLED
 \.
 
 
@@ -3379,42 +3374,42 @@ COPY public.j_action_logs_users (user_id, notify, extensions) FROM stdin;
 --
 
 COPY public.j_assets (id, parent_id, lft, rgt, level, name, title, rules) FROM stdin;
-1	0	0	113	0	root.1	Root Asset	{"core.login.site":{"6":1,"2":1},"core.login.admin":{"6":1},"core.login.offline":{"6":1},"core.admin":{"8":1},"core.manage":{"7":1},"core.create":{"6":1,"3":1},"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1},"core.edit.own":{"6":1,"3":1}}
+1	0	0	123	0	root.1	Root Asset	{"core.login.site":{"6":1,"2":1},"core.login.admin":{"6":1},"core.login.offline":{"6":1},"core.admin":{"8":1},"core.manage":{"7":1},"core.create":{"6":1,"3":1},"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1},"core.edit.own":{"6":1,"3":1}}
 2	1	1	2	1	com_admin	com_admin	{}
 3	1	3	6	1	com_banners	com_banners	{"core.admin":{"7":1},"core.manage":{"6":1}}
 4	1	7	8	1	com_cache	com_cache	{"core.admin":{"7":1},"core.manage":{"7":1}}
 5	1	9	10	1	com_checkin	com_checkin	{"core.admin":{"7":1},"core.manage":{"7":1}}
 6	1	11	12	1	com_config	com_config	{}
 7	1	13	16	1	com_contact	com_contact	{"core.admin":{"7":1},"core.manage":{"6":1}}
-8	1	17	20	1	com_content	com_content	{"core.admin":{"7":1},"core.manage":{"6":1},"core.create":{"3":1},"core.edit":{"4":1},"core.edit.state":{"5":1}}
-9	1	21	22	1	com_cpanel	com_cpanel	{}
-10	1	23	24	1	com_installer	com_installer	{"core.manage":{"7":0},"core.delete":{"7":0},"core.edit.state":{"7":0}}
-11	1	25	26	1	com_languages	com_languages	{"core.admin":{"7":1}}
-12	1	27	28	1	com_login	com_login	{}
-13	1	29	30	1	com_mailto	com_mailto	{}
-14	1	31	32	1	com_massmail	com_massmail	{}
-15	1	33	34	1	com_media	com_media	{"core.admin":{"7":1},"core.manage":{"6":1},"core.create":{"3":1},"core.delete":{"5":1}}
-16	1	35	38	1	com_menus	com_menus	{"core.admin":{"7":1}}
+8	1	17	22	1	com_content	com_content	{"core.admin":{"7":1},"core.manage":{"6":1},"core.create":{"3":1},"core.edit":{"4":1},"core.edit.state":{"5":1}}
+9	1	23	24	1	com_cpanel	com_cpanel	{}
+10	1	25	26	1	com_installer	com_installer	{"core.manage":{"7":0},"core.delete":{"7":0},"core.edit.state":{"7":0}}
+11	1	27	28	1	com_languages	com_languages	{"core.admin":{"7":1}}
+12	1	29	30	1	com_login	com_login	{}
+13	1	31	32	1	com_mailto	com_mailto	{}
+14	1	33	34	1	com_massmail	com_massmail	{}
+15	1	35	36	1	com_media	com_media	{"core.admin":{"7":1},"core.manage":{"6":1},"core.create":{"3":1},"core.delete":{"5":1}}
+16	1	37	38	1	com_menus	com_menus	{"core.admin":{"7":1}}
 17	1	39	40	1	com_messages	com_messages	{"core.admin":{"7":1},"core.manage":{"7":1}}
-18	1	41	78	1	com_modules	com_modules	{"core.admin":{"7":1}}
-19	1	79	82	1	com_newsfeeds	com_newsfeeds	{"core.admin":{"7":1},"core.manage":{"6":1}}
-20	1	83	84	1	com_plugins	com_plugins	{"core.admin":{"7":1}}
-21	1	85	86	1	com_redirect	com_redirect	{"core.admin":{"7":1}}
-22	1	87	88	1	com_search	com_search	{"core.admin":{"7":1},"core.manage":{"6":1}}
-23	1	89	90	1	com_templates	com_templates	{"core.admin":{"7":1}}
-24	1	91	94	1	com_users	com_users	{"core.admin":{"7":1}}
-26	1	95	96	1	com_wrapper	com_wrapper	{}
-27	8	18	19	2	com_content.category.2	Uncategorised	{}
+18	1	41	86	1	com_modules	com_modules	{"core.admin":{"7":1}}
+19	1	87	90	1	com_newsfeeds	com_newsfeeds	{"core.admin":{"7":1},"core.manage":{"6":1}}
+20	1	91	92	1	com_plugins	com_plugins	{"core.admin":{"7":1}}
+21	1	93	94	1	com_redirect	com_redirect	{"core.admin":{"7":1}}
+22	1	95	96	1	com_search	com_search	{"core.admin":{"7":1},"core.manage":{"6":1}}
+23	1	97	98	1	com_templates	com_templates	{"core.admin":{"7":1}}
+24	1	99	102	1	com_users	com_users	{"core.admin":{"7":1}}
+26	1	103	104	1	com_wrapper	com_wrapper	{}
+27	8	18	21	2	com_content.category.2	Uncategorised	{}
 28	3	4	5	2	com_banners.category.3	Uncategorised	{}
 29	7	14	15	2	com_contact.category.4	Uncategorised	{}
-30	19	80	81	2	com_newsfeeds.category.5	Uncategorised	{}
-32	24	92	93	2	com_users.category.7	Uncategorised	{}
-33	1	97	98	1	com_finder	com_finder	{"core.admin":{"7":1},"core.manage":{"6":1}}
-34	1	99	100	1	com_joomlaupdate	com_joomlaupdate	{}
-35	1	101	102	1	com_tags	com_tags	{}
-36	1	103	104	1	com_contenthistory	com_contenthistory	{}
-37	1	105	106	1	com_ajax	com_ajax	{}
-38	1	107	108	1	com_postinstall	com_postinstall	{}
+30	19	88	89	2	com_newsfeeds.category.5	Uncategorised	{}
+32	24	100	101	2	com_users.category.7	Uncategorised	{}
+33	1	105	106	1	com_finder	com_finder	{"core.admin":{"7":1},"core.manage":{"6":1}}
+34	1	107	108	1	com_joomlaupdate	com_joomlaupdate	{}
+35	1	109	110	1	com_tags	com_tags	{}
+36	1	111	112	1	com_contenthistory	com_contenthistory	{}
+37	1	113	114	1	com_ajax	com_ajax	{}
+38	1	115	116	1	com_postinstall	com_postinstall	{}
 39	18	42	43	2	com_modules.module.1	Main Menu	{}
 40	18	44	45	2	com_modules.module.2	Login	{}
 41	18	46	47	2	com_modules.module.3	Popular Articles	{}
@@ -3430,12 +3425,17 @@ COPY public.j_assets (id, parent_id, lft, rgt, level, name, title, rules) FROM s
 51	18	66	67	2	com_modules.module.17	Breadcrumbs	{}
 52	18	68	69	2	com_modules.module.79	Multilanguage status	{}
 53	18	70	71	2	com_modules.module.86	Joomla Version	{}
-54	16	36	37	2	com_menus.menu.1	Main Menu	{}
-55	18	72	73	2	com_modules.module.87	Sample Data	{}
-56	1	109	110	1	com_privacy	com_privacy	{}
-57	1	111	112	1	com_actionlogs	com_actionlogs	{}
-58	18	74	75	2	com_modules.module.88	Latest Actions	{}
-59	18	76	77	2	com_modules.module.89	Privacy Dashboard	{}
+54	18	72	73	2	com_modules.module.87	Popular Tags	{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}
+55	18	74	75	2	com_modules.module.88	Site Information	{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}
+56	18	76	77	2	com_modules.module.89	Release News	{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}
+57	18	78	79	2	com_modules.module.90	Latest Articles	{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}
+58	18	80	81	2	com_modules.module.91	User Menu	{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}
+59	18	82	83	2	com_modules.module.92	Image Module	{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}
+60	18	84	85	2	com_modules.module.93	Search	{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}
+61	27	19	20	3	com_content.article.1	Getting Started	{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}
+62	1	117	118	1	#__ucm_content.1	#__ucm_content.1	{}
+63	1	119	120	1	com_privacy	com_privacy	{"core.admin":{"7":1}}
+64	1	121	122	1	com_actionlogs	com_actionlogs	{"core.admin":{"7":1}}
 \.
 
 
@@ -3476,12 +3476,12 @@ COPY public.j_banners (id, cid, type, name, alias, imptotal, impmade, clicks, cl
 --
 
 COPY public.j_categories (id, asset_id, parent_id, lft, rgt, level, path, extension, title, alias, note, description, published, checked_out, checked_out_time, access, params, metadesc, metakey, metadata, created_user_id, created_time, modified_user_id, modified_time, hits, language, version) FROM stdin;
-1	0	0	0	11	0		system	ROOT	root			1	0	1970-01-01 00:00:00	1	{}			{}	923	2020-02-03 05:55:16	0	1970-01-01 00:00:00	0	*	1
-2	27	1	1	2	1	uncategorised	com_content	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	923	2020-02-03 05:55:16	0	1970-01-01 00:00:00	0	*	1
-3	28	1	3	4	1	uncategorised	com_banners	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	923	2020-02-03 05:55:16	0	1970-01-01 00:00:00	0	*	1
-4	29	1	5	6	1	uncategorised	com_contact	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	923	2020-02-03 05:55:16	0	1970-01-01 00:00:00	0	*	1
-5	30	1	7	8	1	uncategorised	com_newsfeeds	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	923	2020-02-03 05:55:16	0	1970-01-01 00:00:00	0	*	1
-7	32	1	9	10	1	uncategorised	com_users	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	923	2020-02-03 05:55:16	0	1970-01-01 00:00:00	0	*	1
+1	0	0	0	11	0		system	ROOT	root			1	0	1970-01-01 00:00:00	1	{}			{}	885	2020-02-12 05:42:14	0	1970-01-01 00:00:00	0	*	1
+2	27	1	1	2	1	uncategorised	com_content	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	885	2020-02-12 05:42:14	0	1970-01-01 00:00:00	0	*	1
+3	28	1	3	4	1	uncategorised	com_banners	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	885	2020-02-12 05:42:14	0	1970-01-01 00:00:00	0	*	1
+4	29	1	5	6	1	uncategorised	com_contact	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	885	2020-02-12 05:42:14	0	1970-01-01 00:00:00	0	*	1
+5	30	1	7	8	1	uncategorised	com_newsfeeds	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	885	2020-02-12 05:42:14	0	1970-01-01 00:00:00	0	*	1
+7	32	1	9	10	1	uncategorised	com_users	Uncategorised	uncategorised			1	0	1970-01-01 00:00:00	1	{"category_layout":"","image":""}			{"author":"","robots":""}	885	2020-02-12 05:42:14	0	1970-01-01 00:00:00	0	*	1
 \.
 
 
@@ -3498,6 +3498,7 @@ COPY public.j_contact_details (id, name, alias, con_position, address, suburb, s
 --
 
 COPY public.j_content (id, asset_id, title, alias, introtext, fulltext, state, catid, created, created_by, created_by_alias, modified, modified_by, checked_out, checked_out_time, publish_up, publish_down, images, urls, attribs, version, ordering, metakey, metadesc, access, hits, metadata, featured, language, xreference, note) FROM stdin;
+1	61	Getting Started	getting-started	<p>It's easy to get started creating your website. Knowing some of the basics will help.</p><h3>What is a Content Management System?</h3><p>A content management system is software that allows you to create and manage webpages easily by separating the creation of your content from the mechanics required to present it on the web.</p><p>In this site, the content is stored in a <em>database</em>. The look and feel are created by a <em>template</em>. Joomla! brings together the template and your content to create web pages.</p><h3>Logging in</h3><p>To login to your site use the user name and password that were created as part of the installation process. Once logged-in you will be able to create and edit articles and modify some settings.</p><h3>Creating an article</h3><p>Once you are logged-in, a new menu will be visible. To create a new article, click on the "Submit Article" link on that menu.</p><p>The new article interface gives you a lot of options, but all you need to do is add a title and put something in the content area. To make it easy to find, set the state to published.</p><div>You can edit an existing article by clicking on the edit icon (this only displays to users who have the right to edit).</div><h3>Template, site settings, and modules</h3><p>The look and feel of your site is controlled by a template. You can change the site name, background colour, highlights colour and more by editing the template settings. Click the "Template Settings" in the user menu.</p><p>The boxes around the main content of the site are called modules. You can modify modules on the current page by moving your cursor to the module and clicking the edit link. Always be sure to save and close any module you edit.</p><p>You can change some site settings such as the site name and description by clicking on the "Site Settings" link.</p><p>More advanced options for templates, site settings, modules, and more are available in the site administrator.</p><h3>Site and Administrator</h3><p>Your site actually has two separate sites. The site (also called the front end) is what visitors to your site will see. The administrator (also called the back end) is only used by people managing your site. You can access the administrator by clicking the "Site Administrator" link on the "User Menu" menu (visible once you login) or by adding /administrator to the end of your domain name. The same user name and password are used for both sites.</p><h3>Learn more</h3><p>There is much more to learn about how to use Joomla! to create the website you envision. You can learn much more at the <a href="https://docs.joomla.org/" target="_blank">Joomla! documentation site</a> and on the<a href="https://forum.joomla.org/" target="_blank"> Joomla! forums</a>.</p>		1	2	2020-02-12 05:42:14	885		1970-01-01 00:00:00	0	0	1970-01-01 00:00:00	2020-02-12 05:42:14	1970-01-01 00:00:00	{"image_intro":"","float_intro":"","image_intro_alt":"","image_intro_caption":"","image_fulltext":"","float_fulltext":"","image_fulltext_alt":"","image_fulltext_caption":""}	{"urla":false,"urlatext":"","targeta":"","urlb":false,"urlbtext":"","targetb":"","urlc":false,"urlctext":"","targetc":""}	{"show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}	1	0			1	0	{"robots":"","author":"","rights":"","xreference":""}	0	*		
 \.
 
 
@@ -3543,6 +3544,7 @@ COPY public.j_content_types (type_id, type_title, type_alias, "table", rules, fi
 --
 
 COPY public.j_contentitem_tag_map (type_alias, core_content_id, content_item_id, tag_id, tag_date, type_id) FROM stdin;
+com_content.article	1	1	2	2020-02-12 05:42:14	1
 \.
 
 
@@ -3559,7 +3561,8 @@ COPY public.j_core_log_searches (search_term, hits) FROM stdin;
 --
 
 COPY public.j_extensions (extension_id, package_id, name, type, element, folder, client_id, enabled, access, protected, manifest_cache, params, custom_data, system_data, checked_out, checked_out_time, ordering, state) FROM stdin;
-452	0	plg_system_updatenotification	plugin	updatenotification	system	0	1	1	0	{"name":"plg_system_updatenotification","type":"plugin","creationDate":"May 2015","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.5.0","description":"PLG_SYSTEM_UPDATENOTIFICATION_XML_DESCRIPTION","group":"","filename":"updatenotification"}	{"lastrun":1580709422}			0	1970-01-01 00:00:00	0	0
+103	0	LIB_JOOMLA	library	joomla		0	1	1	1	{"name":"LIB_JOOMLA","type":"library","creationDate":"2008","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"https:\\/\\/www.joomla.org","version":"13.1","description":"LIB_JOOMLA_XML_DESCRIPTION","group":"","filename":"joomla"}	{"mediaversion":"6112940bd31694f9078d7e036918f3a5"}			0	1970-01-01 00:00:00	0	0
+452	0	plg_system_updatenotification	plugin	updatenotification	system	0	1	1	0	{"name":"plg_system_updatenotification","type":"plugin","creationDate":"May 2015","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.5.0","description":"PLG_SYSTEM_UPDATENOTIFICATION_XML_DESCRIPTION","group":"","filename":"updatenotification"}	{"lastrun":1581486341}			0	1970-01-01 00:00:00	0	0
 5	0	com_cache	component	com_cache		1	1	1	1	{"name":"com_cache","type":"component","creationDate":"April 2006","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"COM_CACHE_XML_DESCRIPTION","group":""}				0	1970-01-01 00:00:00	0	0
 7	0	com_checkin	component	com_checkin		1	1	1	1	{"name":"com_checkin","type":"component","creationDate":"April 2006","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"COM_CHECKIN_XML_DESCRIPTION","group":""}				0	1970-01-01 00:00:00	0	0
 9	0	com_cpanel	component	com_cpanel		1	1	1	1	{"name":"com_cpanel","type":"component","creationDate":"April 2006","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"COM_CPANEL_XML_DESCRIPTION","group":""}				0	1970-01-01 00:00:00	0	0
@@ -3636,7 +3639,6 @@ COPY public.j_extensions (extension_id, package_id, name, type, element, folder,
 700	0	files_joomla	file	joomla		0	1	1	1	{"name":"files_joomla","type":"file","creationDate":"January 2020","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.9.15","description":"FILES_JOOMLA_XML_DESCRIPTION","group":""}				0	1970-01-01 00:00:00	0	0
 8	0	com_contact	component	com_contact		1	1	1	0	{"name":"com_contact","type":"component","creationDate":"April 2006","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"COM_CONTACT_XML_DESCRIPTION","group":"","filename":"contact"}	{"contact_layout":"_:default","show_contact_category":"hide","save_history":"1","history_limit":10,"show_contact_list":"0","presentation_style":"sliders","show_tags":"1","show_info":"1","show_name":"1","show_position":"1","show_email":"0","show_street_address":"1","show_suburb":"1","show_state":"1","show_postcode":"1","show_country":"1","show_telephone":"1","show_mobile":"1","show_fax":"1","show_webpage":"1","show_image":"1","show_misc":"1","image":"","allow_vcard":"0","show_articles":"0","articles_display_num":"10","show_profile":"0","show_user_custom_fields":["-1"],"show_links":"0","linka_name":"","linkb_name":"","linkc_name":"","linkd_name":"","linke_name":"","contact_icons":"0","icon_address":"","icon_email":"","icon_telephone":"","icon_mobile":"","icon_fax":"","icon_misc":"","category_layout":"_:default","show_category_title":"1","show_description":"1","show_description_image":"0","maxLevel":"-1","show_subcat_desc":"1","show_empty_categories":"0","show_cat_items":"1","show_cat_tags":"1","show_base_description":"1","maxLevelcat":"-1","show_subcat_desc_cat":"1","show_empty_categories_cat":"0","show_cat_items_cat":"1","filter_field":"0","show_pagination_limit":"0","show_headings":"1","show_image_heading":"0","show_position_headings":"1","show_email_headings":"0","show_telephone_headings":"1","show_mobile_headings":"0","show_fax_headings":"0","show_suburb_headings":"1","show_state_headings":"1","show_country_headings":"1","show_pagination":"2","show_pagination_results":"1","initial_sort":"ordering","captcha":"","show_email_form":"1","show_email_copy":"0","banned_email":"","banned_subject":"","banned_text":"","validate_session":"1","custom_reply":"0","redirect":"","show_feed_link":"1","sef_advanced":0,"sef_ids":0,"custom_fields_enable":"1"}			0	1970-01-01 00:00:00	0	0
 13	0	com_media	component	com_media		1	1	0	1	{"name":"com_media","type":"component","creationDate":"April 2006","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"COM_MEDIA_XML_DESCRIPTION","group":"","filename":"media"}	{"upload_extensions":"bmp,csv,doc,gif,ico,jpg,jpeg,odg,odp,ods,odt,pdf,png,ppt,txt,xcf,xls,BMP,CSV,DOC,GIF,ICO,JPG,JPEG,ODG,ODP,ODS,ODT,PDF,PNG,PPT,TXT,XCF,XLS","upload_maxsize":"10","file_path":"images","image_path":"images","restrict_uploads":"1","allowed_media_usergroup":"3","check_mime":"1","image_extensions":"bmp,gif,jpg,png","ignore_extensions":"","upload_mime":"image\\/jpeg,image\\/gif,image\\/png,image\\/bmp,application\\/msword,application\\/excel,application\\/pdf,application\\/powerpoint,text\\/plain,application\\/x-zip","upload_mime_illegal":"text\\/html"}			0	1970-01-01 00:00:00	0	0
-221	0	mod_articles_categories	module	mod_articles_categories		0	1	1	0	{"name":"mod_articles_categories","type":"module","creationDate":"February 2010","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"MOD_ARTICLES_CATEGORIES_XML_DESCRIPTION","group":"","filename":"mod_articles_categories"}				0	1970-01-01 00:00:00	0	0
 17	0	com_newsfeeds	component	com_newsfeeds		1	1	1	0	{"name":"com_newsfeeds","type":"component","creationDate":"April 2006","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"COM_NEWSFEEDS_XML_DESCRIPTION","group":"","filename":"newsfeeds"}	{"newsfeed_layout":"_:default","save_history":"1","history_limit":5,"show_feed_image":"1","show_feed_description":"1","show_item_description":"1","feed_character_count":"0","feed_display_order":"des","float_first":"right","float_second":"right","show_tags":"1","category_layout":"_:default","show_category_title":"1","show_description":"1","show_description_image":"1","maxLevel":"-1","show_empty_categories":"0","show_subcat_desc":"1","show_cat_items":"1","show_cat_tags":"1","show_base_description":"1","maxLevelcat":"-1","show_empty_categories_cat":"0","show_subcat_desc_cat":"1","show_cat_items_cat":"1","filter_field":"1","show_pagination_limit":"1","show_headings":"1","show_articles":"0","show_link":"1","show_pagination":"1","show_pagination_results":"1"}			0	1970-01-01 00:00:00	0	0
 22	0	com_content	component	com_content		1	1	0	1	{"name":"com_content","type":"component","creationDate":"April 2006","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"COM_CONTENT_XML_DESCRIPTION","group":"","filename":"content"}	{"article_layout":"_:default","show_title":"1","link_titles":"1","show_intro":"1","show_category":"1","link_category":"1","show_parent_category":"0","link_parent_category":"0","show_author":"1","link_author":"0","show_create_date":"0","show_modify_date":"0","show_publish_date":"1","show_item_navigation":"1","show_vote":"0","show_readmore":"1","show_readmore_title":"1","readmore_limit":"100","show_icons":"1","show_print_icon":"1","show_email_icon":"0","show_hits":"1","show_noauth":"0","show_publishing_options":"1","show_article_options":"1","save_history":"1","history_limit":10,"show_urls_images_frontend":"0","show_urls_images_backend":"1","targeta":0,"targetb":0,"targetc":0,"float_intro":"left","float_fulltext":"left","category_layout":"_:blog","show_category_title":"0","show_description":"0","show_description_image":"0","maxLevel":"1","show_empty_categories":"0","show_no_articles":"1","show_subcat_desc":"1","show_cat_num_articles":"0","show_base_description":"1","maxLevelcat":"-1","show_empty_categories_cat":"0","show_subcat_desc_cat":"1","show_cat_num_articles_cat":"1","num_leading_articles":"1","num_intro_articles":"4","num_columns":"2","num_links":"4","multi_column_order":"0","show_subcategory_content":"0","show_pagination_limit":"1","filter_field":"hide","show_headings":"1","list_show_date":"0","date_format":"","list_show_hits":"1","list_show_author":"1","orderby_pri":"order","orderby_sec":"rdate","order_date":"published","show_pagination":"2","show_pagination_results":"1","show_feed_link":"1","feed_summary":"0"}			0	1970-01-01 00:00:00	0	0
 23	0	com_config	component	com_config		1	1	0	1	{"name":"com_config","type":"component","creationDate":"April 2006","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"COM_CONFIG_XML_DESCRIPTION","group":""}	{"filters":{"1":{"filter_type":"NH","filter_tags":"","filter_attributes":""},"6":{"filter_type":"BL","filter_tags":"","filter_attributes":""},"7":{"filter_type":"BL","filter_tags":"","filter_attributes":""},"2":{"filter_type":"NH","filter_tags":"","filter_attributes":""},"3":{"filter_type":"BL","filter_tags":"","filter_attributes":""},"4":{"filter_type":"BL","filter_tags":"","filter_attributes":""},"5":{"filter_type":"BL","filter_tags":"","filter_attributes":""},"10":{"filter_type":"BL","filter_tags":"","filter_attributes":""},"12":{"filter_type":"BL","filter_tags":"","filter_attributes":""},"8":{"filter_type":"NONE","filter_tags":"","filter_attributes":""}}}			0	1970-01-01 00:00:00	0	0
@@ -3660,6 +3662,7 @@ COPY public.j_extensions (extension_id, package_id, name, type, element, folder,
 216	0	mod_users_latest	module	mod_users_latest		0	1	1	0	{"name":"mod_users_latest","type":"module","creationDate":"December 2009","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"MOD_USERS_LATEST_XML_DESCRIPTION","group":"","filename":"mod_users_latest"}				0	1970-01-01 00:00:00	0	0
 219	0	mod_wrapper	module	mod_wrapper		0	1	1	0	{"name":"mod_wrapper","type":"module","creationDate":"October 2004","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"MOD_WRAPPER_XML_DESCRIPTION","group":"","filename":"mod_wrapper"}				0	1970-01-01 00:00:00	0	0
 220	0	mod_articles_category	module	mod_articles_category		0	1	1	0	{"name":"mod_articles_category","type":"module","creationDate":"February 2010","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"MOD_ARTICLES_CATEGORY_XML_DESCRIPTION","group":"","filename":"mod_articles_category"}				0	1970-01-01 00:00:00	0	0
+221	0	mod_articles_categories	module	mod_articles_categories		0	1	1	0	{"name":"mod_articles_categories","type":"module","creationDate":"February 2010","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"MOD_ARTICLES_CATEGORIES_XML_DESCRIPTION","group":"","filename":"mod_articles_categories"}				0	1970-01-01 00:00:00	0	0
 222	0	mod_languages	module	mod_languages		0	1	1	1	{"name":"mod_languages","type":"module","creationDate":"February 2010","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.5.0","description":"MOD_LANGUAGES_XML_DESCRIPTION","group":"","filename":"mod_languages"}				0	1970-01-01 00:00:00	0	0
 223	0	mod_finder	module	mod_finder		0	1	0	0	{"name":"mod_finder","type":"module","creationDate":"August 2011","author":"Joomla! Project","copyright":"(C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"MOD_FINDER_XML_DESCRIPTION","group":"","filename":"mod_finder"}				0	1970-01-01 00:00:00	0	0
 300	0	mod_custom	module	mod_custom		1	1	1	1	{"name":"mod_custom","type":"module","creationDate":"July 2004","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.0.0","description":"MOD_CUSTOM_XML_DESCRIPTION","group":"","filename":"mod_custom"}				0	1970-01-01 00:00:00	0	0
@@ -3740,8 +3743,7 @@ COPY public.j_extensions (extension_id, package_id, name, type, element, folder,
 600	802	English (en-GB)	language	en-GB		0	1	1	1	{"name":"English (en-GB)","type":"language","creationDate":"January 2020","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.9.15","description":"en-GB site language","group":""}				0	1970-01-01 00:00:00	0	0
 601	802	English (en-GB)	language	en-GB		1	1	1	1	{"name":"English (en-GB)","type":"language","creationDate":"January 2020","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.9.15","description":"en-GB administrator language","group":""}				0	1970-01-01 00:00:00	0	0
 802	0	English (en-GB) Language Pack	package	pkg_en-GB		0	1	1	1	{"name":"English (en-GB) Language Pack","type":"package","creationDate":"January 2020","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.9.15.1","description":"en-GB language pack","group":"","filename":"pkg_en-GB"}				0	1970-01-01 00:00:00	0	0
-486	0	plg_system_logrotation	plugin	logrotation	system	0	1	1	0	{"name":"plg_system_logrotation","type":"plugin","creationDate":"May 2018","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.9.0","description":"PLG_SYSTEM_LOGROTATION_XML_DESCRIPTION","group":"","filename":"logrotation"}	{"lastrun":1580709422}			0	1970-01-01 00:00:00	0	0
-103	0	LIB_JOOMLA	library	joomla		0	1	1	1	{"name":"LIB_JOOMLA","type":"library","creationDate":"2008","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"https:\\/\\/www.joomla.org","version":"13.1","description":"LIB_JOOMLA_XML_DESCRIPTION","group":"","filename":"joomla"}	{"mediaversion":"7fcc91b4951736701b68c5359a117c6d"}			0	1970-01-01 00:00:00	0	0
+486	0	plg_system_logrotation	plugin	logrotation	system	0	1	1	0	{"name":"plg_system_logrotation","type":"plugin","creationDate":"May 2018","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.9.0","description":"PLG_SYSTEM_LOGROTATION_XML_DESCRIPTION","group":"","filename":"logrotation"}	{"lastrun":1581486342}			0	1970-01-01 00:00:00	0	0
 \.
 
 
@@ -4061,116 +4063,6 @@ yet	en
 you	en
 your	en
 yours	en
-a	en
-about	en
-after	en
-ago	en
-all	en
-am	en
-an	en
-and	en
-any	en
-are	en
-aren't	en
-as	en
-at	en
-be	en
-but	en
-by	en
-for	en
-from	en
-get	en
-go	en
-how	en
-if	en
-in	en
-into	en
-is	en
-isn't	en
-it	en
-its	en
-me	en
-more	en
-most	en
-must	en
-my	en
-new	en
-no	en
-none	en
-not	en
-nothing	en
-of	en
-off	en
-often	en
-old	en
-on	en
-onc	en
-once	en
-only	en
-or	en
-other	en
-our	en
-ours	en
-out	en
-over	en
-page	en
-she	en
-should	en
-small	en
-so	en
-some	en
-than	en
-thank	en
-that	en
-the	en
-their	en
-theirs	en
-them	en
-then	en
-there	en
-these	en
-they	en
-this	en
-those	en
-thus	en
-time	en
-times	en
-to	en
-too	en
-true	en
-under	en
-until	en
-up	en
-upon	en
-use	en
-user	en
-users	en
-version	en
-very	en
-via	en
-want	en
-was	en
-way	en
-were	en
-what	en
-when	en
-where	en
-which	en
-who	en
-whom	en
-whose	en
-why	en
-wide	en
-will	en
-with	en
-within	en
-without	en
-would	en
-yes	en
-yet	en
-you	en
-your	en
-yours	en
 \.
 
 
@@ -4212,7 +4104,7 @@ COPY public.j_languages (lang_id, asset_id, lang_code, title, title_native, sef,
 --
 
 COPY public.j_menu (id, menutype, title, alias, note, path, link, type, published, parent_id, level, component_id, checked_out, checked_out_time, "browserNav", access, img, template_style_id, params, lft, rgt, home, language, client_id) FROM stdin;
-1		Menu_Item_Root	root					1	0	0	0	0	1970-01-01 00:00:00	0	0		0		0	43	0	*	0
+1		Menu_Item_Root	root					1	0	0	0	0	1970-01-01 00:00:00	0	0		0		0	53	0	*	0
 2	main	com_banners	Banners		Banners	index.php?option=com_banners	component	1	1	1	4	0	1970-01-01 00:00:00	0	0	class:banners	0		1	10	0	*	1
 3	main	com_banners	Banners		Banners/Banners	index.php?option=com_banners	component	1	2	2	4	0	1970-01-01 00:00:00	0	0	class:banners	0		2	3	0	*	1
 4	main	com_banners_categories	Categories		Banners/Categories	index.php?option=com_categories&extension=com_banners	component	1	2	2	6	0	1970-01-01 00:00:00	0	0	class:banners-cat	0		4	5	0	*	1
@@ -4221,19 +4113,24 @@ COPY public.j_menu (id, menutype, title, alias, note, path, link, type, publishe
 7	main	com_contact	Contacts		Contacts	index.php?option=com_contact	component	1	1	1	8	0	1970-01-01 00:00:00	0	0	class:contact	0		11	16	0	*	1
 8	main	com_contact_contacts	Contacts		Contacts/Contacts	index.php?option=com_contact	component	1	7	2	8	0	1970-01-01 00:00:00	0	0	class:contact	0		12	13	0	*	1
 9	main	com_contact_categories	Categories		Contacts/Categories	index.php?option=com_categories&extension=com_contact	component	1	7	2	6	0	1970-01-01 00:00:00	0	0	class:contact-cat	0		14	15	0	*	1
-10	main	com_messages	Messaging		Messaging	index.php?option=com_messages	component	1	1	1	15	0	1970-01-01 00:00:00	0	0	class:messages	0		17	20	0	*	1
-11	main	com_messages_add	New Private Message		Messaging/New Private Message	index.php?option=com_messages&task=message.add	component	1	10	2	15	0	1970-01-01 00:00:00	0	0	class:messages-add	0		18	19	0	*	1
-13	main	com_newsfeeds	News Feeds		News Feeds	index.php?option=com_newsfeeds	component	1	1	1	17	0	1970-01-01 00:00:00	0	0	class:newsfeeds	0		21	26	0	*	1
-14	main	com_newsfeeds_feeds	Feeds		News Feeds/Feeds	index.php?option=com_newsfeeds	component	1	13	2	17	0	1970-01-01 00:00:00	0	0	class:newsfeeds	0		22	23	0	*	1
-15	main	com_newsfeeds_categories	Categories		News Feeds/Categories	index.php?option=com_categories&extension=com_newsfeeds	component	1	13	2	6	0	1970-01-01 00:00:00	0	0	class:newsfeeds-cat	0		24	25	0	*	1
-16	main	com_redirect	Redirect		Redirect	index.php?option=com_redirect	component	1	1	1	24	0	1970-01-01 00:00:00	0	0	class:redirect	0		27	28	0	*	1
-17	main	com_search	Basic Search		Basic Search	index.php?option=com_search	component	1	1	1	19	0	1970-01-01 00:00:00	0	0	class:search	0		29	30	0	*	1
-18	main	com_finder	Smart Search		Smart Search	index.php?option=com_finder	component	1	1	1	27	0	1970-01-01 00:00:00	0	0	class:finder	0		31	32	0	*	1
-19	main	com_joomlaupdate	Joomla! Update		Joomla! Update	index.php?option=com_joomlaupdate	component	1	1	1	28	0	1970-01-01 00:00:00	0	0	class:joomlaupdate	0		33	34	0	*	1
-20	main	com_tags	Tags		Tags	index.php?option=com_tags	component	1	1	1	29	0	1970-01-01 00:00:00	0	1	class:tags	0		35	36	0		1
-21	main	com_postinstall	Post-installation messages		Post-installation messages	index.php?option=com_postinstall	component	1	1	1	32	0	1970-01-01 00:00:00	0	1	class:postinstall	0		37	38	0	*	1
-22	main	com_associations	Multilingual Associations		Multilingual Associations	index.php?option=com_associations	component	1	1	1	34	0	1970-01-01 00:00:00	0	0	class:associations	0		39	40	0	*	1
-101	mainmenu	Home	home		home	index.php?option=com_content&view=featured	component	1	1	1	22	0	1970-01-01 00:00:00	0	1		0	{"featured_categories":[""],"layout_type":"blog","num_leading_articles":"1","num_intro_articles":"3","num_columns":"3","num_links":"0","multi_column_order":"1","orderby_pri":"","orderby_sec":"front","order_date":"","show_pagination":"2","show_pagination_results":"1","show_title":"","link_titles":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_vote":"","show_readmore":"","show_readmore_title":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_hits":"","show_noauth":"","show_feed_link":"1","feed_summary":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":1,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}	41	42	1	*	0
+10	main	com_messages	Messaging		Messaging	index.php?option=com_messages	component	1	1	1	15	0	1970-01-01 00:00:00	0	0	class:messages	0		21	24	0	*	1
+11	main	com_messages_add	New Private Message		Messaging/New Private Message	index.php?option=com_messages&task=message.add	component	1	10	2	15	0	1970-01-01 00:00:00	0	0	class:messages-add	0		22	23	0	*	1
+13	main	com_newsfeeds	News Feeds		News Feeds	index.php?option=com_newsfeeds	component	1	1	1	17	0	1970-01-01 00:00:00	0	0	class:newsfeeds	0		31	36	0	*	1
+14	main	com_newsfeeds_feeds	Feeds		News Feeds/Feeds	index.php?option=com_newsfeeds	component	1	13	2	17	0	1970-01-01 00:00:00	0	0	class:newsfeeds	0		32	33	0	*	1
+15	main	com_newsfeeds_categories	Categories		News Feeds/Categories	index.php?option=com_categories&extension=com_newsfeeds	component	1	13	2	6	0	1970-01-01 00:00:00	0	0	class:newsfeeds-cat	0		34	35	0	*	1
+16	main	com_redirect	Redirect		Redirect	index.php?option=com_redirect	component	1	1	1	24	0	1970-01-01 00:00:00	0	0	class:redirect	0		37	38	0	*	1
+17	main	com_search	Basic Search		Basic Search	index.php?option=com_search	component	1	1	1	19	0	1970-01-01 00:00:00	0	0	class:search	0		39	40	0	*	1
+18	main	com_finder	Smart Search		Smart Search	index.php?option=com_finder	component	1	1	1	27	0	1970-01-01 00:00:00	0	0	class:finder	0		41	42	0	*	1
+19	main	com_joomlaupdate	Joomla! Update		Joomla! Update	index.php?option=com_joomlaupdate	component	1	1	1	28	0	1970-01-01 00:00:00	0	0	class:joomlaupdate	0		43	44	0	*	1
+20	main	com_tags	Tags		Tags	index.php?option=com_tags	component	1	1	1	29	0	1970-01-01 00:00:00	0	1	class:tags	0		45	46	0		1
+21	main	com_postinstall	Post-installation messages		Post-installation messages	index.php?option=com_postinstall	component	1	1	1	32	0	1970-01-01 00:00:00	0	1	class:postinstall	0		47	48	0	*	1
+22	main	com_associations	Multilingual Associations		Multilingual Associations	index.php?option=com_associations	component	1	1	1	34	0	1970-01-01 00:00:00	0	0	class:associations	0		49	50	0	*	1
+101	mainmenu	Home	homepage		homepage	index.php?option=com_content&view=article&id=1	component	1	1	1	22	0	1970-01-01 00:00:00	0	1		0	{"show_title":"1","link_titles":"","show_intro":"","info_block_position":"0","show_category":"0","link_category":"0","show_parent_category":"0","link_parent_category":"0","show_author":"0","link_author":"0","show_create_date":"0","show_modify_date":"0","show_publish_date":"0","show_item_navigation":"0","show_vote":"","show_tags":"","show_icons":"0","show_print_icon":"0","show_email_icon":"0","show_hits":"0","show_noauth":"","urls_position":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}	51	52	1	*	0
+102	usermenu	Your Profile	your-profile		your-profile	index.php?option=com_users&view=profile&layout=edit	component	1	1	1	25	0	1970-01-01 00:00:00	0	2		0	{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}	17	18	0	*	0
+103	usermenu	Site Administrator	2013-11-16-23-26-41		2013-11-16-23-26-41	administrator	url	1	1	1	0	0	1970-01-01 00:00:00	0	6		0	{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1}	25	26	0	*	0
+104	usermenu	Submit an Article	submit-an-article		submit-an-article	index.php?option=com_content&view=form&layout=edit	component	1	1	1	22	0	1970-01-01 00:00:00	0	3		0	{"enable_category":"0","catid":"2","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}	19	20	0	*	0
+106	usermenu	Template Settings	template-settings		template-settings	index.php?option=com_config&view=templates&controller=config.display.templates	component	1	1	1	23	0	1970-01-01 00:00:00	0	6		0	{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}	27	28	0	*	0
+107	usermenu	Site Settings	site-settings		site-settings	index.php?option=com_config&view=config&controller=config.display.config	component	1	1	1	23	0	1970-01-01 00:00:00	0	6		0	{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}	29	30	0	*	0
 \.
 
 
@@ -4243,6 +4140,7 @@ COPY public.j_menu (id, menutype, title, alias, note, path, link, type, publishe
 
 COPY public.j_menu_types (id, asset_id, menutype, title, description, client_id) FROM stdin;
 1	0	mainmenu	Main Menu	The main menu for the site	0
+2	0	usermenu	User Menu	A Menu for logged-in Users	0
 \.
 
 
@@ -4267,7 +4165,7 @@ COPY public.j_messages_cfg (user_id, cfg_name, cfg_value) FROM stdin;
 --
 
 COPY public.j_modules (id, asset_id, title, note, content, ordering, "position", checked_out, checked_out_time, publish_up, publish_down, published, module, access, showtitle, params, client_id, language) FROM stdin;
-1	39	Main Menu			1	position-7	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_menu	1	1	{"menutype":"mainmenu","startLevel":"0","endLevel":"0","showAllChildren":"1","tag_id":"","class_sfx":"","window_open":"","layout":"","moduleclass_sfx":"_menu","cache":"1","cache_time":"900","cachemode":"itemid"}	0	*
+1	39	Main Menu			1	position-1	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_menu	1	1	{"menutype":"mainmenu","base":"","startLevel":"1","endLevel":"0","showAllChildren":"1","tag_id":"","class_sfx":" nav-pills","window_open":"","layout":"_:default","moduleclass_sfx":"_menu","cache":"1","cache_time":"900","cachemode":"itemid","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}	0	*
 2	40	Login			1	login	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_login	1	1		1	*
 3	41	Popular Articles			3	cpanel	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_popular	3	1	{"count":"5","catid":"","user_id":"0","layout":"_:default","moduleclass_sfx":"","cache":"0"}	1	*
 4	42	Recently Added Articles			4	cpanel	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_latest	3	1	{"count":"5","ordering":"c_dsc","catid":"","user_id":"0","layout":"_:default","moduleclass_sfx":"","cache":"0"}	1	*
@@ -4282,9 +4180,14 @@ COPY public.j_modules (id, asset_id, title, note, content, ordering, "position",
 17	51	Breadcrumbs			1	position-2	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_breadcrumbs	1	1	{"moduleclass_sfx":"","showHome":"1","homeText":"","showComponent":"1","separator":"","cache":"0","cache_time":"0","cachemode":"itemid"}	0	*
 79	52	Multilanguage status			1	status	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	0	mod_multilangstatus	3	1	{"layout":"_:default","moduleclass_sfx":"","cache":"0"}	1	*
 86	53	Joomla Version			1	footer	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_version	3	1	{"format":"short","product":"1","layout":"_:default","moduleclass_sfx":"","cache":"0"}	1	*
-87	55	Sample Data			0	cpanel	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_sampledata	6	1	{}	1	*
-88	58	Latest Actions			0	cpanel	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_latestactions	6	1	{}	1	*
-89	59	Privacy Dashboard			0	cpanel	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_privacy_dashboard	6	1	{}	1	*
+87	54	Popular Tags			1	position-7	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_tags_popular	1	1	{"maximum":"10","timeframe":"alltime","order_value":"count","order_direction":"1","display_count":0,"no_results_text":"0","minsize":1,"maxsize":2,"layout":"_:default","moduleclass_sfx":"","owncache":"1","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}	0	*
+88	55	Site Information			3	cpanel	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_stats_admin	3	1	{"serverinfo":"1","siteinfo":"1","counter":"0","increase":"0","layout":"_:default","moduleclass_sfx":"","cache":"1","cache_time":"900","cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}	1	*
+89	56	Release News			0	postinstall	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_feed	1	1	{"rssurl":"https:\\/\\/www.joomla.org\\/announcements\\/release-news.feed","rssrtl":"0","rsstitle":"1","rssdesc":"1","rssimage":"1","rssitems":"3","rssitemdesc":"1","word_count":"0","layout":"_:default","moduleclass_sfx":"","cache":"1","cache_time":"900","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}	1	*
+90	57	Latest Articles			1	position-7	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_articles_latest	1	1	{"catid":[""],"count":"5","show_featured":"","ordering":"c_dsc","user_id":"0","layout":"_:default","moduleclass_sfx":"","cache":"1","cache_time":"900","cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}	0	*
+91	58	User Menu			3	position-7	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_menu	1	1	{"menutype":"usermenu","base":"","startLevel":"1","endLevel":"0","showAllChildren":"1","tag_id":"","class_sfx":"","window_open":"","layout":"_:default","moduleclass_sfx":"_menu","cache":"1","cache_time":"900","cachemode":"itemid","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}	0	*
+92	59	Image Module		<p><img src="images/headers/blue-flower.jpg" alt="Blue Flower" /></p>	0	position-3	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_custom	1	0	{"prepare_content":"1","backgroundimage":"","layout":"_:default","moduleclass_sfx":"","cache":"1","cache_time":"900","cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}	0	*
+93	60	Search			0	position-0	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_search	1	1	{"label":"","width":"20","text":"","button":"0","button_pos":"right","imagebutton":"1","button_text":"","opensearch":"1","opensearch_title":"","set_itemid":"0","layout":"_:default","moduleclass_sfx":"","cache":"1","cache_time":"900","cachemode":"itemid","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}	0	*
+94	61	Latest Actions			0	cpanel	0	1970-01-01 00:00:00	1970-01-01 00:00:00	1970-01-01 00:00:00	1	mod_latestactions	6	1	{}	1	*
 \.
 
 
@@ -4313,6 +4216,11 @@ COPY public.j_modules_menu (moduleid, menuid) FROM stdin;
 87	0
 88	0
 89	0
+90	0
+91	0
+92	0
+93	0
+94	0
 \.
 
 
@@ -4387,11 +4295,7 @@ COPY public.j_schemas (extension_id, version_id) FROM stdin;
 --
 
 COPY public.j_session (session_id, client_id, guest, "time", data, userid, username) FROM stdin;
-\\x6531396b306b6b32376636746b396730376a756b696668707070	0	1	1580713083	joomla|s:1220:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjozOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjo0OntzOjc6InNlc3Npb24iO086ODoic3RkQ2xhc3MiOjM6e3M6NzoiY291bnRlciI7aTo1O3M6NToidGltZXIiO086ODoic3RkQ2xhc3MiOjM6e3M6NToic3RhcnQiO2k6MTU4MDcxMTk0NTtzOjQ6Imxhc3QiO2k6MTU4MDcxMzA4MztzOjM6Im5vdyI7aToxNTgwNzEzMDgzO31zOjU6InRva2VuIjtzOjMyOiI5WWdIajFSaHY1eGxWZzE4WWdWdUhmUVlhMml0SzZzZyI7fXM6ODoicmVnaXN0cnkiO086MjQ6Ikpvb21sYVxSZWdpc3RyeVxSZWdpc3RyeSI6Mzp7czo3OiIAKgBkYXRhIjtPOjg6InN0ZENsYXNzIjoxOntzOjU6InVzZXJzIjtPOjg6InN0ZENsYXNzIjoxOntzOjU6ImxvZ2luIjtPOjg6InN0ZENsYXNzIjoxOntzOjQ6ImZvcm0iO086ODoic3RkQ2xhc3MiOjI6e3M6NjoicmV0dXJuIjtzOjM2OiJodHRwOi8vMTkyLjE2OC4zMy4zMC9maW5hbC9pbmRleC5waHAiO3M6NDoiZGF0YSI7YTo1OntzOjY6InJldHVybiI7czozNjoiaHR0cDovLzE5Mi4xNjguMzMuMzAvZmluYWwvaW5kZXgucGhwIjtzOjg6InVzZXJuYW1lIjtzOjA6IiI7czo4OiJwYXNzd29yZCI7czowOiIiO3M6OToic2VjcmV0a2V5IjtzOjA6IiI7czo4OiJyZW1lbWJlciI7aTowO319fX19czoxNDoiACoAaW5pdGlhbGl6ZWQiO2I6MDtzOjk6InNlcGFyYXRvciI7czoxOiIuIjt9czo0OiJ1c2VyIjtPOjIwOiJKb29tbGFcQ01TXFVzZXJcVXNlciI6MTp7czoyOiJpZCI7aTowO31zOjExOiJhcHBsaWNhdGlvbiI7Tzo4OiJzdGRDbGFzcyI6MTp7czo1OiJxdWV1ZSI7YTowOnt9fX19czoxNDoiACoAaW5pdGlhbGl6ZWQiO2I6MDtzOjk6InNlcGFyYXRvciI7czoxOiIuIjt9";	0	
-\\x75663033636f6f7534746e686b396831376a7473693976666475	1	0	1580709435	joomla|s:868:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjozOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjozOntzOjc6InNlc3Npb24iO086ODoic3RkQ2xhc3MiOjM6e3M6NzoiY291bnRlciI7aTo2O3M6NToidGltZXIiO086ODoic3RkQ2xhc3MiOjM6e3M6NToic3RhcnQiO2k6MTU4MDcwOTQyMjtzOjQ6Imxhc3QiO2k6MTU4MDcwOTQzMztzOjM6Im5vdyI7aToxNTgwNzA5NDM1O31zOjU6InRva2VuIjtzOjMyOiI2Q0ZFejdqdDJjckJpeWZZeG5vSDVtcnptNHd3aWxkYSI7fXM6ODoicmVnaXN0cnkiO086MjQ6Ikpvb21sYVxSZWdpc3RyeVxSZWdpc3RyeSI6Mzp7czo3OiIAKgBkYXRhIjtPOjg6InN0ZENsYXNzIjoxOntzOjEzOiJjb21faW5zdGFsbGVyIjtPOjg6InN0ZENsYXNzIjoyOntzOjc6Im1lc3NhZ2UiO3M6MDoiIjtzOjE3OiJleHRlbnNpb25fbWVzc2FnZSI7czowOiIiO319czoxNDoiACoAaW5pdGlhbGl6ZWQiO2I6MDtzOjk6InNlcGFyYXRvciI7czoxOiIuIjt9czo0OiJ1c2VyIjtPOjIwOiJKb29tbGFcQ01TXFVzZXJcVXNlciI6MTp7czoyOiJpZCI7czozOiI5MjMiO319fXM6MTQ6IgAqAGluaXRpYWxpemVkIjtiOjA7czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fQ==";	923	temp_user
-\\x76753938383938356f33326e316b326f633935693064646f6b68	0	1	1580710188	joomla|s:736:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjozOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjozOntzOjc6InNlc3Npb24iO086ODoic3RkQ2xhc3MiOjM6e3M6NzoiY291bnRlciI7aToxO3M6NToidGltZXIiO086ODoic3RkQ2xhc3MiOjM6e3M6NToic3RhcnQiO2k6MTU4MDcxMDE4ODtzOjQ6Imxhc3QiO2k6MTU4MDcxMDE4ODtzOjM6Im5vdyI7aToxNTgwNzEwMTg4O31zOjU6InRva2VuIjtzOjMyOiJoendOVEVYYXpKVndCemRzZXJ1aEtlUHF6RDN3WmVydSI7fXM6ODoicmVnaXN0cnkiO086MjQ6Ikpvb21sYVxSZWdpc3RyeVxSZWdpc3RyeSI6Mzp7czo3OiIAKgBkYXRhIjtPOjg6InN0ZENsYXNzIjowOnt9czoxNDoiACoAaW5pdGlhbGl6ZWQiO2I6MDtzOjk6InNlcGFyYXRvciI7czoxOiIuIjt9czo0OiJ1c2VyIjtPOjIwOiJKb29tbGFcQ01TXFVzZXJcVXNlciI6MTp7czoyOiJpZCI7aTowO319fXM6MTQ6IgAqAGluaXRpYWxpemVkIjtiOjA7czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fQ==";	0	
-\\x76706f736a70736d3565383736656b6f626567727238736a6861	1	0	1580714764	joomla|s:860:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjozOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjozOntzOjc6InNlc3Npb24iO086ODoic3RkQ2xhc3MiOjM6e3M6NzoiY291bnRlciI7aTo4O3M6NToidGltZXIiO086ODoic3RkQ2xhc3MiOjM6e3M6NToic3RhcnQiO2k6MTU4MDcxNDYzNztzOjQ6Imxhc3QiO2k6MTU4MDcxNDc2MjtzOjM6Im5vdyI7aToxNTgwNzE0NzY0O31zOjU6InRva2VuIjtzOjMyOiJVR3Fqb3lqYmdobW1uT0syQXVZVzVmN1NhMmJSSm50OCI7fXM6ODoicmVnaXN0cnkiO086MjQ6Ikpvb21sYVxSZWdpc3RyeVxSZWdpc3RyeSI6Mzp7czo3OiIAKgBkYXRhIjtPOjg6InN0ZENsYXNzIjoxOntzOjEzOiJjb21faW5zdGFsbGVyIjtPOjg6InN0ZENsYXNzIjoyOntzOjc6Im1lc3NhZ2UiO3M6MDoiIjtzOjE3OiJleHRlbnNpb25fbWVzc2FnZSI7czowOiIiO319czoxNDoiACoAaW5pdGlhbGl6ZWQiO2I6MDtzOjk6InNlcGFyYXRvciI7czoxOiIuIjt9czo0OiJ1c2VyIjtPOjIwOiJKb29tbGFcQ01TXFVzZXJcVXNlciI6MTp7czoyOiJpZCI7aTo5MjM7fX19czoxNDoiACoAaW5pdGlhbGl6ZWQiO2I6MDtzOjk6InNlcGFyYXRvciI7czoxOiIuIjt9";	923	admin
-\\x6f676474656a6d396c633035396e303964696170623230736336	0	0	1580717040	joomla|s:1020:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjozOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjo0OntzOjc6InNlc3Npb24iO086ODoic3RkQ2xhc3MiOjM6e3M6NzoiY291bnRlciI7aTo1O3M6NToidGltZXIiO086ODoic3RkQ2xhc3MiOjM6e3M6NToic3RhcnQiO2k6MTU4MDcxNDYyNztzOjQ6Imxhc3QiO2k6MTU4MDcxNzAzOTtzOjM6Im5vdyI7aToxNTgwNzE3MDQwO31zOjU6InRva2VuIjtzOjMyOiJ0VWdvUzJZMkJQcTNkbmpvaDVUdmJTM2R0YVRlWGFjSyI7fXM6ODoicmVnaXN0cnkiO086MjQ6Ikpvb21sYVxSZWdpc3RyeVxSZWdpc3RyeSI6Mzp7czo3OiIAKgBkYXRhIjtPOjg6InN0ZENsYXNzIjoxOntzOjU6InVzZXJzIjtPOjg6InN0ZENsYXNzIjoxOntzOjU6ImxvZ2luIjtPOjg6InN0ZENsYXNzIjoxOntzOjQ6ImZvcm0iO086ODoic3RkQ2xhc3MiOjI6e3M6NjoicmV0dXJuIjtzOjI1OiJodHRwOi8vMTkyLjE2OC4zMy4zMC9reXIvIjtzOjQ6ImRhdGEiO2E6MDp7fX19fX1zOjE0OiIAKgBpbml0aWFsaXplZCI7YjowO3M6OToic2VwYXJhdG9yIjtzOjE6Ii4iO31zOjQ6InVzZXIiO086MjA6Ikpvb21sYVxDTVNcVXNlclxVc2VyIjoxOntzOjI6ImlkIjtpOjkyMzt9czoxMToiYXBwbGljYXRpb24iO086ODoic3RkQ2xhc3MiOjE6e3M6NToicXVldWUiO2E6MDp7fX19fXM6MTQ6IgAqAGluaXRpYWxpemVkIjtiOjA7czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fQ==";	923	admin
+57r1407pgn3evlev0a072isg7r	1	1	1581486342	joomla|s:736:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjozOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjozOntzOjc6InNlc3Npb24iO086ODoic3RkQ2xhc3MiOjM6e3M6NzoiY291bnRlciI7aToxO3M6NToidGltZXIiO086ODoic3RkQ2xhc3MiOjM6e3M6NToic3RhcnQiO2k6MTU4MTQ4NjM0MTtzOjQ6Imxhc3QiO2k6MTU4MTQ4NjM0MTtzOjM6Im5vdyI7aToxNTgxNDg2MzQxO31zOjU6InRva2VuIjtzOjMyOiJjbVFudVVHWDd1dlJLRE91b0k5VzVBNmhUQUVNb3NzYSI7fXM6ODoicmVnaXN0cnkiO086MjQ6Ikpvb21sYVxSZWdpc3RyeVxSZWdpc3RyeSI6Mzp7czo3OiIAKgBkYXRhIjtPOjg6InN0ZENsYXNzIjowOnt9czoxNDoiACoAaW5pdGlhbGl6ZWQiO2I6MDtzOjk6InNlcGFyYXRvciI7czoxOiIuIjt9czo0OiJ1c2VyIjtPOjIwOiJKb29tbGFcQ01TXFVzZXJcVXNlciI6MTp7czoyOiJpZCI7aTowO319fXM6MTQ6IgAqAGluaXRpYWxpemVkIjtiOjA7czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fQ==";	0	
 \.
 
 
@@ -4400,7 +4304,8 @@ COPY public.j_session (session_id, client_id, guest, "time", data, userid, usern
 --
 
 COPY public.j_tags (id, parent_id, lft, rgt, level, path, title, alias, note, description, published, checked_out, checked_out_time, access, params, metadesc, metakey, metadata, created_user_id, created_time, created_by_alias, modified_user_id, modified_time, images, urls, hits, language, version, publish_up, publish_down) FROM stdin;
-1	0	0	1	0		ROOT	root			1	0	1970-01-01 00:00:00	1					923	2020-02-03 05:55:16		0	1970-01-01 00:00:00			0	*	1	1970-01-01 00:00:00	1970-01-01 00:00:00
+1	0	0	3	0		ROOT	root			1	0	1970-01-01 00:00:00	1	{}				0	2020-02-12 05:42:14		0	1970-01-01 00:00:00			0	*	1	1970-01-01 00:00:00	1970-01-01 00:00:00
+2	1	1	2	1	joomla	Joomla	joomla			1	0	1970-01-01 00:00:00	1	{"tag_layout":"","tag_link_class":"label label-info","image_intro":"","float_intro":"","image_intro_alt":"","image_intro_caption":"","image_fulltext":"","float_fulltext":"","image_fulltext_alt":"","image_fulltext_caption":""}			{"author":"","robots":""}	885	2020-02-12 05:42:14		0	1970-01-01 00:00:00			0	*	1	1970-01-01 00:00:00	1970-01-01 00:00:00
 \.
 
 
@@ -4421,6 +4326,7 @@ COPY public.j_template_styles (id, template, client_id, home, title, params) FRO
 --
 
 COPY public.j_ucm_base (ucm_id, ucm_item_id, ucm_type_id, ucm_language_id) FROM stdin;
+1	1	1	0
 \.
 
 
@@ -4429,6 +4335,7 @@ COPY public.j_ucm_base (ucm_id, ucm_item_id, ucm_type_id, ucm_language_id) FROM 
 --
 
 COPY public.j_ucm_content (core_content_id, core_type_alias, core_title, core_alias, core_body, core_state, core_checked_out_time, core_checked_out_user_id, core_access, core_params, core_featured, core_metadata, core_created_user_id, core_created_by_alias, core_created_time, core_modified_user_id, core_modified_time, core_language, core_publish_up, core_publish_down, core_content_item_id, asset_id, core_images, core_urls, core_hits, core_version, core_ordering, core_metakey, core_metadesc, core_catid, core_xreference, core_type_id) FROM stdin;
+1	com_content.article	Getting Started	getting-started	<p>It's easy to get started creating your website. Knowing some of the basics will help.</p><h3>What is a Content Management System?</h3><p>A content management system is software that allows you to create and manage webpages easily by separating the creation of your content from the mechanics required to present it on the web.</p><p>In this site, the content is stored in a <em>database</em>. The look and feel are created by a <em>template</em>. Joomla! brings together the template and your content to create web pages.</p><h3>Logging in</h3><p>To login to your site use the user name and password that were created as part of the installation process. Once logged-in you will be able to create and edit articles and modify some settings.</p><h3>Creating an article</h3><p>Once you are logged-in, a new menu will be visible. To create a new article, click on the "Submit Article" link on that menu.</p><p>The new article interface gives you a lot of options, but all you need to do is add a title and put something in the content area. To make it easy to find, set the state to published.</p><div>You can edit an existing article by clicking on the edit icon (this only displays to users who have the right to edit).</div><h3>Template, site settings, and modules</h3><p>The look and feel of your site is controlled by a template. You can change the site name, background colour, highlights colour and more by editing the template settings. Click the "Template Settings" in the user menu.</p><p>The boxes around the main content of the site are called modules. You can modify modules on the current page by moving your cursor to the module and clicking the edit link. Always be sure to save and close any module you edit.</p><p>You can change some site settings such as the site name and description by clicking on the "Site Settings" link.</p><p>More advanced options for templates, site settings, modules, and more are available in the site administrator.</p><h3>Site and Administrator</h3><p>Your site actually has two separate sites. The site (also called the front end) is what visitors to your site will see. The administrator (also called the back end) is only used by people managing your site. You can access the administrator by clicking the "Site Administrator" link on the "User Menu" menu (visible once you login) or by adding /administrator to the end of your domain name. The same user name and password are used for both sites.</p><h3>Learn more</h3><p>There is much more to learn about how to use Joomla! to create the website you envision. You can learn much more at the <a href="https://docs.joomla.org/" target="_blank">Joomla! documentation site</a> and on the<a href="https://forum.joomla.org/" target="_blank"> Joomla! forums</a>.</p>	1	1970-01-01 00:00:00	0	1	{"show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}	0	{"robots":"","author":"","rights":"","xreference":""}	885		2020-02-12 05:42:14	0	1970-01-01 00:00:00	*	2020-02-12 05:42:14	1970-01-01 00:00:00	1	62	{"image_intro":"","float_intro":"","image_intro_alt":"","image_intro_caption":"","image_fulltext":"","float_fulltext":"","image_fulltext_alt":"","image_fulltext_caption":""}	{"urla":false,"urlatext":"","targeta":"","urlb":false,"urlbtext":"","targetb":"","urlc":false,"urlctext":"","targetc":""}	0	1	0			2		1
 \.
 
 
@@ -4437,6 +4344,8 @@ COPY public.j_ucm_content (core_content_id, core_type_alias, core_title, core_al
 --
 
 COPY public.j_ucm_history (version_id, ucm_item_id, ucm_type_id, version_note, save_date, editor_user_id, character_count, sha1_hash, version_data, keep_forever) FROM stdin;
+1	2	10	Initial content	2020-02-12 05:42:14+00	885	558	be28228b479aa67bad3dc1db2975232a033d5f0f	{"id":2,"parent_id":"1","lft":"1","rgt":2,"level":1,"path":"joomla","title":"Joomla","alias":"joomla","note":"","description":null,"published":1,"checked_out":"0","checked_out_time":"1970-01-01 00:00:00","access":1,"params":null,"metadesc":null,"metakey":null,"metadata":null,"created_user_id":"849","created_time":"2013-11-16 00:00:00","created_by_alias":"","modified_user_id":"0","modified_time":"1970-01-01 00:00:00","images":null,"urls":null,"hits":"0","language":"*","version":"1","publish_up":"1970-01-01 00:00:00","publish_down":"1970-01-01 00:00:00"}	0
+2	1	1	Initial content	2020-02-12 05:42:14+00	885	4539	4f6bf8f67e89553853c3b6e8ed0a6111daaa7a2f	{"id":1,"asset_id":54,"title":"Getting Started","alias":"getting-started","introtext":"<p>It's easy to get started creating your website. Knowing some of the basics will help.</p>\\r\\n<h3>What is a Content Management System?</h3>\\r\\n<p>A content management system is software that allows you to create and manage webpages easily by separating the creation of your content from the mechanics required to present it on the web.</p>\\r\\n<p>In this site, the content is stored in a <em>database</em>. The look and feel are created by a <em>template</em>. Joomla! brings together the template and your content to create web pages.</p>\\r\\n<h3>Logging in</h3>\\r\\n<p>To login to your site use the user name and password that were created as part of the installation process. Once logged-in you will be able to create and edit articles and modify some settings.</p>\\r\\n<h3>Creating an article</h3>\\r\\n<p>Once you are logged-in, a new menu will be visible. To create a new article, click on the \\"Submit Article\\" link on that menu.</p>\\r\\n<p>The new article interface gives you a lot of options, but all you need to do is add a title and put something in the content area. To make it easy to find, set the state to published.</p>\\r\\n<div>You can edit an existing article by clicking on the edit icon (this only displays to users who have the right to edit).</div>\\r\\n<h3>Template, site settings, and modules</h3>\\r\\n<p>The look and feel of your site is controlled by a template. You can change the site name, background colour, highlights colour and more by editing the template settings. Click the \\"Template Settings\\" in the user menu.\\u00a0</p>\\r\\n<p>The boxes around the main content of the site are called modules. \\u00a0You can modify modules on the current page by moving your cursor to the module and clicking the edit link. Always be sure to save and close any module you edit.</p>\\r\\n<p>You can change some site settings such as the site name and description by clicking on the \\"Site Settings\\" link.</p>\\r\\n<p>More advanced options for templates, site settings, modules, and more are available in the site administrator.</p>\\r\\n<h3>Site and Administrator</h3>\\r\\n<p>Your site actually has two separate sites. The site (also called the front end) is what visitors to your site will see. The administrator (also called the back end) is only used by people managing your site. You can access the administrator by clicking the \\"Site Administrator\\" link on the \\"User Menu\\" menu (visible once you login) or by adding /administrator to the end of your domain name. The same user name and password are used for both sites.</p>\\r\\n<h3>Learn more</h3>\\r\\n<p>There is much more to learn about how to use Joomla! to create the website you envision. You can learn much more at the <a href=\\"https://docs.joomla.org\\" target=\\"_blank\\">Joomla! documentation site</a> and on the<a href=\\"https://forum.joomla.org/\\" target=\\"_blank\\"> Joomla! forums</a>.</p>","fulltext":"","state":1,"catid":"2","created":"2013-11-16 00:00:00","created_by":"849","created_by_alias":"","modified":"","modified_by":null,"checked_out":null,"checked_out_time":null,"publish_up":"2013-11-16 00:00:00","publish_down":"1970-01-01 00:00:00","images":"{\\"image_intro\\":\\"\\",\\"float_intro\\":\\"\\",\\"image_intro_alt\\":\\"\\",\\"image_intro_caption\\":\\"\\",\\"image_fulltext\\":\\"\\",\\"float_fulltext\\":\\"\\",\\"image_fulltext_alt\\":\\"\\",\\"image_fulltext_caption\\":\\"\\"}","urls":"{\\"urla\\":false,\\"urlatext\\":\\"\\",\\"targeta\\":\\"\\",\\"urlb\\":false,\\"urlbtext\\":\\"\\",\\"targetb\\":\\"\\",\\"urlc\\":false,\\"urlctext\\":\\"\\",\\"targetc\\":\\"\\"}","attribs":"{\\"show_title\\":\\"\\",\\"link_titles\\":\\"\\",\\"show_tags\\":\\"\\",\\"show_intro\\":\\"\\",\\"info_block_position\\":\\"\\",\\"show_category\\":\\"\\",\\"link_category\\":\\"\\",\\"show_parent_category\\":\\"\\",\\"link_parent_category\\":\\"\\",\\"show_author\\":\\"\\",\\"link_author\\":\\"\\",\\"show_create_date\\":\\"\\",\\"show_modify_date\\":\\"\\",\\"show_publish_date\\":\\"\\",\\"show_item_navigation\\":\\"\\",\\"show_icons\\":\\"\\",\\"show_print_icon\\":\\"\\",\\"show_email_icon\\":\\"\\",\\"show_vote\\":\\"\\",\\"show_hits\\":\\"\\",\\"show_noauth\\":\\"\\",\\"urls_position\\":\\"\\",\\"alternative_readmore\\":\\"\\",\\"article_layout\\":\\"\\",\\"show_publishing_options\\":\\"\\",\\"show_article_options\\":\\"\\",\\"show_urls_images_backend\\":\\"\\",\\"show_urls_images_frontend\\":\\"\\"}","version":1,"ordering":null,"metakey":"","metadesc":"","access":"1","hits":null,"metadata":"{\\"robots\\":\\"\\",\\"author\\":\\"\\",\\"rights\\":\\"\\",\\"xreference\\":\\"\\"}","featured":"0","language":"*","xreference":""}	0
 \.
 
 
@@ -4445,9 +4354,9 @@ COPY public.j_ucm_history (version_id, ucm_item_id, ucm_type_id, version_note, s
 --
 
 COPY public.j_update_sites (update_site_id, name, type, location, enabled, last_check_timestamp, extra_query) FROM stdin;
-2	Accredited Joomla! Translations	collection	https://update.joomla.org/language/translationlist_3.xml	1	1580709433	
-3	Joomla! Update Component Update Site	extension	https://update.joomla.org/core/extensions/com_joomlaupdate.xml	1	1580709434	
-1	Joomla! Core	collection	https://update.joomla.org/core/list.xml	1	1580714764	
+2	Accredited Joomla! Translations	collection	https://update.joomla.org/language/translationlist_3.xml	1	0	
+3	Joomla! Update Component Update Site	extension	https://update.joomla.org/core/extensions/com_joomlaupdate.xml	1	0	
+1	Joomla! Core	collection	https://update.joomla.org/core/list.xml	1	1581486342	
 \.
 
 
@@ -4467,83 +4376,6 @@ COPY public.j_update_sites_extensions (update_site_id, extension_id) FROM stdin;
 --
 
 COPY public.j_updates (update_id, update_site_id, extension_id, name, description, element, type, folder, client_id, version, data, detailsurl, infourl, extra_query) FROM stdin;
-1	2	0	Armenian		pkg_hy-AM	package		0	3.4.4.1		https://update.joomla.org/language/details3/hy-AM_details.xml		
-2	2	0	Malay		pkg_ms-MY	package		0	3.4.1.2		https://update.joomla.org/language/details3/ms-MY_details.xml		
-3	2	0	Romanian		pkg_ro-RO	package		0	3.9.13.1		https://update.joomla.org/language/details3/ro-RO_details.xml		
-4	2	0	Flemish		pkg_nl-BE	package		0	3.9.15.1		https://update.joomla.org/language/details3/nl-BE_details.xml		
-5	2	0	Chinese Traditional		pkg_zh-TW	package		0	3.8.0.1		https://update.joomla.org/language/details3/zh-TW_details.xml		
-6	2	0	French		pkg_fr-FR	package		0	3.9.15.1		https://update.joomla.org/language/details3/fr-FR_details.xml		
-7	2	0	Galician		pkg_gl-ES	package		0	3.3.1.2		https://update.joomla.org/language/details3/gl-ES_details.xml		
-8	2	0	Georgian		pkg_ka-GE	package		0	3.9.15.1		https://update.joomla.org/language/details3/ka-GE_details.xml		
-9	2	0	Greek		pkg_el-GR	package		0	3.9.15.1		https://update.joomla.org/language/details3/el-GR_details.xml		
-10	2	0	Japanese		pkg_ja-JP	package		0	3.9.15.1		https://update.joomla.org/language/details3/ja-JP_details.xml		
-11	2	0	Hebrew		pkg_he-IL	package		0	3.1.1.2		https://update.joomla.org/language/details3/he-IL_details.xml		
-12	2	0	Bengali		pkg_bn-BD	package		0	3.8.10.1		https://update.joomla.org/language/details3/bn-BD_details.xml		
-13	2	0	Hungarian		pkg_hu-HU	package		0	3.9.12.1		https://update.joomla.org/language/details3/hu-HU_details.xml		
-14	2	0	Afrikaans		pkg_af-ZA	package		0	3.9.15.1		https://update.joomla.org/language/details3/af-ZA_details.xml		
-15	2	0	Arabic Unitag		pkg_ar-AA	package		0	3.9.15.1		https://update.joomla.org/language/details3/ar-AA_details.xml		
-16	2	0	Belarusian		pkg_be-BY	package		0	3.2.1.2		https://update.joomla.org/language/details3/be-BY_details.xml		
-17	2	0	Bulgarian		pkg_bg-BG	package		0	3.6.5.2		https://update.joomla.org/language/details3/bg-BG_details.xml		
-18	2	0	Catalan		pkg_ca-ES	package		0	3.9.11.2		https://update.joomla.org/language/details3/ca-ES_details.xml		
-19	2	0	Chinese Simplified		pkg_zh-CN	package		0	3.9.15.1		https://update.joomla.org/language/details3/zh-CN_details.xml		
-20	2	0	Croatian		pkg_hr-HR	package		0	3.9.15.1		https://update.joomla.org/language/details3/hr-HR_details.xml		
-21	2	0	Czech		pkg_cs-CZ	package		0	3.9.13.1		https://update.joomla.org/language/details3/cs-CZ_details.xml		
-22	2	0	Danish		pkg_da-DK	package		0	3.9.15.1		https://update.joomla.org/language/details3/da-DK_details.xml		
-23	2	0	Dutch		pkg_nl-NL	package		0	3.9.15.1		https://update.joomla.org/language/details3/nl-NL_details.xml		
-24	2	0	Esperanto		pkg_eo-XX	package		0	3.8.11.1		https://update.joomla.org/language/details3/eo-XX_details.xml		
-25	2	0	Estonian		pkg_et-EE	package		0	3.9.14.2		https://update.joomla.org/language/details3/et-EE_details.xml		
-26	2	0	Italian		pkg_it-IT	package		0	3.9.15.1		https://update.joomla.org/language/details3/it-IT_details.xml		
-27	2	0	Khmer		pkg_km-KH	package		0	3.4.5.1		https://update.joomla.org/language/details3/km-KH_details.xml		
-28	2	0	Korean		pkg_ko-KR	package		0	3.8.9.1		https://update.joomla.org/language/details3/ko-KR_details.xml		
-29	2	0	Latvian		pkg_lv-LV	package		0	3.7.3.1		https://update.joomla.org/language/details3/lv-LV_details.xml		
-30	2	0	Lithuanian		pkg_lt-LT	package		0	3.9.6.1		https://update.joomla.org/language/details3/lt-LT_details.xml		
-31	2	0	Macedonian		pkg_mk-MK	package		0	3.6.5.1		https://update.joomla.org/language/details3/mk-MK_details.xml		
-32	2	0	Norwegian Bokmal		pkg_nb-NO	package		0	3.8.11.1		https://update.joomla.org/language/details3/nb-NO_details.xml		
-33	2	0	Norwegian Nynorsk		pkg_nn-NO	package		0	3.4.2.1		https://update.joomla.org/language/details3/nn-NO_details.xml		
-34	2	0	Persian		pkg_fa-IR	package		0	3.9.15.1		https://update.joomla.org/language/details3/fa-IR_details.xml		
-35	2	0	Polish		pkg_pl-PL	package		0	3.9.13.1		https://update.joomla.org/language/details3/pl-PL_details.xml		
-36	2	0	Portuguese		pkg_pt-PT	package		0	3.9.15.1		https://update.joomla.org/language/details3/pt-PT_details.xml		
-37	2	0	Russian		pkg_ru-RU	package		0	3.9.12.1		https://update.joomla.org/language/details3/ru-RU_details.xml		
-38	2	0	English AU		pkg_en-AU	package		0	3.9.15.1		https://update.joomla.org/language/details3/en-AU_details.xml		
-39	2	0	Slovak		pkg_sk-SK	package		0	3.9.15.1		https://update.joomla.org/language/details3/sk-SK_details.xml		
-40	2	0	English US		pkg_en-US	package		0	3.9.15.1		https://update.joomla.org/language/details3/en-US_details.xml		
-41	2	0	Swedish		pkg_sv-SE	package		0	3.9.15.1		https://update.joomla.org/language/details3/sv-SE_details.xml		
-42	2	0	Syriac		pkg_sy-IQ	package		0	3.4.5.1		https://update.joomla.org/language/details3/sy-IQ_details.xml		
-43	2	0	Tamil		pkg_ta-IN	package		0	3.9.15.1		https://update.joomla.org/language/details3/ta-IN_details.xml		
-44	2	0	Thai		pkg_th-TH	package		0	3.9.15.1		https://update.joomla.org/language/details3/th-TH_details.xml		
-45	2	0	Turkish		pkg_tr-TR	package		0	3.9.4.1		https://update.joomla.org/language/details3/tr-TR_details.xml		
-46	2	0	Ukrainian		pkg_uk-UA	package		0	3.7.1.1		https://update.joomla.org/language/details3/uk-UA_details.xml		
-47	2	0	Uyghur		pkg_ug-CN	package		0	3.7.5.2		https://update.joomla.org/language/details3/ug-CN_details.xml		
-48	2	0	Albanian		pkg_sq-AL	package		0	3.1.1.2		https://update.joomla.org/language/details3/sq-AL_details.xml		
-49	2	0	Basque		pkg_eu-ES	package		0	3.7.5.1		https://update.joomla.org/language/details3/eu-ES_details.xml		
-50	2	0	Hindi		pkg_hi-IN	package		0	3.3.6.2		https://update.joomla.org/language/details3/hi-IN_details.xml		
-51	2	0	German DE		pkg_de-DE	package		0	3.9.15.1		https://update.joomla.org/language/details3/de-DE_details.xml		
-52	2	0	Portuguese Brazil		pkg_pt-BR	package		0	3.9.15.1		https://update.joomla.org/language/details3/pt-BR_details.xml		
-53	2	0	Serbian Latin		pkg_sr-YU	package		0	3.9.15.1		https://update.joomla.org/language/details3/sr-YU_details.xml		
-54	2	0	Spanish		pkg_es-ES	package		0	3.9.11.1		https://update.joomla.org/language/details3/es-ES_details.xml		
-55	2	0	Bosnian		pkg_bs-BA	package		0	3.9.14.1		https://update.joomla.org/language/details3/bs-BA_details.xml		
-56	2	0	Serbian Cyrillic		pkg_sr-RS	package		0	3.9.15.1		https://update.joomla.org/language/details3/sr-RS_details.xml		
-57	2	0	Vietnamese		pkg_vi-VN	package		0	3.2.1.2		https://update.joomla.org/language/details3/vi-VN_details.xml		
-58	2	0	Bahasa Indonesia		pkg_id-ID	package		0	3.6.2.1		https://update.joomla.org/language/details3/id-ID_details.xml		
-59	2	0	Finnish		pkg_fi-FI	package		0	3.9.14.1		https://update.joomla.org/language/details3/fi-FI_details.xml		
-60	2	0	Swahili		pkg_sw-KE	package		0	3.9.15.1		https://update.joomla.org/language/details3/sw-KE_details.xml		
-61	2	0	Montenegrin		pkg_srp-ME	package		0	3.3.1.2		https://update.joomla.org/language/details3/srp-ME_details.xml		
-62	2	0	English CA		pkg_en-CA	package		0	3.9.15.1		https://update.joomla.org/language/details3/en-CA_details.xml		
-63	2	0	French CA		pkg_fr-CA	package		0	3.6.5.1		https://update.joomla.org/language/details3/fr-CA_details.xml		
-64	2	0	Welsh		pkg_cy-GB	package		0	3.9.14.1		https://update.joomla.org/language/details3/cy-GB_details.xml		
-65	2	0	Sinhala		pkg_si-LK	package		0	3.3.1.2		https://update.joomla.org/language/details3/si-LK_details.xml		
-66	2	0	Dari Persian		pkg_prs-AF	package		0	3.4.4.3		https://update.joomla.org/language/details3/prs-AF_details.xml		
-67	2	0	Turkmen		pkg_tk-TM	package		0	3.5.0.2		https://update.joomla.org/language/details3/tk-TM_details.xml		
-68	2	0	Irish		pkg_ga-IE	package		0	3.8.13.1		https://update.joomla.org/language/details3/ga-IE_details.xml		
-69	2	0	Dzongkha		pkg_dz-BT	package		0	3.6.2.1		https://update.joomla.org/language/details3/dz-BT_details.xml		
-70	2	0	Slovenian		pkg_sl-SI	package		0	3.9.15.1		https://update.joomla.org/language/details3/sl-SI_details.xml		
-71	2	0	Spanish CO		pkg_es-CO	package		0	3.9.15.1		https://update.joomla.org/language/details3/es-CO_details.xml		
-72	2	0	German CH		pkg_de-CH	package		0	3.9.15.1		https://update.joomla.org/language/details3/de-CH_details.xml		
-73	2	0	German AT		pkg_de-AT	package		0	3.9.15.1		https://update.joomla.org/language/details3/de-AT_details.xml		
-74	2	0	German LI		pkg_de-LI	package		0	3.9.15.1		https://update.joomla.org/language/details3/de-LI_details.xml		
-75	2	0	German LU		pkg_de-LU	package		0	3.9.15.1		https://update.joomla.org/language/details3/de-LU_details.xml		
-76	2	0	English NZ		pkg_en-NZ	package		0	3.9.15.1		https://update.joomla.org/language/details3/en-NZ_details.xml		
-77	2	0	Kazakh		pkg_kk-KZ	package		0	3.9.14.1		https://update.joomla.org/language/details3/kk-KZ_details.xml		
 \.
 
 
@@ -4576,7 +4408,7 @@ COPY public.j_user_profiles (user_id, profile_key, profile_value, ordering) FROM
 --
 
 COPY public.j_user_usergroup_map (user_id, group_id) FROM stdin;
-923	8
+885	8
 \.
 
 
@@ -4602,7 +4434,7 @@ COPY public.j_usergroups (id, parent_id, lft, rgt, title) FROM stdin;
 --
 
 COPY public.j_users (id, name, username, email, password, block, "sendEmail", "registerDate", "lastvisitDate", activation, params, "lastResetTime", "resetCount", "otpKey", otep, "requireReset") FROM stdin;
-923	Super User	admin	raa@fafa.com	$2y$10$9etx6Rg1Lznp0pXs/w65LuFMe9rQzzVBKzfrMS6zJbovBl6LuattS	0	1	2020-02-03 05:55:16	2020-02-03 08:04:00	0		1970-01-01 00:00:00	0			0
+885	Super User	joomlauser	poc@joomla.com	$2y$10$RWOL8JI9zfOZAWq.ms5vvOHI4dBJOXC3adS1d22NoRH6eELS9FMc2	0	1	2020-02-12 05:42:14	1970-01-01 00:00:00	0		1970-01-01 00:00:00	0			0
 \.
 
 
@@ -4637,14 +4469,14 @@ SELECT pg_catalog.setval('public.j_action_logs_extensions_id_seq', 19, false);
 -- Name: j_action_logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_action_logs_id_seq', 3, true);
+SELECT pg_catalog.setval('public.j_action_logs_id_seq', 1, false);
 
 
 --
 -- Name: j_assets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_assets_id_seq', 60, false);
+SELECT pg_catalog.setval('public.j_assets_id_seq', 64, true);
 
 
 --
@@ -4679,7 +4511,7 @@ SELECT pg_catalog.setval('public.j_contact_details_id_seq', 1, false);
 -- Name: j_content_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_content_id_seq', 1, false);
+SELECT pg_catalog.setval('public.j_content_id_seq', 1, true);
 
 
 --
@@ -4756,14 +4588,14 @@ SELECT pg_catalog.setval('public.j_languages_lang_id_seq', 2, false);
 -- Name: j_menu_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_menu_id_seq', 102, false);
+SELECT pg_catalog.setval('public.j_menu_id_seq', 107, true);
 
 
 --
 -- Name: j_menu_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_menu_types_id_seq', 2, false);
+SELECT pg_catalog.setval('public.j_menu_types_id_seq', 2, true);
 
 
 --
@@ -4777,7 +4609,7 @@ SELECT pg_catalog.setval('public.j_messages_message_id_seq', 1, false);
 -- Name: j_modules_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_modules_id_seq', 90, false);
+SELECT pg_catalog.setval('public.j_modules_id_seq', 94, true);
 
 
 --
@@ -4826,7 +4658,7 @@ SELECT pg_catalog.setval('public.j_redirect_links_id_seq', 1, false);
 -- Name: j_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_tags_id_seq', 2, false);
+SELECT pg_catalog.setval('public.j_tags_id_seq', 2, true);
 
 
 --
@@ -4840,21 +4672,21 @@ SELECT pg_catalog.setval('public.j_template_styles_id_seq', 9, false);
 -- Name: j_ucm_base_ucm_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_ucm_base_ucm_id_seq', 1, false);
+SELECT pg_catalog.setval('public.j_ucm_base_ucm_id_seq', 1, true);
 
 
 --
 -- Name: j_ucm_content_core_content_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_ucm_content_core_content_id_seq', 1, false);
+SELECT pg_catalog.setval('public.j_ucm_content_core_content_id_seq', 1, true);
 
 
 --
 -- Name: j_ucm_history_version_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_ucm_history_version_id_seq', 1, false);
+SELECT pg_catalog.setval('public.j_ucm_history_version_id_seq', 2, true);
 
 
 --
@@ -4868,7 +4700,7 @@ SELECT pg_catalog.setval('public.j_update_sites_update_site_id_seq', 4, false);
 -- Name: j_updates_update_id_seq; Type: SEQUENCE SET; Schema: public; Owner: temp_user
 --
 
-SELECT pg_catalog.setval('public.j_updates_update_id_seq', 77, true);
+SELECT pg_catalog.setval('public.j_updates_update_id_seq', 1, false);
 
 
 --
