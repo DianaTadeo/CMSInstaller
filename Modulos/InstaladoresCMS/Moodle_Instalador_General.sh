@@ -3,7 +3,7 @@
 ## @file
 ## @author Rafael Alejandro Vallejo Fernandez
 ## @author Diana G. Tadeo Guillen
-## @brief Instalador de Joomla para CentOS 6, CentOS 7, Debian 9 y Debian 10
+## @brief Instalador de Moodle para CentOS 6, CentOS 7, Debian 9 y Debian 10
 ## @version 1.0
 ##
 
@@ -36,8 +36,8 @@ log_errors(){
 }
 
 ## @fn install_dep()
-## @brief Funcion que realiza la instalacion de las dependencias de php para Joomla
-## @param $1 El sistema operativo donde se desea instalar Joomla : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+## @brief Funcion que realiza la instalacion de las dependencias de php para Moodle
+## @param $1 El sistema operativo donde se desea instalar Moodle : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
 ## @param $2 Manejador de base de datos para la instalaci[on de Moodle
 ## @param $3 Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
 ## @param $4 Nombre de dominio del sitio
@@ -57,17 +57,17 @@ install_dep(){
 			apt update
 			cmd="apt install $PHP php7.3-common \
 			php7.3-gd php7.3-json php7.3-mbstring php7.3-intl \
-			php7.3-xml php7.3-zip php7.3-curl unzip zip -y"
+			php7.3-xml php7.3-zip php7.3-curl php7.3-xmlrpc unzip zip -y"
 			$cmd
-			log_errors $? "Instalacion de PHP en Joomla: $cmd"
+			log_errors $? "Instalacion de PHP en Moodle: $cmd"
 			if [[ $2 == 'MySQL' ]]; then
 				cmd="apt install php7.3-mysql -y"
 				$cmd
-				log_errors $? "Instalacion de dependencias Joomla: $cmd"
+				log_errors $? "Instalacion de dependencias Moodle: $cmd"
 			else
 				cmd="apt install php7.3-pgsql -y"
 				$cmd
-				log_errors $? "Instalacion de dependencias Joomla: $cmd"
+				log_errors $? "Instalacion de dependencias Moodle: $cmd"
 			fi
 			if [[ $3 == 'Apache' ]]; then
 				apt install libapache2-mod-php7.3 -y
@@ -81,19 +81,20 @@ install_dep(){
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
 			cmd="yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Joomla: $cmd"
+			log_errors 0 "Instalacion de dependencias Moodle: $cmd"
 			cmd="yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Joomla: $cmd"
+			log_errors $? "Instalacion de dependencias Moodle: $cmd"
 			cmd="yum install yum-utils -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Joomla: $cmd"
+			log_errors 0 "Instalacion de dependencias Moodle: $cmd"
 			cmd="yum-config-manager --enable remi-php73 -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Joomla: $cmd"
-			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y"
+			log_errors $? "Instalacion de dependencias Moodle: $cmd"
+			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo \
+			php-xml php-mbstring unzip php-intl php-zip php-xmlrpc unzip zip-y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Joomla: $cmd"
+			log_errors $? "Instalacion de dependencias Moodle: $cmd"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
 			log_errors $? "Instalacion de PHP7.3-$2: "
 			if [[ $3 == 'Apache' ]]; then
@@ -112,14 +113,16 @@ modulos_configuraciones(){
 	chown $USER:$USER ../moodledata/temp -R
 	wget https://moodle.org/plugins/download.php/20823/moosh_moodle38_2019121900.zip
 	unzip moosh_moodle38_2019121900.zip
+	rm moosh_moodle38_2019121900.zip
 	cd moosh
 	ln -s $PWD/moosh.php /usr/local/bin/moosh
 	# Se deshabilita inicio de sesión de usuarios invitados
-	/usr/local/bin/moosh config-set guestloginbutton 0
+	/usr/local/bin/moosh -n config-set guestloginbutton 0
+	cd ..
 }
 
 ## @fn install_moodle()
-## @brief Funcion que realiza la instalacion de Joomla
+## @brief Funcion que realiza la instalacion de Moodle
 ## @param $1 Nombre de la base de  para Moodle
 ## @param $2 Usuario de la base de datos para Moodle
 ## @param $3 Servidor de la base de datos (host)
@@ -130,6 +133,8 @@ modulos_configuraciones(){
 ## @param $8 Version de Moodle
 ## @param $9 Email de administrador
 ## @param ${10} Ruta del directorio donde fue ejecutado el script main.sh
+## @param ${11} Nombre de usuario con el que se ejecuta el servidor web
+##
 install_moodle(){
 	if [[ $7 == 'MySQL' ]]; then
 		dbtype='mariadb'
@@ -147,53 +152,43 @@ install_moodle(){
 	rm $moodleName.tgz
 	mv moodle $6
 	cd $6
+	#clear
+	chown ${11}:${11} . -R
 	mkdir ../moodledata
+	chown ${11}:${11} ../moodledata -R
 	read -sp "Ingresa el password de la base de datos del usuario '$2' para Moodle: " dbpass; echo -e "\n"
 	read -p "Ingresa el nombre completo del sitio ['$6' por defecto]: " fullname
 	if [ -z "$fullname" ]; then fullname="$6"; fi
 	read -p "Ingresa el nombre corto del sitio: " shortname
 	read -p "Ingresa el nombre para el administrador de Moodle: " adminuser
 	read -sp "Ingresa el password para el '$adminuser' de Moodle: " adminpass; echo -e "\n"
-	
-	if [[ $6 == 'Apache' ]]; then
 
-		if [[ $7 == 'Debian 9' ]] || [[ $7 == 'Debian 10' ]]; then
-			chown www-data:www-data . -R
-			chown www-data:www-data ../moodledata -R
-			/usr/bin/php7.3 --version  2> /dev/null
-			if [ $? == 0 ]; then
-				cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
-			else
-				cmd="sudo -u www-data /usr/bin/php admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
-			fi
-			$cmd
-		else
-			chown apache:apache . -R
-			chown apache:apache ../moodledata -R
-			/usr/bin/php7.3 --version  2> /dev/null
-			if [ $? == 0 ]; then
-				cmd="sudo -u apache /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
-			else
-				cmd="sudo -u apache /usr/bin/php admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
-			fi
-			$cmd
-		fi
+	/usr/bin/php7.3 --version  2> /dev/null
+	if [ $? == 0 ]; then
+		BIN_PHP="php7.3"
 	else
-		#chown -R nginx:nginx $4
-		chown www-data:www-data . -R
-		chown www-data:www-data ../moodledata -R
-		/usr/bin/php7.3 --version  2> /dev/null
-		if [ $? == 0 ]; then
-			cmd="sudo -u www-data /usr/bin/php7.3 admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
-		else
-			cmd="sudo -u www-data /usr/bin/php admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
-		fi
-		$cmd
+		BIN_PHP="php"
 	fi
-	
+
+	cmd="sudo -u ${11} /usr/bin/$BIN_PHP admin/cli/install.php  --dbname=$1 --dbuser=$2 --dbhost=$3 --dbport=$4 --dbtype=$dbtype --dbpass=$dbpass --fullname="$fullname" --shortname="$shortname" --adminuser="$adminuser" --adminpass="$adminpass" --adminemail=$9 --wwwroot=https://$6 --non-interactive --agree-license"
+	$cmd
 
 	modulos_configuraciones
-	#sudo -u www-data /usr/bin/php admin/cli/install_database.php
+
+	echo "Estoy en: $PWD"
+	# Permisos de carpetas y archivos de dir: moodledata
+	find ../moodledata -type f -exec chmod 600 {} +
+	log_errors $? "Permisos en archivos de directorio moodledata: 600"
+	find ../moodledata -type d -exec chmod 700 {} +
+	log_errors $? "Permisos en carpetas de directorio moodledata: 700"
+	chown ${11}:${11} ../moodledata/ -R
+
+	# Permisos de carpetas y archivos
+	find . -type f -exec chmod 644 {} +
+	log_errors $? "Permisos en archivos: 644"
+	find . -type d -exec chmod 755 {} +
+	log_errors $? "Permisos en carpetas: 755"
+	chown $USER:$USER . -R
 
 	jq -c -n --arg title "$fullname" --arg moodle_admin "$adminuser" --arg moodle_admin_pass "$adminpass" \
 	'{Title: $title, moodle_admin:$moodle_admin, moodle_admin_pass:$moodle_admin_pass}' \
@@ -210,5 +205,11 @@ mkdir -p "$5"
 
 install_dep "$8" "$9" "${10}" "$7" "$5" "${12}"
 
+WEB_USER=$(grep -o "^www-data" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^apache" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^httpd" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^nginx" /etc/passwd)
+
 cd $5
-install_moodle "$1" "$2" "$3" "$4" "$5" "$7" "$9" "$6" "${11}" "$TEMP_PATH"
+install_moodle "$1" "$2" "$3" "$4" "$5" "$7" "$9" "$6" "${11}" "$TEMP_PATH" \
+"$WEB_USER"
