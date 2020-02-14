@@ -30,15 +30,19 @@ if [[ $1 =~ CentOS.* ]]; then
 	[ -z "$(which openssl)" ] && yum install openssl -y
 	log_errors 0 "Instalacion de $(openssl version): "
 	yum install mod_ssl -y
+	mkdir /etc/httpd/sites-available /etc/httpd/sites-enabled
+	echo "IncludeOptional sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf
 	SISTEMA="/etc/httpd/sites-available/$2.conf"
 	SECURITY_CONF="/etc/httpd/conf.d/security.conf"
 	ROOT_PATH="/var/www"
+	WEB_SERVER="httpd"
 else
 	[ -z "$(which openssl)" ] && apt install openssl -y
 	log_errors 0 "Instalacion de $(openssl version): "
 	SISTEMA="/etc/apache2/sites-available/$2.conf"
 	SECURITY_CONF="/etc/apache2/conf-enabled/security.conf"
 	ROOT_PATH="/var/www/html"
+	WEB_SERVER="apache2"
 fi
 if [[ $2 =~ [^www.]* ]]; then SERVERNAME="www.$2"; else SERVERNAME=$(echo $2 | cut -f1 -d'.' --complement); fi
 
@@ -63,6 +67,14 @@ else
 	los archivos de configuración correspondientes."
 	KEY="/root/$2.key"; CSR="/root/$2.csr"; CRT="/root/$2.crt"
 	openssl genrsa -out $KEY 2048
+	# Se ajusta script de expect a CentOS
+	if [[ $1 =~ CentOS.* ]]; then
+		sed -i "s/AU/XX/" ./Modulos/InstaladoresCMS/openssl_req.exp
+		sed -i "s/Some-State//" ./Modulos/InstaladoresCMS/openssl_req.exp
+		sed -i 's/\(Locality Name (eg, city) \)\\\[\\\]/\1\\\[Default City\\\]/' ./Modulos/InstaladoresCMS/openssl_req.exp
+		sed -i "s/Internet Widgits Pty Ltd/Default Company Ltd/" ./Modulos/InstaladoresCMS/openssl_req.exp
+		sed -i "s/e.g. server FQDN or YOUR name/eg, your name or your server's hostname/" ./Modulos/InstaladoresCMS/openssl_req.exp
+	fi
 	./Modulos/InstaladoresCMS/openssl_req.exp "$KEY" "$CSR" "$2" "temporal@email.com"
 	#openssl req -new -key $KEY -out $CSR
 	openssl x509 -req -days 365 -in $CSR -signkey $KEY -out $CRT
@@ -94,8 +106,8 @@ echo "
 	#<FilesMatch \"(?i)(README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t(ar.*|ar\.gz|gz)|z(.*|ip)|~)\$)\">
 	#		Require all denied
 	#</FilesMatch>
-	ErrorLog /var/log/apache2/$2-error.log
-	CustomLog /var/log/apache2/$2-requests.log combined
+	ErrorLog /var/log/$WEB_SERVER/$2-error.log
+	CustomLog /var/log/$WEB_SERVER/$2-requests.log combined
 
 </VirtualHost>" |  tee $SISTEMA
 if [[ ! $3 =~ $ROOT_PATH/? ]]; then
