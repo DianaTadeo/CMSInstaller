@@ -16,10 +16,10 @@ LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 #################################################################
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR] : $2" >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2" 	>> $LOG
 	fi
 }
 
@@ -64,15 +64,20 @@ install_nginx(){
 install_nginx_apt(){
 	# $1=DEBIAN_VERSION; $2=WEBSERVER_VERSION
 	apt install curl gnupg2 ca-certificates lsb-release -y
-	[[ $1 == "Debian 10" ]] && VERSION_NAME="buster"
-	[[ $1 == "Debian 9" ]] && VERSION_NAME="stretch"
-	echo "deb http://nginx.org/packages/debian $VERSION_NAME nginx" \
-	| sudo tee /etc/apt/sources.list.d/nginx.list
-	log_errors $? "Repostorio para instalar nginx: deb http://nginx.org/packages/debian $VERSION_NAME nginx"
-	curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+
+	if [[ $1 == "Debian 10" ]]; then
+		echo "deb http://nginx.org/packages/debian buster nginx" \
+		| sudo tee /etc/apt/sources.list.d/nginx.list
+		log_errors $? "Repostorio para instalar nginx: deb http://nginx.org/packages/debian buster nginx"
+		curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+	else
+		wget -q https://packages.sury.org/nginx/apt.gpg -O- | sudo apt-key add -
+		echo "deb https://packages.sury.org/nginx/ stretch main" | sudo tee /etc/apt/sources.list.d/nginx.list
+		log_errors $? "Repostorio para instalar nginx: deb https://packages.sury.org/nginx/ stretch main"
+	fi
 	apt update
 	log_errors $? "Actualización de la lista de paquetes disponibles: apt update"
-	apt install -y nginx=$2*
+	apt install -y nginx=$2* nginx-extras
 	log_errors $? "Instalación de nginx: apt install -y nginx=$2*"
 
 }
@@ -154,12 +159,11 @@ install_nginx_WAF_etc(){
 	tar zxvf nginx-$2.tar.gz
 	cd nginx-$2
 	#./configure --with-compat --add-dynamic-module=../ModSecurity-nginx
-	[[ $1 == "Debian 9" ]] && ./configure --add-dynamic-module=../ModSecurity-nginx --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'
-	[[ $1 == "Debian 10" ]] &&	./configure --add-dynamic-module=../ModSecurity-nginx --with-cc-opt='-g -O2 -fPIC -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now' --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_dav_module --with-http_slice_module --with-threads --with-http_addition_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_mp4_module --with-http_random_index_module --with-http_secure_link_module --with-http_sub_module --with-http_xslt_module --with-mail --with-mail_ssl_module --with-stream --with-stream_ssl_module --with-threads
+	./configure --add-dynamic-module=../ModSecurity-nginx --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -fPIC' --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_dav_module --with-http_slice_module --with-threads --with-http_addition_module --with-http_geoip_module=dynamic --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module=dynamic --with-http_sub_module --with-http_xslt_module=dynamic --with-stream=dynamic --with-stream_ssl_module --with-stream_ssl_preread_module --with-mail=dynamic --with-mail_ssl_module
+
 	log_errors $? "Se configura Nginx para utilizar ModSecurity-nginx"
 	make modules
-	[[ $1 == "Debian 9" ]] && cp objs/ngx_http_modsecurity_module.so /etc/nginx/modules/
-	[[ $1 == "Debian 10" ]] && cp objs/ngx_http_modsecurity_module.so /usr/share/nginx/modules
+	cp objs/ngx_http_modsecurity_module.so /usr/share/nginx/modules
 	sed -i "1 i\load_module modules/ngx_http_modsecurity_module.so;" /etc/nginx/nginx.conf
 	log_errors $? "Se carga módulo 'ngx_http_modsecurity_module.so' en '/etc/nginx/nginx.conf'"
 
@@ -294,10 +298,9 @@ fi
 
 if [[ $2 == 'Nginx' ]];
 then
-	#install_nginx $1 $3
-	#install_nginx_WAF
 	install_nginx_apt "$1" "$3"
-	[[ $1 == "Debian 10" ]] && install_nginx_WAF_etc "$1" "$3"
+	#[[ $1 == "Debian 10" ]] &&
+	install_nginx_WAF_etc "$1" "$3"
 else
 	install_apache $1 $3
 	install_apache_WAF
