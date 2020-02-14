@@ -67,6 +67,14 @@ else
 	los archivos de configuración correspondientes."
 	KEY="/root/$2.key"; CSR="/root/$2.csr"; CRT="/root/$2.crt"
 	openssl genrsa -out $KEY 2048
+	# Se ajusta script de expect a CentOS
+	if [[ $1 =~ CentOS.* ]]; then
+		sed -i "s/AU/XX/" ./Modulos/InstaladoresCMS/openssl_req.exp
+		sed -i "s/Some-State//" ./Modulos/InstaladoresCMS/openssl_req.exp
+		sed -i 's/\(Locality Name (eg, city) \)\\\[\\\]/\1\\\[Default City\\\]/' ./Modulos/InstaladoresCMS/openssl_req.exp
+		sed -i "s/Internet Widgits Pty Ltd/Default Company Ltd/" ./Modulos/InstaladoresCMS/openssl_req.exp
+		sed -i "s/e.g. server FQDN or YOUR name/eg, your name or your server's hostname/" ./Modulos/InstaladoresCMS/openssl_req.exp
+	fi
 	./Modulos/InstaladoresCMS/openssl_req.exp "$KEY" "$CSR" "$2" "temporal@email.com"
 	#openssl req -new -key $KEY -out $CSR
 	openssl x509 -req -days 365 -in $CSR -signkey $KEY -out $CRT
@@ -147,7 +155,7 @@ else
 		autoindex off;
 	}
 
-	#location ~* /.*((README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t(ar.*|ar\.gz|gz)|z(.*|ip)|~)\$)){
+	#location ~* /.*((ht|README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t(ar.*|ar\.gz|gz)|z(.*|ip)|~)\$)){
 	#		deny all;
 	#		error_page 403 http://$2;
 	#}
