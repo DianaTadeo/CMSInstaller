@@ -109,7 +109,6 @@ if [[ $WEB_SERVER == "Apache" ]]; then
 	fi
 else  # Nginx
 	if [[ "$SO" =~ Debian.* ]]; then
-		apt install nginx-extras -y
 		WEB_SERVER_CONF="/etc/nginx/nginx.conf"
 		SECURITY_CONF="/etc/nginx/conf.d/security.conf"
 		sed -i 's/#//' /etc/nginx/sites-available/$3.conf
@@ -173,7 +172,7 @@ else  # Nginx
 	log_errors $? "Redireccion de codigos de estado al sitio principal"
 
 	# Se aplica a todos
-	sed -i '/server_name _;/a location ~* \/.*\(\(README|robots|INSTALL|UP\(D|GR\)A\(T|D\)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE\)\(.*\)$|\(.*config|version|info|xmlrpc\)\(\\.php)$|\(.*\\.\(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t\(ar.*|ar\\.gz|gz\)|z\(.*|ip\)|~\)$\)\){\n\tdeny all;\n\terror_page 403 \/;\n}' /etc/nginx/sites-available/default
+	sed -i '/server_name _;/a location ~* \/.*\(\(ht|README|robots|INSTALL|UP\(D|GR\)A\(T|D\)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE\)\(.*\)$|\(.*config|version|info|xmlrpc\)\(\\.php)$|\(.*\\.\(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t\(ar.*|ar\\.gz|gz\)|z\(.*|ip\)|~\)$\)\){\n\tdeny all;\n\terror_page 403 \/;\n}' /etc/nginx/sites-available/default
 	log_errors $? "Se restringe el acceso a los archivos publicos"
 	if [[ "$SO" =~ Debian.* ]]; then
 		systemctl restart nginx
