@@ -33,9 +33,10 @@ disable_default_services(){
 	# Función que deshabilita los servicios del sistema predeterminados
 	# $1=SO
 	# Servicios que no se deshabilitarán
-	SERVICES_NOT_DISABLED="network.* ssh.* cron.* fail2ban.* keyboard.* \
+	SERVICES_NOT_DISABLED="[Nn]etwork.* ssh.* cron.* fail2ban.* keyboard.* \
 	console.* r*sync.* r*sys.* system.* d-bus.* apache.* mysql.* p.*g.*sql.* \
-	mariadb.* httpd.* nginx.* log(check|watch).* postfix.* php.*"
+	mariadb.* httpd.* nginx.* log(check|watch).* postfix.* php.* autovt.* \
+	dbus-org.* getty.*"
 	case $1 in
 		'Debian 9' | 'Debian 10' | 'CentOS 7')
 			DEFAULT_SERVICES_ENABLED=$(systemctl list-unit-files --state=enabled --type=service | grep enabled | cut -f1 -d" " | tr '\n' ' ')
@@ -174,7 +175,7 @@ sudo_policy(){
 		[[ $1 == 'Debian 10' ]] && NOEXEC="noexec, "
 	else
 		GROUP="wheel"; INSTALL="/usr/sbin/yum"
-		if [[$1 == 'CentOS 6']]; then
+		if [[ $1 == 'CentOS 6' ]]; then
 			SERVICES="/usr/sbin/service"
 		else
 			SERVICES="/usr/bin/systemctl, /usr/sbin/service"
