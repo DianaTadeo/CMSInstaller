@@ -38,26 +38,47 @@ if [[ $WEB_SERVER == "Apache" ]]; then
 		SECURITY_CONF="/etc/httpd/conf.d/security.conf"
 		sed -i 's/#//' /etc/httpd/sites-available/$3.conf
 	fi
+	if [[ -e $SECURITY_CONF ]]; then
+		sed -i "s/\(TraceEnable\s*\)on/\1off/" $SECURITY_CONF
+		log_errors $? "Se deshabilitan metodos HTTP excepto: GET, HEAD, POST"
+		sed -i "s/\(ServerTokens\s*\).*/\1Prod/" $SECURITY_CONF
+		#ServerTokens Prod
+		log_errors $? "ServerTokens Prod"
 
-	sed -i "s/\(TraceEnable\s*\)on/\1off/" $SECURITY_CONF
-	log_errors $? "Se deshabilitan metodos HTTP excepto: GET, HEAD, POST"
-	sed -i "s/\(ServerTokens\s*\).*/\1Prod/" $SECURITY_CONF
-	#ServerTokens Prod
-	log_errors $? "ServerTokens Prod"
+		sed -i "s/\(ServerSignature\s*\).*/\1Off/" $SECURITY_CONF
+		#ServerSignature On -> ServerSignature Off
+		log_errors $? "ServerSignature Off"
 
-	sed -i "s/\(ServerSignature\s*\).*/\1Off/" $SECURITY_CONF
-	#ServerSignature On -> ServerSignature Off
-	log_errors $? "ServerSignature Off"
+		sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/s/\(.*Options\s*\).*/\1-Indexes +FollowSymlinks/' $WEB_SERVER_CONF
+		log_errors $? "Se deshabilita listado de directorios: "
 
-	sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/s/\(.*Options\s*\).*/\1-Indexes +FollowSymlinks/' $WEB_SERVER_CONF
-	log_errors $? "Se deshabilita listado de directorios: "
+		sed -i 's/#*\(Header set X-Content-Type-Options:\s*\).*/\1"nosniff"/' $SECURITY_CONF
+		log_errors $? "Header set X-Content-Type-Options: \"nosniff\": "
 
-	sed -i 's/#*\(Header set X-Content-Type-Options:\s*\).*/\1"nosniff"/' $SECURITY_CONF
-	log_errors $? "Header set X-Content-Type-Options: \"nosniff\": "
+		sed -i 's/#*\(Header set X-Frame-Options:\s*\).*/\1"sameorigin"/' $SECURITY_CONF
+		log_errors $? "Header set X-Frame-Options: \"sameorigin\": "
+	else
+		SECURITY_CONF=$WEB_SERVER_CONF
+		echo "ServerSignature Off" >> $SECURITY_CONF
+		log_errors $? "ServerSignature Off"
+		echo "ServerTokens Prod" >> $SECURITY_CONF
+		log_errors $? "ServerTokens Prod"
 
-	sed -i 's/#*\(Header set X-Frame-Options:\s*\).*/\1"sameorigin"/' $SECURITY_CONF
-	log_errors $? "Header set X-Frame-Options: \"sameorigin\": "
+		sed -i '/<Directory "\/var\/www\/html">/,/<\/Directory>/s/\(.*Options\s*\).*/\1-Indexes +FollowSymlinks/' $WEB_SERVER_CONF
+		log_errors $? "Se deshabilita listado de directorios"
 
+		echo -e "<Location />\n\t<LimitExcept GET HEAD POST>\n\t\torder deny,allow\n\t\tdeny from all\n\t</LimitExcept>\n</Location>" >> $SECURITY_CONF # Otra opción
+		echo "TraceEnable Off" >> $SECURITY_CONF
+		log_errors $? "Se deshabilitan metodos HTTP excepto: GET, HEAD, POST"
+
+		echo "LoadModule headers_module modules/mod_headers.so" >> $SECURITY_CONF
+		echo "Header set X-Content-Type-Options nosniff" >> $SECURITY_CONF
+		log_errors $? "Header set X-Content-Type-Options nosniff "
+
+		echo "Header set X-Frame-Options sameorigin" >> $SECURITY_CONF
+		log_errors $? "Header set X-Frame-Options sameorigin"
+
+	fi
 	echo "Header set X-XSS-Protection \"1;  mode=block\"" >> $SECURITY_CONF
 	log_errors $? "Header set X-XSS-Protection \"1;  mode=block\": "
 
@@ -104,7 +125,7 @@ if [[ $WEB_SERVER == "Apache" ]]; then
 		systemctl restart apache2
 		log_errors $? "Se reinicia apache2 "
 	else
-		apachectl -k restart
+		service httpd restart
 		log_errors $? "Se reinicia apache2 "
 	fi
 else  # Nginx
