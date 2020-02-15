@@ -22,10 +22,10 @@ LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 ##
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`]: [ERROR] : $2" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR] : $2" >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`]: [OK] : $2" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2" 	>> $LOG
 	fi
 }
 
@@ -66,15 +66,15 @@ install_PostgreSQL(){
 	read  -sp "Ingresa el password para ese usuario: " userPass; echo -e "\n"
 	su postgres -c "psql -h $4 -p $2 -c 'CREATE DATABASE $1;'"
 	su -c "psql -h $4 -p $2 -c \"CREATE USER $3 WITH PASSWORD '$userPass'\" " postgres
-	su postgres -c "psql -h $4 -p $2 -c 'GRANT ALL PRIVILEGES ON DATABASE $1 TO $3;'"	
+	su postgres -c "psql -h $4 -p $2 -c 'GRANT ALL PRIVILEGES ON DATABASE $1 TO $3;'"
 	rm /var/lib/pgsql/data/pg_hba.conf
 	mv /var/lib/pgsql/data/pg_hba.conf-aux /var/lib/pgsql/data/pg_hba.conf
 	chown postgres:postgres /var/lib/pgsql/data/pg_hba.conf
-        cmd="systemctl daemon-reload"
-        $cmd
+				cmd="systemctl daemon-reload"
+				$cmd
 	log_errors $? "Configuracion de PostgreSQL: $cmd [Revise archivo pg_hba.conf]"
-        cmd="systemctl restart postgresql"
-        $cmd
+				cmd="systemctl restart postgresql"
+				$cmd
 }
 
 
@@ -98,42 +98,40 @@ install_MySQL(){
 	log_errors $? "Instalacion de MySQL: $cmd"
 	if [[ $(cat /etc/my.cnf | grep port) ]];
 	then
-	       sed -i "s/.*port.*/port=$1/" /etc/my.cnf
-               sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
+				 sed -i "s/.*port.*/port=$1/" /etc/my.cnf
+							 sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
 	else
-	       echo "[mysqld]\nport=$2" >> /etc/my.cnf
-               sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
+				 echo "[mysqld]\nport=$2" >> /etc/my.cnf
+							 sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
 	fi
-	/usr/sbin/semanage port -a -t mysqld_port_t -p tcp $2
-        cmd="systemctl daemon-reload"
+	[[ -f /usr/sbin/semanage ]] && /usr/sbin/semanage port -a -t mysqld_port_t -p tcp $2
+				cmd="systemctl daemon-reload"
 	$cmd
 	log_errors $? "Configuracion de MySQL: $cmd"
 	cmd="systemctl restart mariadb.service"
 	$cmd
 	log_errors $? "Configuracion de MySQL: $cmd [Revise archivos /etc/my.cnf y /etc/my.cnf.d/server.cnf]"
 	mysql_secure_installation
-        echo "Ingresa el password para el usuario de la Base de Datos: " 
-	read -s userPass
-	echo "\n"
-	echo "ALGO mysql -h $4 -P $2 -u root --password=$rootPass -e CREATE USER '$3' IDENTIFIED BY $userPass "
-	echo "Ingresa el password de root en MySQL: " 
-	read -s rootPass 
-	echo "\n"
+	read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
+	read -sp "Ingresa el password para el usuario 'root' de MySQL: " rootPass; echo -e "\n"
 	mysql -h $4 -P $2 -u root --password=$rootPass -e "CREATE USER '$3' IDENTIFIED BY '$userPass';"
-        mysql -h $4 -P $2 -u root --password=$rootPass -e "GRANT ALL PRIVILEGES ON *.* TO $3;"
+	mysql -h $4 -P $2 -u root --password=$rootPass -e "GRANT ALL PRIVILEGES ON *.* TO $3;"
 	mysql -h $4 -P $2 -u $3 --password=$userPass -e "CREATE DATABASE $1;"
-	mysql -h $4 -P $2 -u root --password=$rootPass -e "FLUSH PRIVILEGES;"	
+	mysql -h $4 -P $2 -u root --password=$rootPass -e "FLUSH PRIVILEGES;"
+	# Para moodle
+	mysql -h $4 -P $2 -u root --password=$rootPass -e "SET GLOBAL innodb_file_format=Barracuda;"
+	mysql -h $4 -P $2 -u root --password=$rootPass -e "SET GLOBAL innodb_file_per_table=ON;"
+	mysql -h $4 -P $2 -u root --password=$rootPass -e "SET GLOBAL innodb_large_prefix=ON;"
 }
 
 
 if [[ $1 == 'PostgreSQL' ]];
 then
-	
-    install_PostgreSQL $2 $3 $4 $5 
+
+		install_PostgreSQL $2 $3 $4 $5
 else
-    install_MySQL $2 $3 $4 $5 
+		install_MySQL $2 $3 $4 $5
 fi
 echo "==============================================="
 echo "         Instalacion completada"
 echo "==============================================="
-
