@@ -35,6 +35,7 @@ if [[ $1 =~ CentOS.* ]]; then
 	SISTEMA="/etc/httpd/sites-available/$2.conf"
 	SECURITY_CONF="/etc/httpd/conf.d/security.conf"
 	ROOT_PATH="/var/www"
+	[[ $1 == "CentOS 7" ]] && ROOT_PATH="/var/www/html"
 	WEB_SERVER="httpd"
 else
 	[ -z "$(which openssl)" ] && apt install openssl -y
