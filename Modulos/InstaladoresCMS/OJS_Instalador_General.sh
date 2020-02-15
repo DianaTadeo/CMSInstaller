@@ -222,7 +222,7 @@ ojs_installer(){
 	# URL con la que se instala el CMS ojs para Apache o Nginx
 	URL="https://$7/index.php/index/install/install"
 	[[ ${11} == 'Nginx' ]] && sed -i "s/\(disable_path_info = \)Off/\1On/" config.inc.php && URL="https://$7/index.php?journal=index&page=install&op=install"
-	log_errors $? "Se utiliza la URL para realizar la instalación de ojs: $URL"
+	log_errors 0 "Se utiliza la URL para realizar la instalación de ojs: $URL"
 	# Se cambia puerto de servidor de BD por el seleccionado en el formulario o en la instalación
 	sed -i "s/;\(.*port.*=\s*\).*/\1$5/" config.inc.php
 
@@ -256,7 +256,7 @@ ojs_installer(){
 		$URL  --trace-ascii - | grep "Errors occurred"#> /dev/null
 		[[ $? == '1' ]] && break
 	done
-	log_errors 0 "Termina instalación de ojs"
+	log_errors $? "Termina instalación de ojs"
 	modulos_configuraciones "$1"
 	cd -
 	jq -c -n --arg title "$SITE_NAME" --arg ojs_admin "$CMS_USER" --arg ojs_admin_pass "$CMS_PASS" \
