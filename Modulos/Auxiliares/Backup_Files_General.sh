@@ -84,14 +84,15 @@ backups(){
 			fi
 		fi
 	else
-		systemctl cron start
+		service crond start
 		if [[ $3 == "Apache" ]]; then
 			WEB_CONFIG="/etc/httpd/conf/httpd.conf"
 			SECURITY_CONF="/etc/httpd/conf.d/security.conf"
+			[[ ! -e $SECURITY_CONF ]] && SECURITY_CONF=$WEB_CONFIG
 			VH_CONFIG="/etc/httpd/sites-available/$6.conf"
 			WAF_CONFIG="/etc/httpd/conf.d/mod_security.conf"
-			WAF_CONFIG_MOD="/etc/apache2/mods-enabled/security2.conf"
-
+			WAF_CONFIG_MOD="/etc/httpd/mods-enabled/security2.conf"
+			[[ ! -e $WAF_CONFIG_MOD ]] && WAF_CONFIG_MOD=$WAF_CONFIG
 		else
 			WEB_CONFIG="/etc/nginx/nginx.conf"
 			SECURITY_CONF="/etc/nginx/conf.d/security.conf"
@@ -195,7 +196,7 @@ backups(){
 	# Se agrega ejecución de script para respaldos
 	echo "$MIN $HOUR		*	*	$1 		root		$CRON_SCRIPT" >> $CRONTAB
 	log_errors $? "Respaldos programados: $1 on $HOUR:$MIN"
-	if [[ $2 =~ Debian.* ]]; then systemctl restart cron; else service cron restart; fi
+	if [[ $2 =~ Debian.* ]]; then systemctl restart cron; else service crond restart; fi
 	cd -
 }
 
