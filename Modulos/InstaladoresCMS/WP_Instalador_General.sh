@@ -83,17 +83,17 @@ install_dep(){
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
 			cmd="yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			log_errors 0 "Instalacion de dependencias Wordpress: $cmd"
 			cmd="yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
 			cmd="yum install yum-utils -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
+			log_errors 0 "Instalacion de dependencias Wordpress: $cmd"
 			cmd="yum-config-manager --enable remi-php73 -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
-			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y"
+			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring php-intl php-zip php-xmlrpc unzip zip -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
@@ -116,10 +116,13 @@ install_dep(){
 ## @param $5 Manejador de la base de datos 'MySQL' o 'PostgreSQL'
 ## @param $6 Tipo de Servidor Web 'Apache' o 'Nginx'
 ## @param $7 El sistema operativo donde se desea instalar Wordpress : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+## @param $8 Nombre de dominio del sitio
+## @param $9 Version de WordPress
+## @param $10 Nombre de usuario con el que se ejecuta el servidor web
 ##
 install_WP(){
 	#$1=DBName $2=DBHost:port $3=DBUser $4=WPDirRoot $5=DBManager $6=WebServer $7=OS
-	# $8=DomainName; $9=WPVersion
+	# $8=DomainName; $9=WPVersion; ${10}=WEB_USER
 	#clear
 	echo "==============================================="
 	echo "	Se inicia la instalacion de Wordpress"
@@ -131,7 +134,7 @@ install_WP(){
 	wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 	chmod u+x wp-cli.phar
 	mv wp-cli.phar /usr/local/bin/wp
-	wp --allow-root core download --path="$8" --version="$9"
+	/usr/local/bin/wp --allow-root core download --path="$8" --version="$9"
 	log_errors $? "Descarga de WordPress version=$9"
 	cd $8
 	if [[ $5 == 'PostgreSQL' ]]; then
@@ -153,33 +156,22 @@ install_WP(){
 		sed -i "s/localhost/$(echo $2 | cut -f1 -d':')/" ../wp-config.php
 		log_errors $? "Host de base de datos: $(echo $2 | cut -f1 -d':')"
 		chmod 644 ../wp-config.php
-
+		cd ..
 	else
-		wp --allow-root core config --dbhost=$2 --dbname=$1 --dbuser=$3 --dbpass=$dbpass
+		/usr/local/bin/wp --allow-root core config --dbhost=$2 --dbname=$1 --dbuser=$3 --dbpass=$dbpass
 		log_errors $? "Configuración de WordPress con MySQL: Host:$2, DBName=$1, DBUser=$3"
 		chmod 644 wp-config.php
 	fi
 
-	if [[ $6 == 'Apache' ]]; then
-
-		if [[ $7 == 'Debian 9' ]] || [[ $7 == 'Debian 10' ]]; then
-			chown -R www-data:www-data $4
-			systemctl restart apache2
-		else
-			chown -R apache:apache $4
-			systemctl restart httpd
-		fi
-	else
-		#chown -R nginx:nginx $4
-		chown -R www-data:www-data $4
-		systemctl restart nginx
-	fi
+	chown -R ${10}:${10} $4
 }
 
 ## @fn configure_WP()
 ## @brief Funcion que realiza la configuracion de Wordpress
 ## @param $1 Url donde se encontrara Wordpress
 ## @param $2 correo para el administrador de Wordpress
+## @param $3 Ruta del directorio donde fue ejecutado el script main.sh
+## @param $4 Manejador de base de datos para el sitio ['MySQL' o 'PostgreSQL']
 ##
 configure_WP(){
 	# $1=Url $2=mail
@@ -193,9 +185,9 @@ configure_WP(){
 	read -p "Ingresa un nombre de usuario para ser administrador: " wp_admin
 	read -sp "Ingresa el password para '$wp_admin': " wp_pass; echo -e "\n"
 	if [[ $4 == "MySQL" ]]; then
-		wp --allow-root core install --url=$1 --title=$title --admin_user=$wp_admin --admin_password=$wp_pass --admin_email=$2
+		/usr/local/bin/wp --allow-root core install --url=$1 --title=$title --admin_user=$wp_admin --admin_password=$wp_pass --admin_email=$2
 		log_errors $? "Instalación de WP con MySQL"
-		wp --allow-root plugin install simple-login-captcha --activate
+		/usr/local/bin/wp --allow-root plugin install simple-login-captcha --activate
 		log_errors $? "Instalación de captcha en login"
 	else
 		weblog_title="weblog_title=$title"
@@ -213,12 +205,13 @@ configure_WP(){
 		"https://$1/wp-admin/install.php?step=2" --trace-ascii - > /dev/null
 		log_errors $? "Instalación de WP con PostgreSQL"
 
-		wp --allow-root plugin install wp-math-captcha
+		/usr/local/bin/wp --allow-root plugin install wp-math-captcha
 		sed -i "s/\(\s*'login_form'\s*=>\s*\)false,/\1true,/" plugins/wp-math-captcha/wp-math-captcha.php
-		wp --allow-root plugin activate wp-math-captcha
+		/usr/local/bin/wp --allow-root plugin activate wp-math-captcha
 		log_errors $? "Instalación de captcha en login"
 	fi
-	cd ../
+
+	echo "Estoy en: $PWD"
 	find . -type f -exec chmod 644 {} +
 	log_errors $? "Permisos en archivos: 644"
 	find . -type d -exec chmod 755 {} +
@@ -242,5 +235,11 @@ TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 
 mkdir -p $4
 install_dep "$9" "$7" "$8" "$5" "$4" "${11}"
-install_WP "$1" "$2" "$3" "$4" "$7" "$8" "$9" "$5" "${10}"
+
+WEB_USER=$(grep -o "^www-data" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^apache" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^httpd" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^nginx" /etc/passwd)
+
+install_WP "$1" "$2" "$3" "$4" "$7" "$8" "$9" "$5" "${10}" "$WEB_USER"
 configure_WP "$5" "$6" "$TEMP_PATH" "$7"
