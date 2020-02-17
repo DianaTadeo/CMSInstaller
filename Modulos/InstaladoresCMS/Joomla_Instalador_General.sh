@@ -83,24 +83,26 @@ install_dep(){
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
 			cmd="yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Joomla: $cmd"
+			log_errors 0 "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum install yum-utils -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Joomla: $cmd"
+			log_errors 0 "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum-config-manager --enable remi-php73 -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Joomla: $cmd"
-			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y"
+			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-intl php-zip php-xmlrpc unzip zip -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-mysql php-pgsql -y; fi
 			log_errors $? "Instalacion de PHP7.3-$2: "
 			if [[ $3 == 'Apache' ]]; then
+				yum install -y httpd-tools
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
+				yum install -y httpd-tools
 				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6" "joomla"
 			fi
 			;;
@@ -162,11 +164,12 @@ install_composer(){
 ## @param $10 Correo del administrador que se introdujo en el formulario web
 ## @param $11 Ruta del directorio donde fue ejecutado el script main.sh
 ## @param $12 El sistema operativo donde se desea instalar Joomla : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+## @param $13 Nombre de usuario con el que se ejecuta el servidor web
 ##
 install_joomla(){
 	# $1=dbname $2=dbuser $3=dbhost $4=dbport $5=ruta $6=version
 	# $7=DOMAIN_NAME; $8=DBM; $9=DB_EXISTS; ${10}=EMAIL_NOTIFICATION;
-	# ${11}=TEMP_PATH; ${12}=SO
+	# ${11}=TEMP_PATH; ${12}=SO; ${13}=WEB_USER
 	DBM="mysqli"
 
 	if [[ $8 == "PostgreSQL" ]]; then
@@ -247,11 +250,21 @@ install_joomla(){
 	fi
 	log_errors $? "Configuracion de administrador '$adminuser' para joomla"
 
+	echo "Estoy en: $PWD"
+	# Permisos de carpetas y archivos
+	find . -type f -exec chmod 644 {} +
+	log_errors $? "Permisos en archivos: 644"
+	find . -type d -exec chmod 755 {} +
+	log_errors $? "Permisos en carpetas: 755"
+	chown $USER:$USER . -R
+
+
 	# Permisos de escritura para log y tmp
-	chown -R www-data:www-data $7/administrator/logs $7/tmp $7/plugins $7/administrator/language
+	chown -R ${13}:${13} $7/administrator/logs $7/tmp $7/plugins $7/administrator/language
 	log_errors $? "Permisos de escritura para archivos log y tmp de joomla"
 	rm sitio.yaml
 	rm -r install_*
+
 
 	jq -c -n --arg title "$site" --arg joomla_admin "$adminuser" --arg joomla_admin_pass "$adminpass" \
 	'{Title: $title, joomla_admin:$joomla_admin, joomla_admin_pass:$joomla_admin_pass}' \
@@ -268,5 +281,11 @@ mkdir -p "$5"
 install_dep "$7" "$8" "${11}" "${12}" "$5" "${13}"
 
 install_composer
+
+WEB_USER=$(grep -o "^www-data" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^apache" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^httpd" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^nginx" /etc/passwd)
+
 cd $5
-install_joomla "$1" "$2" "$3" "$4" "$5" "$6" "${12}" "$8" "$9" "${10}" "$TEMP_PATH" "$7"
+install_joomla "$1" "$2" "$3" "$4" "$5" "$6" "${12}" "$8" "$9" "${10}" "$TEMP_PATH" "$7" "$WEB_USER"
