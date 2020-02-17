@@ -79,8 +79,8 @@ install_dep(){
 			yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y
 			yum install yum-utils -y
 			yum-config-manager --enable remi-php73 -y
-			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y
-			log_errors $? "Instalación de PHP7.3"
+			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip php-intl php-zip php-xmlrpc -y
+			log_errors $? "Instalación de PHP7.3: php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip php-intl php-zip php-xmlrpc"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql php-mysqli -y; else yum install php-pgsql -y; fi
 			log_errors $? "Instalación de PHP7.3-$2"
 			if [[ $3 == 'Apache' ]]; then
@@ -183,11 +183,12 @@ modulos_configuraciones(){
 ## @param $9 Indica si se especifico que se tiene una base de datos existente
 ## @param ${10} Ruta del directorio donde fue ejecutado el script main.sh
 ## @param ${11} Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
+## @param ${12} Nombre de usuario con el que se ejecuta el servidor web
 ##
 ojs_installer(){
 	# $1=CMS_VERSION; $2=DBM; $3=DB_USER; $4=DB_IP; $5=DB_PORT; $6=DB_NAME;
 	# $7=DOMAIN_NAME; $8=EMAIL_NOTIFICATION; $9=DB_EXISTS; ${10}=TEMP_PATH;
-	# ${11}=WEB_SERVER
+	# ${11}=WEB_SERVER; ${12}=WEB_USER
 	if [[ $2 == 'MySQL' ]]; then DBM="mysqli"; else DBM="postgres"; fi
 	git_existence
 	echo "Instalando ojs ######################################################"
@@ -202,13 +203,14 @@ ojs_installer(){
 
 	mkdir /var/www/files
 	log_errors $? "Se crea directorio /var/www/files"
-	chown www-data:www-data -R /var/www/files/
-	log_errors $? "Se asigna www-data dueño del directorio /var/www/files"
+	chown ${12}:${12} -R /var/www/files/
+	echo "El usuario web es: ${12}"
+	log_errors $? "Se asigna ${12} dueño del directorio /var/www/files"
 
 	cd $7
 
-	chgrp -R www-data cache public config.inc.php
-	log_errors $? "Se asigna al grupo www-data (para configuración) los directorios y archivos: cache public config.inc.php"
+	chgrp -R ${12} cache public config.inc.php
+	log_errors $? "Se asigna al grupo ${12} (para configuración) los directorios y archivos: cache public config.inc.php"
 	chmod -R ug+w cache public config.inc.php
 	log_errors $? "Se asigna permisos de escritura (para configuración) los directorios y archivos: cache public config.inc.php"
 
@@ -258,6 +260,24 @@ ojs_installer(){
 	done
 	log_errors $? "Termina instalación de ojs"
 	modulos_configuraciones "$1"
+
+	# Permisos de carpetas y archivos de dir: files
+	find /var/www/files -type f -exec chmod 600 {} +
+	log_errors $? "Permisos en archivos de directorio /var/www/files: 600"
+	find /var/www/files -type d -exec chmod 700 {} +
+	log_errors $? "Permisos en carpetas de directorio /var/www/files: 700"
+	#chown ${12}:${12} /var/www/files -R
+
+	# Permisos de carpetas y archivos
+	find . -type f -exec chmod 644 {} +
+	log_errors $? "Permisos en archivos: 644"
+	find . -type d -exec chmod 755 {} +
+	log_errors $? "Permisos en carpetas: 755"
+	chown $USER:$USER . -R
+	chown ${12}:${12} cache -R
+	chgrp -R ${12} public config.inc.php
+
+
 	cd -
 	jq -c -n --arg title "$SITE_NAME" --arg ojs_admin "$CMS_USER" --arg ojs_admin_pass "$CMS_PASS" \
 	'{Title: $title, ojs_admin:$ojs_admin, ojs_admin_pass:$ojs_admin_pass}' \
@@ -283,8 +303,14 @@ chown $SUDO_USER:$SUDO_USER -R $PATH_INSTALL
 install_dep "$SO" "$DBM" "$WEB_SERVER" "$DOMAIN_NAME" "$PATH_INSTALL" "$IPv6"
 chown $SUDO_USER:$SUDO_USER $PATH_INSTALL
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
+
+WEB_USER=$(grep -o "^www-data" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^apache" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^httpd" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^nginx" /etc/passwd)
+
 cd $PATH_INSTALL
 ojs_installer "$OJS_VERSION" "$DBM" "$DB_USER" "$DB_IP" "$DB_PORT"\
 									"$DB_NAME" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$DB_EXISTS"\
-									"$TEMP_PATH" "$WEB_SERVER"
+									"$TEMP_PATH" "$WEB_SERVER" "$WEB_USER"
 cd -
