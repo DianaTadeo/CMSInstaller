@@ -46,7 +46,7 @@ log_errors(){
 ## @param $3 Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
 ## @param $4 Nombre de dominio del sitio
 ## @param $5 Ruta donde se instalara Drupal
-## @param $5 Compatibilidad con IPv6
+## @param $6 Compatibilidad con IPv6
 ##
 install_dep(){
 	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL; $6=IPv6
@@ -80,7 +80,7 @@ install_dep(){
 			yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y
 			yum install yum-utils -y
 			yum-config-manager --enable remi-php73 -y
-			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y
+			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring php-intl php-zip php-xmlrpc unzip zip -y
 			log_errors $? "Instalacion de PHP7.3 en Drupal: "
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
 			log_errors $? "Instalacion de PHP7.3-$2: "
@@ -142,12 +142,6 @@ git_composer_drush(){
 				#cgr drush/drush:8.x
 	fi
 	log_errors $? "Instalacion de drush 8.x "
-}
-
-
-# Se hace respaldo del sitio
-backup(){
-	su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush archive-dump --root=$1 --destination=$1.tar.gz -v --overwrite"
 }
 
 ## @fn modulos_configuraciones()
@@ -246,10 +240,11 @@ complementos_seguridad(){
 ## @param $8 Corrreo de administracion y notificacion del sitio
 ## @param $9 Indica si se especifico que se tiene una base de datos existente
 ## @param ${10} Ruta del directorio donde fue ejecutado el script main.sh
+## @param ${11} Nombre de usuario con el que se ejecuta el servidor web
 ##
 drupal_installer(){
 	# $1=CMS_VERSION; $2=DBM; $3=DB_USER; $4=DB_IP; $5=DB_PORT; $6=DB_NAME;
-	# $7=DOMAIN_NAME; $8=EMAIL_NOTIFICATION; $9=DB_EXISTS; ${10}=TEMP_PATH
+	# $7=DOMAIN_NAME; $8=EMAIL_NOTIFICATION; $9=DB_EXISTS; ${10}=TEMP_PATH; ${11}=WEB_USER
 	if [[ $2 == 'MySQL' ]]; then DBM="mysql"; else DBM="pgsql"; fi
 	# Se instala drupal con Drush
 	echo "Instalando drupal ######################################################"
@@ -291,16 +286,16 @@ drupal_installer(){
 			log_errors $? "Se elimina la base de datos 'dbtemporal' de PostgreSQL"
 		fi
 	fi
+	chown ${11}:${11} sites/default/files/
+	modulos_configuraciones "$1"
+	complementos_seguridad "$7" "$1"
 
-	chown www-data:www-data sites/default/files/
 	if [[ $1 =~ 7.* ]]; then
 		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush @none dl file_permissions"
 		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush cc drush"
 		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush fp -y"
 	fi
 	log_errors $? "Permisos en carpetas"
-	modulos_configuraciones "$1"
-	complementos_seguridad "$7" "$1"
 
 	jq -c -n --arg title "$SITE_NAME" --arg drup_admin "$CMS_USER" --arg drup_admin_pass "$CMS_PASS" \
 	'{Title: $title, drup_admin:$drup_admin, drup_admin_pass:$drup_admin_pass}' \
@@ -329,7 +324,12 @@ mkdir -p $PATH_INSTALL
 install_dep "$SO" "$DBM" "$WEB_SERVER" "$DOMAIN_NAME" "$PATH_INSTALL" "$IPv6"
 chown $SUDO_USER:$SUDO_USER $PATH_INSTALL
 
+WEB_USER=$(grep -o "^www-data" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^apache" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^httpd" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^nginx" /etc/passwd)
+
 cd $PATH_INSTALL
 drupal_installer "$DRUPAL_VERSION" "$DBM" "$DB_USER" "$DB_IP" "$DB_PORT"\
 									"$DB_NAME" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$DB_EXISTS"\
-									"$TEMP_PATH"
+									"$TEMP_PATH" "$WEB_USER"
