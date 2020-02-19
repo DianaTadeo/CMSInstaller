@@ -103,7 +103,7 @@ backups(){
 		if [[ $4 == "MySQL" ]]; then
 			DBM_CONFIG="/etc/my.cnf"
 		else
-			DBM_CONFIG="/var/lib/pgsql/data/"
+			DBM_CONFIG="/var/lib/pgsql/data/postgresql.conf"
 			DBM_CONF="/var/lib/pgsql/data/pg_hba.conf"
 		fi
 	fi
@@ -171,7 +171,17 @@ backups(){
 	log_errors $? "Programación de respaldo de datos de sitio web agregada en '$CRON_SCRIPT'"
 
 	# Respaldo de BD
-	read -sp "Ingresa la contraseña del usuario '$7' de la BD para hacer el respaldo: " DB_PASS; echo -e "\n"
+	while true; do
+		read -sp "Ingresa la contraseña del usuario '$7' de la BD para hacer el respaldo: " DB_PASS; echo -e "\n"
+		if [[ -n $DB_PASS ]]; then
+			if [[ $4 == "PostgreSQL" ]]; then
+				su postgres -c "PGPASSWORD="$DB_PASS" psql -h $8 -p $9 -d ${10} -U $7 -c '\q'"
+			else
+				mysql -h $8 -P $9 -u $7 --password=$DB_PASS ${10} -e "\q"
+			fi
+			[[ $? == '0' ]] && break
+		fi
+	done
 	if [[ $4 == "MySQL" ]]; then
 		mysqldump -u $7 --password=$DB_PASS -h $8 -P $9 ${10} > "$DATE-${10}.sql"
 		log_errors $? "Respaldo de BD actual: $DATE-${10}.sql"
