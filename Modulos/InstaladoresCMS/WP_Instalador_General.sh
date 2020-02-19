@@ -128,7 +128,18 @@ install_WP(){
 	echo "	Se inicia la instalacion de Wordpress"
 	echo "==============================================="
 
-	read -sp "Ingresa el password del usuario '$3' de la base de datos: " dbpass; echo -e "\n"
+	while true; do
+		read -sp "Ingresa el password del usuario '$3' de la base de datos: " dbpass; echo -e "\n"
+		if [[ -n $dbpass ]]; then
+			if [[ $5 == "PostgreSQL" ]]; then
+				su postgres -c "PGPASSWORD="$dbpass" psql -h $(echo $2 | cut -f1 -d':') -p $(echo $2 | cut -f2 -d':') -d $1 -U $3 -c '\q'"
+			else
+				mysql -h $(echo $2 | cut -f1 -d':') -P $(echo $2 | cut -f2 -d':') -u $3 --password=$dbpass $1 -e "\q"
+			fi
+			[[ $? == '0' ]] && break
+		fi
+	done
+
 	mkdir -p $4
 	cd $4
 	wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
@@ -139,7 +150,8 @@ install_WP(){
 	cd $8
 	if [[ $5 == 'PostgreSQL' ]]; then
 		echo "==========Se configura PostgreSQL para WordPress"
-		apt install php7.3-mysql -y
+		[[ $7 =~ Debian.* ]] && apt install php7.3-mysql -y
+		[[ $7 =~ CentOS.* ]] && yum install php-mysql -y
 		cd wp-content
 		git clone https://github.com/kevinoid/postgresql-for-wordpress.git
 		mv postgresql-for-wordpress/pg4wp pg4wp
@@ -164,6 +176,8 @@ install_WP(){
 	fi
 
 	chown -R ${10}:${10} $4
+	[[ $7 =~ CentOS.* ]] && [[ $6 == 'Apache' ]] && 	sed -i "s/SecRuleEngine On/SecRuleEngine DetectionOnly/" /etc/httpd/conf.d/mod_security.conf && systemctl restart httpd
+
 }
 
 ## @fn configure_WP()
@@ -182,8 +196,20 @@ configure_WP(){
 
 	read -p "Ingresa el titulo de la pagina ['$1' por defecto]: " title
 	if [ -z "$title" ]; then title="$1"; fi
-	read -p "Ingresa un nombre de usuario para ser administrador: " wp_admin
-	read -sp "Ingresa el password para '$wp_admin': " wp_pass; echo -e "\n"
+	while true; do
+		read -p "Ingresa un nombre de usuario para ser administrador: " wp_admin
+		[[ -n $wp_admin ]] && break
+	done
+
+	while true; do
+					read -sp "Ingresa el password para '$wp_admin': " wp_pass; echo -e "\n"
+					if [[ -n $wp_pass ]]; then
+						read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+						[[ "$wp_pass" == "$userPass2" ]] && userPass2="" && break
+						echo -e "No coinciden!\n"
+					fi
+	done
+
 	if [[ $4 == "MySQL" ]]; then
 		/usr/local/bin/wp --allow-root core install --url=$1 --title=$title --admin_user=$wp_admin --admin_password=$wp_pass --admin_email=$2
 		log_errors $? "Instalación de WP con MySQL"
@@ -197,16 +223,19 @@ configure_WP(){
 		admin_email="admin_email=$2"
 		DATA="pw_weak=on&language=&Submit=Install+WordPress"
 
-		curl -k \
-		--data $DATA \
-		--data-urlencode "$weblog_title" --data-urlencode "$user_name" \
-		--data-urlencode "$admin_password" --data-urlencode "$admin_password2" \
-		--data-urlencode "$admin_email" \
-		"https://$1/wp-admin/install.php?step=2" --trace-ascii - > /dev/null
+		while true; do
+			curl -k \
+			--data $DATA \
+			--data-urlencode "$weblog_title" --data-urlencode "$user_name" \
+			--data-urlencode "$admin_password" --data-urlencode "$admin_password2" \
+			--data-urlencode "$admin_email" \
+			"https://$1/wp-admin/install.php?step=2" --trace-ascii - | grep "WordPress has been installed" #> /dev/null
+			[[ $? == '0' ]] && break
+		done
 		log_errors $? "Instalación de WP con PostgreSQL"
 
 		/usr/local/bin/wp --allow-root plugin install wp-math-captcha
-		sed -i "s/\(\s*'login_form'\s*=>\s*\)false,/\1true,/" plugins/wp-math-captcha/wp-math-captcha.php
+		sed -i "s/\(\s*'login_form'\s*=>\s*\)false,/\1true,/" wp-content/plugins/wp-math-captcha/wp-math-captcha.php
 		/usr/local/bin/wp --allow-root plugin activate wp-math-captcha
 		log_errors $? "Instalación de captcha en login"
 	fi
