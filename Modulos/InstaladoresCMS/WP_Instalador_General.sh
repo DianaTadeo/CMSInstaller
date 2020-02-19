@@ -67,7 +67,7 @@ install_dep(){
 				$cmd
 				log_errors $? "Instalacion de dependencias Wordpress: $cmd"
 			else
-				cmd="apt install php7.3-pgsql -y"
+				cmd="apt install php7.3-pgsql php7.3-mysql -y"
 				$cmd
 				log_errors $? "Instalacion de dependencias Wordpress: $cmd"
 			fi
@@ -96,7 +96,7 @@ install_dep(){
 			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring php-intl php-zip php-xmlrpc unzip zip -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Wordpress: $cmd"
-			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
+			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql php-mysql -y; fi
 			log_errors $? "Instalacion de PHP7.3-$2: "
 			if [[ $3 == 'Apache' ]]; then
 				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
@@ -150,8 +150,6 @@ install_WP(){
 	cd $8
 	if [[ $5 == 'PostgreSQL' ]]; then
 		echo "==========Se configura PostgreSQL para WordPress"
-		[[ $7 =~ Debian.* ]] && apt install php7.3-mysql -y
-		[[ $7 =~ CentOS.* ]] && yum install php-mysql -y
 		cd wp-content
 		git clone https://github.com/kevinoid/postgresql-for-wordpress.git
 		mv postgresql-for-wordpress/pg4wp pg4wp
