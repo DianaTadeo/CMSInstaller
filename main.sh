@@ -262,7 +262,10 @@ if [ $DB_EXISTS = "Yes" ]; then
 	DB_IP=`jq '.DBIP' $JSON_OPTIONS | cut -f2 -d'"'`
 	DB_PORT=`jq '.DBPort' $JSON_OPTIONS | cut -f2 -d'"'`
 else
-	read -p "Ingresa el usuario para la base de datos: " DB_USER
+	while true; do
+		read -p "Ingresa el usuario para la base de datos: " DB_USER
+		[[ -n $DB_USER ]] && break
+	done
 	## Se quita la opción de ingresar IP porque la BD es local
 	#read -p "Ingresa la dirección IPv4 del servidor de la base de datos [localhost por defecto]: " DB_IP
 	if [ -z "$DB_IP" ]; then DB_IP="localhost"; fi
@@ -270,7 +273,10 @@ else
 	read -p "Ingresa el puerto del servidor de la base de datos [$DEFAULT_DB_PORT por defecto]: " DB_PORT
 	if [ -z "$DB_PORT" ]; then DB_PORT=$DEFAULT_DB_PORT; fi
 fi
-read -p "Ingresa el nombre de la base de datos: " DB_NAME
+while true; do
+	read -p "Ingresa el nombre de la base de datos: " DB_NAME
+	[[ -n $DB_NAME ]] && break
+done
 
 data_base_manager_installer "$SO" "$DBM" "$DB_VERSION" "$DB_EXISTS" \
 "$DB_USER" "$DB_IP" "$DB_PORT" "$DB_NAME"
