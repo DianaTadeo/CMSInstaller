@@ -24,10 +24,10 @@ LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 ##
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR]: $2 " >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2 " 	>> $LOG
 	fi
 }
 
@@ -49,13 +49,34 @@ install_MySQL(){
 	systemctl restart mysql.service
 	cmd="mysql_secure_installation"
 	$cmd
+
 	log_errors $? "Instalacion de MySQL: $cmd"
-	read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+
 	if [[ $2 == 'Yes' ]]; then
-		mysql -h $5 -P $6 -u $4 --password=$userPass -e "\q"
+		while true; do
+						read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+						if [[ -n $userPass ]]; then
+							mysql -h $5 -P $6 -u $4 --password=$userPass -e "\q"
+							[[ $? == '0' ]] && break
+						fi
+		done
 		log_errors $? "Conexión a la base de datos '$3' en MySQL, servidor $5"
 	else
-		read -sp "Ingresa el password para el usuario 'root' de MySQL: " rootPass; echo -e "\n"
+		while true; do
+						read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+						if [[ -n $userPass ]]; then
+							read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+							[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
+							echo -e "No coinciden!\n"
+						fi
+		done
+		while true; do
+			read -sp "Ingresa el password para el usuario 'root' de MySQL: " rootPass; echo -e "\n"
+			if [[ -n $rootPass ]]; then
+				mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "\q"
+				[[ $? == '0' ]] && break
+			fi
+		done
 		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "CREATE USER '$4' IDENTIFIED BY '$userPass';"
 		log_errors $? "Creación del usuario '$4' en MySQL, servidor '$5'"
 		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "GRANT ALL PRIVILEGES ON *.* TO '$4';"
@@ -79,15 +100,23 @@ install_MySQL(){
 ##
 install_PostgreSQL(){
 	# $1=DBVersion; $2=DBExists; $3=DBName; $4=DBUser; $5=DBHost; $6=DBPort $7=VerDebian
+	#cmd="apt-get install postgresql-$1.* -y"
 	cmd="apt-get install postgresql -y"
 	$cmd
 	log_errors $? "Instalacion de PostgreSQL: $cmd"
 	if [[ $2 == 'Yes' ]]; then
 		# solamente hace conexión a la BD existente
-		su postgres -c "psql -h $5 -p $6 -d $3 -U $4 -c '\q'"
+		while true; do
+						read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
+						if [[ -n $userPass ]]; then
+							su postgres -c "PGPASSWORD="$userPass" psql -h $5 -p $6 -d $3 -U $4 -c '\q'"
+							[[ $? == '0' ]] && break
+						fi
+		done
 		log_errors $? "Conexión a la base de datos '$3' en PostgreSQL, servidor $5"
 	else
 		#Si es Debian 9
+		echo $7
 		if [[ $7 == 'Debian 9' ]]; then
 			sed -i "s/.*port.*/port = $6/" /etc/postgresql/9.6/main/postgresql.conf
 			cp /etc/postgresql/9.6/main/pg_hba.conf /etc/postgresql/9.6/main/pg_hba_estable.conf
@@ -104,7 +133,16 @@ install_PostgreSQL(){
 		fi
 		systemctl restart postgresql
 		log_errors $? "Reinicio de PostgreSQL: $cmd"
-		read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+
+		while true; do
+						read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+						if [[ -n $userPass ]]; then
+							read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+							[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
+							echo -e "No coinciden!\n"
+						fi
+		done
+
 		echo "Inicia la creacion de la base de datos..."
 		su postgres -c "psql -h $5 -p $6 -c 'CREATE DATABASE $3;'"
 		log_errors $? "Creación de la base de datos $3 en PostgreSQL, servidor '$5'"
