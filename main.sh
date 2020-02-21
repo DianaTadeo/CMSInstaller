@@ -138,7 +138,7 @@ data_base_manager_installer(){
 		'CentOS 6' | 'CentOS 7')
 			# Se ejecuta script para instalación de base de datos en centos
 			bash ./Modulos/Auxiliares/DB_Instalador_CentOS.sh "$2" "$DB_NAME" "$DB_PORT"  \
-			"$DB_USER" "$DB_IP"
+			"$DB_USER" "$DB_IP" "$4" "$3"
 		;;
 	esac
 }
@@ -159,11 +159,12 @@ data_base_manager_installer(){
 ## @param $12 Servidor Web 'Apache' o 'Nginx'
 ## @param $13 Existe la base de datos
 ## @param $14 Compatibilidad con IPv6
+## @param $15 Versión del manejador de base de datos
 ##
 CMS(){
 	# $1=CMS; $2=$SO; $3=$CMS_VERSION; $4=$DBM; $5=$DB_NAME; $6=$DB_IP; $7=$DB_PORT;
 	# $8=$DB_USER; $9=$PATH_INSTALL; $10=$DOMAIN_NAME;
-	# $11=EMAIL_NOTIFICATION; $12=WEB_SERVER; $13=DB_EXISTS; $14=IPv6
+	# $11=EMAIL_NOTIFICATION; $12=WEB_SERVER; $13=DB_EXISTS; $14=IPv6; $15=DB_VERSION
 	case $1 in
 		'drupal')
 			echo 'Drupal' $3
@@ -173,7 +174,7 @@ CMS(){
 		'joomla')
 			echo 'Joomla' $3
 			bash ./Modulos/InstaladoresCMS/Joomla_Instalador_General.sh "$5" "$8" "$6" \
-			"$7" "$9" "$3" "$2" "$4" "${13}" "${11}" "${12}" "${10}" "${14}"
+			"$7" "$9" "$3" "$2" "$4" "${13}" "${11}" "${12}" "${10}" "${14}" "${15}"
 			;;
 		'moodle')
 			echo 'moodle' $3
@@ -283,12 +284,12 @@ data_base_manager_installer "$SO" "$DBM" "$DB_VERSION" "$DB_EXISTS" \
 
 CMS "$CMS" "$SO"  "$CMS_VERSION" "$DBM" "$DB_NAME" "$DB_IP" "$DB_PORT" \
 "$DB_USER" "$PATH_INSTALL" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$WEB_SERVER" \
-"$DB_EXISTS" "$IPV_6"
+"$DB_EXISTS" "$IPV_6" "$DB_VERSION"
 
 OS_hardening "$SO" "$EMAIL_NOTIFICATION"
 
 bash ./Modulos/Auxiliares/Backup_Files_General.sh "$BACKUP_DAYS" "$SO" \
 "$WEB_SERVER" "$DBM" "$PATH_INSTALL" "$DOMAIN_NAME" "$DB_USER" "$DB_IP" \
-"$DB_PORT" "$DB_NAME" "$BACKUP_TIME" "$TEMP_PATH" "$EMAIL_NOTIFICATION"
+"$DB_PORT" "$DB_NAME" "$BACKUP_TIME" "$TEMP_PATH" "$EMAIL_NOTIFICATION" "$DB_VERSION"
 bash ./Modulos/Auxiliares/firewall/Firewall_Config.sh "$SO" "$DB_PORT" "$DB_IP"
 echo -e "Recarga las variables de entorno.\n Ejecute los siguientes comandos: . /etc/profile\n\t\t\t\t  . ~/.bashrc"
