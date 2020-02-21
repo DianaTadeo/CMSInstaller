@@ -12,7 +12,8 @@
 # Argumento 3: Puerto de la Base de Datos
 # Argumento 4: Usuario para la Base de Datos
 # Argumento 5: Servidor de la Base de Datos (localhost, ip, etc.)
-
+# Argumento 6: Existencia de BD ['Yes' o 'No']
+# Argumento 7: Versión del manejador
 
 LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
@@ -29,9 +30,9 @@ log_errors(){
 	fi
 }
 
-echo "==============================================="
-echo "		  Instalando $1"
-echo "==============================================="
+echo "===============================================" | tee -a $LOG
+echo "		  Instalando $1" | tee -a $LOG
+echo "===============================================" | tee -a $LOG
 
 
 ## @fn install_PostgreSQL()
@@ -41,61 +42,68 @@ echo "==============================================="
 ## @param $3 Nombre de usuario de la base de datos que se desea crear
 ## @param $4 Host de la base de datos que se desea crear
 ## @param $5 Pregunta si la base de datos ya existe
+## @param $6 Version de manejador de base de datos a instalar
 ##
 install_PostgreSQL(){
-	yum -y install postgresql-server postgresql-contrib
-	postgresql-setup initdb
-	cmd="systemctl start postgresql"
+	yum install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm -y
+	#yum -y install postgresql-server postgresql-contrib
+	pgsqlVersion=$(echo $6 | cut -d"." -f1,2 | sed "s/\.//")
+	yum -y install postgresql$pgsqlVersion-server
+	#postgresql-setup initdb
+	[[ $pgsqlVersion =~ 1.* ]] && /usr/pgsql-$6/bin/postgresql-$pgsqlVersion-setup initdb
+	[[ $pgsqlVersion =~ 9.* ]] && /usr/pgsql-$6/bin/postgresql$pgsqlVersion-setup initdb
+	cmd="systemctl start postgresql-$6"
 	$cmd
 	log_errors $? "Instalacion de PostgreSQL: $cmd"
-	cmd="systemctl enable postgresql"
+	cmd="systemctl enable postgresql-$6"
 	$cmd
 	log_errors $? "Instalacion de PostgreSQL: $cmd"
 	if [[ $5 == 'Yes' ]]; then
 		# solamente hace conexión a la BD existente
 		while true; do
-						read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
-						if [[ -n $userPass ]]; then
-							su postgres -c "PGPASSWORD="$userPass" psql -h $4 -p $2 -d $1 -U $3 -c '\q'"
-							[[ $? == '0' ]] && break
-						fi
+			read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
+			if [[ -n $userPass ]]; then
+				su postgres -c "PGPASSWORD="$userPass" psql -h $4 -p $2 -d $1 -U $3 -c '\q'"
+				[[ $? == '0' ]] && break
+			fi
 		done
 		log_errors $? "Conexión a la base de datos '$3' en PostgreSQL, servidor $5"
 	else
-		cp /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf-aux
-		sed -i "s/ident/trust/" /var/lib/pgsql/data/pg_hba.conf
-		sed -i "s/peer/trust/" /var/lib/pgsql/data/pg_hba.conf
-		#sed -i "s/md5/trust/" /var/lib/pgsql/data/pg_hba.conf
-		sed -i "s/Environment=PGPORT=5432/Environment=PGPORT=$2/" /lib/systemd/system/postgresql.service
+		cp /var/lib/pgsql/$6/data/pg_hba.conf /var/lib/pgsql/$6/data/pg_hba.conf-aux
+		sed -i "s/ident/trust/" /var/lib/pgsql/$6/data/pg_hba.conf
+		sed -i "s/peer/trust/" /var/lib/pgsql/$6/data/pg_hba.conf
+		#sed -i "s/md5/trust/" /var/lib/pgsql/$6/data/pg_hba.conf
+		#sed -i "s/Environment=PGPORT=5432/Environment=PGPORT=$2/" /lib/systemd/system/postgresql.service
+		sed -i "s/^#port = 5432/port = $2/" /var/lib/pgsql/$6/data/postgresql.conf
 		[[ -f /usr/sbin/semanage ]] && /usr/sbin/semanage port -a -t postgresql_port_t -p tcp $2
-		chown postgres:postgres /var/lib/pgsql/data/pg_hba.conf
+		chown postgres:postgres /var/lib/pgsql/$6/data/pg_hba.conf
 		cmd="systemctl daemon-reload"
 		$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd"
-		cmd="systemctl restart postgresql"
+		cmd="systemctl restart postgresql-$6"
 		$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd"
 
 		while true; do
-						read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
-						if [[ -n $userPass ]]; then
-							read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
-							[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
-							echo -e "No coinciden!\n"
-						fi
+			read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
+			if [[ -n $userPass ]]; then
+				read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+				[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
+				echo -e "No coinciden!\n"
+			fi
 		done
 		su postgres -c "psql -h $4 -p $2 -c 'CREATE DATABASE $1;'"
 		su postgres -c "psql -h $4 -p $2 -c 'ALTER DATABASE '$1' SET bytea_output = 'escape';'"
 		su -c "psql -h $4 -p $2 -c \"CREATE USER $3 WITH PASSWORD '$userPass'\" " postgres
 		su postgres -c "psql -h $4 -p $2 -c 'GRANT ALL PRIVILEGES ON DATABASE $1 TO $3;'"
-		rm /var/lib/pgsql/data/pg_hba.conf
-		mv /var/lib/pgsql/data/pg_hba.conf-aux /var/lib/pgsql/data/pg_hba.conf
-		sed -i "s/\(^host.*\)ident/\1md5/" /var/lib/pgsql/data/pg_hba.conf
-		chown postgres:postgres /var/lib/pgsql/data/pg_hba.conf
+		rm /var/lib/pgsql/$6/data/pg_hba.conf
+		mv /var/lib/pgsql/$6/data/pg_hba.conf-aux /var/lib/pgsql/$6/data/pg_hba.conf
+		sed -i "s/\(^host.*\)ident/\1md5/" /var/lib/pgsql/$6/data/pg_hba.conf
+		chown postgres:postgres /var/lib/pgsql/$6/data/pg_hba.conf
 					cmd="systemctl daemon-reload"
 					$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd [Revise archivo pg_hba.conf]"
-					cmd="systemctl restart postgresql"
+					cmd="systemctl restart postgresql-$6"
 					$cmd
 	fi
 }
@@ -122,11 +130,11 @@ install_MySQL(){
 	log_errors $? "Instalacion de MySQL: $cmd"
 	if [[ $5 == 'Yes' ]]; then
 		while true; do
-						read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
-						if [[ -n $userPass ]]; then
-							mysql -h $4 -P $2 -u $3 --password=$userPass -e $1 "\q"
-							[[ $? == '0' ]] && break
-						fi
+			read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
+			if [[ -n $userPass ]]; then
+				mysql -h $4 -P $2 -u $3 --password=$userPass -e $1 "\q"
+				[[ $? == '0' ]] && break
+			fi
 		done
 		log_errors $? "Conexión a la base de datos '$1' en MySQL, servidor $4"
 	else
@@ -148,12 +156,12 @@ install_MySQL(){
 		mysql_secure_installation
 
 		while true; do
-						read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
-						if [[ -n $userPass ]]; then
-							read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
-							[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
-							echo -e "No coinciden!\n"
-						fi
+			read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
+			if [[ -n $userPass ]]; then
+				read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+				[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
+				echo -e "No coinciden!\n"
+			fi
 		done
 
 		while true; do
@@ -175,13 +183,11 @@ install_MySQL(){
 	fi
 }
 
-
 if [[ $1 == 'PostgreSQL' ]];
 then
-
-		install_PostgreSQL $2 $3 $4 $5
+		install_PostgreSQL $2 $3 $4 $5 $6 $7
 else
-		install_MySQL $2 $3 $4 $5
+		install_MySQL $2 $3 $4 $5 $6
 fi
 echo "==============================================="
 echo "         Instalacion completada"
