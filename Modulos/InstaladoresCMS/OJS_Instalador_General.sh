@@ -214,10 +214,36 @@ ojs_installer(){
 	chmod -R ug+w cache public config.inc.php
 	log_errors $? "Se asigna permisos de escritura (para configuración) los directorios y archivos: cache public config.inc.php"
 
+#	read -sp "Ingresa la contraseña del usuario '$3' de la BD: " DB_PASS; echo -e "\n"
+#	read -p "Ingresa el usuario para configurar OJS: " CMS_USER
+#	read -sp "Ingresa la contraseña del usuario '$CMS_USER' para configurar OJS: " CMS_PASS; echo -e "\n"
 
-	read -sp "Ingresa la contraseña del usuario '$3' de la BD: " DB_PASS; echo -e "\n"
-	read -p "Ingresa el usuario para configurar OJS: " CMS_USER
-	read -sp "Ingresa la contraseña del usuario '$CMS_USER' para configurar OJS: " CMS_PASS; echo -e "\n"
+	while true; do
+		read -sp "Ingresa la contraseña del usuario '$3' de la BD: " DB_PASS; echo -e "\n"
+		if [[ -n $DB_PASS ]]; then
+			if [[ $2 == "PostgreSQL" ]]; then
+				su postgres -c "PGPASSWORD="$DB_PASS" psql -h $4 -p $5 -d $6 -U $3 -c '\q'"
+			else
+				mysql -h $4 -P $5 -u $3 --password=$DB_PASS $6 -e "\q"
+			fi
+			[[ $? == '0' ]] && break
+		fi
+	done
+
+	while true; do
+		read -p "Ingresa el usuario para configurar OJS: " CMS_USER
+		[[ -n $CMS_USER ]] && break
+	done
+
+	while true; do
+		read -sp "Ingresa la contraseña del usuario '$CMS_USER' para configurar OJS: " CMS_PASS; echo -e "\n"
+		if [[ -n $CMS_PASS ]]; then
+			read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+			[[ "$CMS_PASS" == "$userPass2" ]] && userPass2="" && break
+			echo -e "No coinciden!\n"
+		fi
+	done
+
 	read -p "Ingresa el nombre que tendrá el sitio ['$7' por defecto]: " SITE_NAME
 	if [ -z "$SITE_NAME" ]; then SITE_NAME="$7"; fi
 
@@ -297,6 +323,10 @@ EMAIL_NOTIFICATION=${10}
 WEB_SERVER=${11}
 DB_EXISTS=${12}
 IPv6=${13}
+
+echo "===============================================" | tee -a $LOG
+echo "     Inicia la instalacion de OJS $OJS_VERSION " | tee -a $LOG
+echo "===============================================" | tee -a $LOG
 
 mkdir -p $PATH_INSTALL
 chown $SUDO_USER:$SUDO_USER -R $PATH_INSTALL
