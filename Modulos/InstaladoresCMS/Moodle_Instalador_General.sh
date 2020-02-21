@@ -92,7 +92,7 @@ install_dep(){
 			$cmd
 			log_errors $? "Instalacion de dependencias Moodle: $cmd"
 			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo \
-			php-xml php-mbstring unzip php-intl php-zip php-xmlrpc unzip zip-y"
+			php-xml php-mbstring php-intl php-zip php-xmlrpc unzip zip -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Moodle: $cmd"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
@@ -123,7 +123,7 @@ modulos_configuraciones(){
 
 ## @fn install_moodle()
 ## @brief Funcion que realiza la instalacion de Moodle
-## @param $1 Nombre de la base de  para Moodle
+## @param $1 Nombre de la base de datos para Moodle
 ## @param $2 Usuario de la base de datos para Moodle
 ## @param $3 Servidor de la base de datos (host)
 ## @param $4 Puerto al que se conecta el manejador de base de datos
@@ -156,12 +156,38 @@ install_moodle(){
 	chown ${11}:${11} . -R
 	mkdir ../moodledata
 	chown ${11}:${11} ../moodledata -R
-	read -sp "Ingresa el password de la base de datos del usuario '$2' para Moodle: " dbpass; echo -e "\n"
+
+	while true; do
+		read -sp "Ingresa el password de la base de datos del usuario '$2' para Moodle: " dbpass; echo -e "\n"
+		if [[ -n $dbpass ]]; then
+			if [[ $7 == "PostgreSQL" ]]; then
+				su postgres -c "PGPASSWORD="$dbpass" psql -h $3 -p $4 -d $1 -U $2 -c '\q'"
+			else
+				mysql -h $3 -P $4 -u $2 --password=$dbpass $1 -e "\q"
+			fi
+			[[ $? == '0' ]] && break
+		fi
+	done
+
 	read -p "Ingresa el nombre completo del sitio ['$6' por defecto]: " fullname
 	if [ -z "$fullname" ]; then fullname="$6"; fi
-	read -p "Ingresa el nombre corto del sitio: " shortname
-	read -p "Ingresa el nombre para el administrador de Moodle: " adminuser
-	read -sp "Ingresa el password para el '$adminuser' de Moodle: " adminpass; echo -e "\n"
+	while true; do
+		read -p "Ingresa el nombre corto del sitio: " shortname
+		[[ -n $shortname ]] && break
+	done
+	while true; do
+		read -p "Ingresa el nombre para el administrador de Moodle: " adminuser
+		[[ -n $adminuser ]] && break
+	done
+
+	while true; do
+		read -sp "Ingresa el password para el '$adminuser' de Moodle: " adminpass; echo -e "\n"
+		if [[ -n $adminpass ]]; then
+			read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+			[[ "$adminpass" == "$userPass2" ]] && userPass2="" && break
+			echo -e "No coinciden!\n"
+		fi
+	done
 
 	/usr/bin/php7.3 --version  2> /dev/null
 	if [ $? == 0 ]; then
@@ -195,9 +221,9 @@ install_moodle(){
 	> ${10}/moodleInfo.json
 }
 
-echo "==============================================="
-echo "     Inicia la instalacion de Moodle"
-echo "==============================================="
+echo "===============================================" | tee -a $LOG
+echo "     Inicia la instalacion de Moodle $6 " | tee -a $LOG
+echo "===============================================" | tee -a $LOG
 
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 
