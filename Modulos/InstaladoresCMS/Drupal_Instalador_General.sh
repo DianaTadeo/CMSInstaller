@@ -228,7 +228,7 @@ complementos_seguridad(){
 	fi
 }
 
-## @fn install_moodle()
+## @fn drupal_installer()
 ## @brief Funcion que realiza la instalacion de Joomla
 ## @param $1 Version de drupal que se va a instalar
 ## @param $2 Manejador de la base de datos  ['MySQL'|'PostgreSQL']
@@ -251,9 +251,33 @@ drupal_installer(){
 
 	su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush dl drupal-$1 --drupal-project-rename=$7"
 	log_errors $? "Se descarga 'drupal-$1' y se renombra como '$7'"
-	read -sp "Ingresa la contraseña del usuario '$3' de la BD: " DB_PASS; echo -e "\n"
-	read -p "Ingresa el usuario para configurar Drupal: " CMS_USER
-	read -sp "Ingresa la contraseña del usuario '$CMS_USER' para configurar Drupal: " CMS_PASS; echo -e "\n"
+
+	while true; do
+		read -sp "Ingresa la contraseña del usuario '$3' de la BD: " DB_PASS; echo -e "\n"
+		if [[ -n $DB_PASS ]]; then
+			if [[ $2 == "PostgreSQL" ]]; then
+				su postgres -c "PGPASSWORD="$DB_PASS" psql -h $4 -p $5 -d $6 -U $3 -c '\q'"
+			else
+				mysql -h $4 -P $5 -u $3 --password=$DB_PASS $6 -e "\q"
+			fi
+			[[ $? == '0' ]] && break
+		fi
+	done
+
+	while true; do
+		read -p "Ingresa el usuario para configurar Drupal: " CMS_USER
+		[[ -n $CMS_USER ]] && break
+	done
+
+	while true; do
+		read -sp "Ingresa la contraseña del usuario '$CMS_USER' para configurar Drupal: " CMS_PASS; echo -e "\n"
+		if [[ -n $CMS_PASS ]]; then
+			read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+			[[ "$CMS_PASS" == "$userPass2" ]] && userPass2="" && break
+			echo -e "No coinciden!\n"
+		fi
+	done
+
 	read -p "Ingresa el nombre que tendrá el sitio ['$7' por defecto]: " SITE_NAME
 	if [ -z "$SITE_NAME" ]; then SITE_NAME="$7"; fi
 
@@ -316,6 +340,10 @@ EMAIL_NOTIFICATION=${10}
 WEB_SERVER=${11}
 DB_EXISTS=${12}
 IPv6=${13}
+
+echo "===============================================" | tee -a $LOG
+echo "     Inicia la instalacion de Drupal $DRUPAL_VERSION" | tee -a $LOG
+echo "===============================================" | tee -a $LOG
 
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 

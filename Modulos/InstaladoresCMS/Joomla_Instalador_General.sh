@@ -20,6 +20,7 @@
 # Argumento 11: Web server ['Apache'|'Nginx']
 # Argumento 12: Nombre de dominio del sitio
 # Argumento 13: Compatibilidad con IPv6
+# Argumento 14: Versión del manejador de base de datos
 
 LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
 
@@ -165,11 +166,12 @@ install_composer(){
 ## @param $11 Ruta del directorio donde fue ejecutado el script main.sh
 ## @param $12 El sistema operativo donde se desea instalar Joomla : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
 ## @param $13 Nombre de usuario con el que se ejecuta el servidor web
+## @param $14 Versión del manejador de base de datos
 ##
 install_joomla(){
 	# $1=dbname $2=dbuser $3=dbhost $4=dbport $5=ruta $6=version
 	# $7=DOMAIN_NAME; $8=DBM; $9=DB_EXISTS; ${10}=EMAIL_NOTIFICATION;
-	# ${11}=TEMP_PATH; ${12}=SO; ${13}=WEB_USER
+	# ${11}=TEMP_PATH; ${12}=SO; ${13}=WEB_USER; ${14}=DB_VERSION
 	DBM="mysqli"
 
 	if [[ $8 == "PostgreSQL" ]]; then
@@ -186,16 +188,46 @@ install_joomla(){
 		else
 			yum -y install mariadb-server
 			service mariadb start
+			if [[ ${14} == "11" ]]; then
+				DB_CONF_PGSQL="database_conf.pgsql"
+			else
+				DB_CONF_PGSQL="database_conf_d9.pgsql"
+			fi
+			sed -i "s/\(^local\s.*all\s.*all\s.*\)peer/\1md5/" /var/lib/pgsql/${14}/data/pg_hba.conf
+			service postgresql-${14} restart
 		fi
 		mysql -e "CREATE USER 'temp' IDENTIFIED BY 'temp'; GRANT ALL PRIVILEGES ON *.* TO 'temp'; FLUSH PRIVILEGES;"
 	fi
 
 	su $SUDO_USER -c "composer global require joomlatools/console"
 
-	clear
-	read -sp "Ingresa el password del usuario '$2' de la base de datos de Joomla: " passDB; echo -e "\n"
-	read -p "Ingresa el nombre para el administrador de Joomla: " adminuser
-	read -sp "Ingresa el password para el '$adminuser' de Joomla: " adminpass; echo -e "\n"
+	#clear
+	while true; do
+		read -sp "Ingresa el password del usuario '$2' de la base de datos de Joomla: " passDB; echo -e "\n"
+		if [[ -n $passDB ]]; then
+			if [[ $8 == "PostgreSQL" ]]; then
+				su postgres -c "PGPASSWORD="$passDB" psql -h $3 -p $4 -d $1 -U $2 -c '\q'"
+			else
+				mysql -h $3 -P $4 -u $2 --password=$passDB $1 -e "\q"
+			fi
+			[[ $? == '0' ]] && break
+		fi
+	done
+
+	while true; do
+		read -p "Ingresa el nombre para el administrador de Joomla: " adminuser
+		[[ -n $adminuser ]] && break
+	done
+
+	while true; do
+		read -sp "Ingresa el password para el '$adminuser' de Joomla: " adminpass; echo -e "\n"
+		if [[ -n $adminpass ]]; then
+			read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+			[[ "$adminpass" == "$userPass2" ]] && userPass2="" && break
+			echo -e "No coinciden!\n"
+		fi
+	done
+
 	adminpass_hash=$(htpasswd -bnBC 10 "" $adminpass | tr -d ':\n')
 
 	read -p "Ingresa el nombre del sitio ['$7' por defecto]: " site
@@ -265,15 +297,16 @@ install_joomla(){
 	rm sitio.yaml
 	rm -r install_*
 
+	[[ ${12} =~ CentOS.* ]] && [[ $8 == 'PostgreSQL' ]] && sed -i "s/\(^local\s.*all\s.*all\s.*\)md5/\1peer/" /var/lib/pgsql/${14}/data/pg_hba.conf && service postgresql-${14} restart
 
 	jq -c -n --arg title "$site" --arg joomla_admin "$adminuser" --arg joomla_admin_pass "$adminpass" \
 	'{Title: $title, joomla_admin:$joomla_admin, joomla_admin_pass:$joomla_admin_pass}' \
 	> ${11}/joomlaInfo.json
 }
 
-echo "==============================================="
-echo "     Inicia la instalacion de Joomla"
-echo "==============================================="
+echo "===============================================" | tee -a $LOG
+echo "     Inicia la instalacion de Joomla $6" | tee -a $LOG
+echo "===============================================" | tee -a $LOG
 
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 mkdir -p "$5"
@@ -288,4 +321,5 @@ WEB_USER=$(grep -o "^www-data" /etc/passwd)
 [[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^nginx" /etc/passwd)
 
 cd $5
-install_joomla "$1" "$2" "$3" "$4" "$5" "$6" "${12}" "$8" "$9" "${10}" "$TEMP_PATH" "$7" "$WEB_USER"
+install_joomla "$1" "$2" "$3" "$4" "$5" "$6" "${12}" "$8" "$9" "${10}" \
+"$TEMP_PATH" "$7" "$WEB_USER" "${14}"
