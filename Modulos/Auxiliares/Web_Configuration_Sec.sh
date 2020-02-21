@@ -3,12 +3,11 @@
 ## @file
 ## @author Rafael Alejandro Vallejo Fernandez
 ## @author Diana G. Tadeo Guillen
-## @brief Script Main de instalador y configurador de CMS seguros en Debian 9, 10 y CentOS 6, 7
+## @brief Script que realiza las configuraciones de seguridad para el servidor web elegido en Debian 9, 10 y CentOS 6, 7
 ## @version 1.0
 ##
 
 LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
-
 
 ## @fn log_errors()
 ## Funcion para creacion de bitacora de errores
@@ -27,6 +26,10 @@ log_errors(){
 # $1=SO ; $2=WEB_SERVER ; $3=DOMAIN_NAME
 SO="$1"
 WEB_SERVER="$2"
+
+echo "=========================================================" | tee -a $LOG
+echo "     Configuraciones Web de seguridad para $WEB_SERVER" | tee -a $LOG
+echo "=========================================================" | tee -a $LOG
 
 if [[ $WEB_SERVER == "Apache" ]]; then
 	if [[ "$SO" =~ Debian.* ]]; then
@@ -90,8 +93,8 @@ if [[ $WEB_SERVER == "Apache" ]]; then
 	# Apache<2.2.4-
 	#echo "Header set Set-Cookie HttpOnly;Secure" >> $SECURITY_CONF
 
-	echo "Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval';\"" >> $SECURITY_CONF
-	log_errors $? "Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval';\": "
+	echo "Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com;\"" >> $SECURITY_CONF
+	log_errors $? "Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com;\""
 
 	echo "Header set Referrer-Policy \"strict-origin-when-cross-origin\"" >> $SECURITY_CONF
 	log_errors $? "Header set Referrer-Policy \"strict-origin-when-cross-origin\": "
