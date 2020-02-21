@@ -19,6 +19,7 @@
 # Argumento 11: Hora en la que se realizarán los respaldos
 # Argumento 12: Directorio donde se ejecutó el script main.sh
 # Argumento 13: Correo a donde se enviar[an las notificaciones
+# Argumento 14: Versión de manejador de base de datos
 
 LOG="`pwd`/Modulos/Log/Backup_Files.log"
 
@@ -50,12 +51,13 @@ log_errors(){
 ## @param $10 Nombre de la base de datos
 ## @param $11 Hora en la que se realizarán los respaldos
 ## @param $12 Directorio donde se ejecutó el script main.sh
-## @param $13 Correo a donde se enviar[an las notificaciones
+## @param $13 Correo a donde se enviarán las notificaciones
+## @param $14 Versión de DBM
 ##
 backups(){
 	# $1=BACKUP_DAYS
 	# $2=SO; $3=WEB_SERVER; $4=DBM; $5=PATH_INSTALL; $6=DOMAIN_NAME; $7=DB_USER; $8=DB__IP
-	# $9=DB_PORT; $10=DB_NAME; $11=BACKUP_TIME; $12=TEMP_PATH; $13=EMAIL_NOTIFICATION
+	# $9=DB_PORT; $10=DB_NAME; $11=BACKUP_TIME; $12=TEMP_PATH; $13=EMAIL_NOTIFICATION; $14=DB_VERSION
 	cd ${12}
 	if [[ $2 =~ Debian.* ]]; then
 		systemctl start cron
@@ -103,8 +105,8 @@ backups(){
 		if [[ $4 == "MySQL" ]]; then
 			DBM_CONFIG="/etc/my.cnf"
 		else
-			DBM_CONFIG="/var/lib/pgsql/data/postgresql.conf"
-			DBM_CONF="/var/lib/pgsql/data/pg_hba.conf"
+			DBM_CONFIG="/var/lib/pgsql/${14}/data/postgresql.conf"
+			DBM_CONF="/var/lib/pgsql/${14}/data/pg_hba.conf"
 		fi
 	fi
 	FIREWALL_CONFIG="./Modulos/Auxiliares/firewall/iptables.v4"
@@ -210,6 +212,10 @@ backups(){
 	cd -
 }
 
+echo "===============================================" | tee -a $LOG
+echo "		  Respaldo de archivos 			" | tee -a $LOG
+echo "===============================================" | tee -a $LOG
+
 backups "$1" "$2" "$3" "$4" "$5" \
 "$6" "$7" "$8" "$9" "${10}" "${11}" \
-"${12}" "${13}"
+"${12}" "${13}" "${14}"
