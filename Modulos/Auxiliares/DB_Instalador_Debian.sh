@@ -54,21 +54,21 @@ install_MySQL(){
 
 	if [[ $2 == 'Yes' ]]; then
 		while true; do
-						read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
-						if [[ -n $userPass ]]; then
-							mysql -h $5 -P $6 -u $4 --password=$userPass -e "\q"
-							[[ $? == '0' ]] && break
-						fi
+			read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+			if [[ -n $userPass ]]; then
+				mysql -h $5 -P $6 -u $4 --password=$userPass -e "\q"
+				[[ $? == '0' ]] && break
+			fi
 		done
 		log_errors $? "Conexión a la base de datos '$3' en MySQL, servidor $5"
 	else
 		while true; do
-						read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
-						if [[ -n $userPass ]]; then
-							read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
-							[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
-							echo -e "No coinciden!\n"
-						fi
+			read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+			if [[ -n $userPass ]]; then
+				read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+				[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
+				echo -e "No coinciden!\n"
+			fi
 		done
 		while true; do
 			read -sp "Ingresa el password para el usuario 'root' de MySQL: " rootPass; echo -e "\n"
@@ -107,11 +107,11 @@ install_PostgreSQL(){
 	if [[ $2 == 'Yes' ]]; then
 		# solamente hace conexión a la BD existente
 		while true; do
-						read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
-						if [[ -n $userPass ]]; then
-							su postgres -c "PGPASSWORD="$userPass" psql -h $5 -p $6 -d $3 -U $4 -c '\q'"
-							[[ $? == '0' ]] && break
-						fi
+			read -sp "Ingresa el password para el usuario '$3': " userPass; echo -e "\n"
+			if [[ -n $userPass ]]; then
+				su postgres -c "PGPASSWORD="$userPass" psql -h $5 -p $6 -d $3 -U $4 -c '\q'"
+				[[ $? == '0' ]] && break
+			fi
 		done
 		log_errors $? "Conexión a la base de datos '$3' en PostgreSQL, servidor $5"
 	else
@@ -135,12 +135,12 @@ install_PostgreSQL(){
 		log_errors $? "Reinicio de PostgreSQL: $cmd"
 
 		while true; do
-						read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
-						if [[ -n $userPass ]]; then
-							read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
-							[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
-							echo -e "No coinciden!\n"
-						fi
+			read -sp "Ingresa el password para el usuario '$4': " userPass; echo -e "\n"
+			if [[ -n $userPass ]]; then
+				read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+				[[ "$userPass" == "$userPass2" ]] && userPass2="" && break
+				echo -e "No coinciden!\n"
+			fi
 		done
 
 		echo "Inicia la creacion de la base de datos..."
@@ -169,9 +169,9 @@ install_PostgreSQL(){
 	fi
 }
 
-echo "==============================================="
-echo "            Instalando $1"
-echo "==============================================="
+echo "===============================================" | tee -a $LOG
+echo "		  					Instalando $1" | tee -a $LOG
+echo "===============================================" | tee -a $LOG
 
 if [[ $1 == 'PostgreSQL' ]];
 then
