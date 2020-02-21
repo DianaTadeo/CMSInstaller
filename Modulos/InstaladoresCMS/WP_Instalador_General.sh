@@ -254,9 +254,9 @@ configure_WP(){
 	> $3/wpInfo.json
 }
 
-echo "==============================================="
-echo "     Inicia la instalacion de Wordpress"
-echo "==============================================="
+echo "===============================================" | tee -a $LOG
+echo "     Inicia la instalacion de Wordpress ${10} " | tee -a $LOG
+echo "===============================================" | tee -a $LOG
 
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 
