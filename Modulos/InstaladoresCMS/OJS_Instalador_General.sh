@@ -74,13 +74,15 @@ install_dep(){
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
+			[[ $3 == "Apache" ]] && PHP="php"
+			[[ $3 == "Nginx" ]] && PHP="php-fpm"
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
 			yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y
 			yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y
 			yum install yum-utils -y
 			yum-config-manager --enable remi-php73 -y
-			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip php-intl php-zip php-xmlrpc -y
-			log_errors $? "Instalación de PHP7.3: php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip php-intl php-zip php-xmlrpc"
+			yum install wget $PHP php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip php-intl php-zip php-xmlrpc -y
+			log_errors $? "Instalación de PHP7.3: $PHP php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip php-intl php-zip php-xmlrpc"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql php-mysqli -y; else yum install php-pgsql -y; fi
 			log_errors $? "Instalación de PHP7.3-$2"
 			if [[ $3 == 'Apache' ]]; then
