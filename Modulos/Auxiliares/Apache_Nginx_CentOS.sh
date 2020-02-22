@@ -50,16 +50,10 @@ install_apache(){
 ## @fn install_nginx()
 ## @brief Instalador de Nginx para CentOS
 ## @param $1 version de CentOS
+## @param $2 version de Nginx
 ##
 install_nginx(){
-	if [[ $1 == 'CentOS 7' ]];
-	then
-	rpm -Uvh http://nginx.org/packages/centos/7/x86_64/RPMS/nginx-1.16.1-1.el7.ngx.x86_64.rpm
-	else
-	rpm -Uvh http://nginx.org/packages/centos/6/x86_64/RPMS/nginx-1.16.1-1.el6.ngx.x86_64.rpm
-	fi
-
-	cmd="yum -y install nginx"
+	cmd="yum -y install nginx-$2*"
 	$cmd
 	log_errors $? "Instalacion de Nginx: $cmd"
 	cmd="systemctl start nginx"
@@ -86,6 +80,8 @@ install_apache_WAF(){
 	log_errors $? "Instalando Mod Security en Apache: $cmd"
 
 	sed -i "s/SecRuleEngine DetectionOnly/SecRuleEngine On/" /etc/httpd/conf.d/mod_security.conf
+	sed -i "s/SecResponseBodyAccess On/SecResponseBodyAccess Off/" /etc/	sed -i "s/SecResponseBodyAccess On/SecResponseBodyAccess Off/" /etc/httpd/conf.d/mod_security.conf
+
 	cmd="service httpd restart"
 	$cmd
 	log_errors $? "Instalando ModSecurity en Apache: $cmd"
@@ -147,25 +143,12 @@ install_nginx_WAF(){
 
 
 
-echo "==============================================="
-echo "     Inicia la instalacion de $2 $3"
-echo "==============================================="
-yum update
+echo "===============================================" | tee -a $LOG
+echo "     Inicia la instalacion de $2 $3" | tee -a $LOG
+echo "===============================================" | tee -a $LOG
+
+yum update -y
 yum upgrade -y
-#yum install epel-release yum-utils -y
-#if [ $1 == 6 ];
-#then
-#	yum install centos-release-SCL
-#	yum install php54 php54-php php54-php-gd php54-php-mbstring
-#	yum install php54-php-mysqlnd3
-#	mv /etc/httpd/conf.d/php.conf /etc/httpd/conf.d/php53.off
-#else
-#	yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
-#	yum-config-manager --enable remi-php73
-#	yum  -y install php php-fpm php-common php-opcache php-mcrypt php-cli php-gd php-curl php-mysqlnd
-#	systemctl start php-fpm
-#	systemctl enable php-fpm
-#fi
 
 if [[ $(whereis git | cut -f2 -d':') ]]; then
 		echo $(git version)
@@ -174,11 +157,11 @@ else
 fi
 if [[ $2 == 'Nginx' ]];
 then
-	install_nginx $1
-	install_nginx_WAF $1
+	install_nginx "$1" "$3"
+	#install_nginx_WAF $1
 else
 	install_apache
-	install_apache_WAF $1
+	install_apache_WAF "$1"
 
 fi
 echo "==============================================="
