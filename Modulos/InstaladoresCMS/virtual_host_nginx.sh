@@ -6,7 +6,7 @@
 ## @version 1.0
 ##
 
-# Argumento 1: El sistema operativo donde se esta instalando Drupal : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
+# Argumento 1: El sistema operativo donde se esta configurando el sitio: 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
 # Argumento 2: Nombre de dominio del sitio
 # Argumento 3: Ruta donde se instalara Drupal
 # Argumento 4: Soporte para IPv6
@@ -27,18 +27,42 @@ log_errors(){
 }
 
 # $1=SO; $2=DomainName; $3=PathInstall; $4=IPv6; $5=CMS
-sed -i 's/;\(cgi.fix_pathinfo=\)1/\10/' /etc/php/7.3/fpm/php.ini
 if [[ $1 =~ CentOS.* ]]; then
+	sed -i 's/;\(cgi.fix_pathinfo=\)1/\10/' /etc/php.ini
+	sed -i 's/expose_php = On/expose_php = Off/' /etc/php.ini
 	[ -z "$(which openssl)" ] && yum install openssl -y
 	log_errors 0 "Instalacion de $(openssl version): "
 	yum install mod_ssl -y
 	ROOT_PATH="/var/www"
-	service php7.3-fpm restart
+	[[ $1 == 'CentOS 7' ]] && ROOT_PATH="/usr/share/nginx/html"
+	WEB_USER=$(grep -o "^www-data" /etc/passwd)
+	[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^apache" /etc/passwd)
+	[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^httpd" /etc/passwd)
+	[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^nginx" /etc/passwd)
+	PHP="php-fpm"
+	PHP_SOCK="/run/$PHP/$PHP.sock"
+	FASTCGI="include fastcgi.conf;"
+
+	sed -i "s%listen = .*%listen = $PHP_SOCK%" /etc/php-fpm.d/www.conf
+	sed -i "s%;\(listen.owner = \)nobody%\1$WEB_USER%" /etc/php-fpm.d/www.conf
+	sed -i "s%;\(listen.group = \)nobody%\1$WEB_USER%" /etc/php-fpm.d/www.conf
+	sed -i "s%;\(listen.mode = .*\)%\1%" /etc/php-fpm.d/www.conf
+	sed -i "s/user nginx;/user $WEB_USER;/" /etc/nginx/nginx.conf
+	#chown -Rf $WEB_USER:$WEB_USER /var/lib/nginx
+
+	service $PHP restart
+	setenforce 0
+	sed -i '/^\s\+server\s\+{/i 		include /etc/nginx/sites-enabled/*.conf;' /etc/nginx/nginx.conf
 else
+	sed -i 's/;\(cgi.fix_pathinfo=\)1/\10/' /etc/php/7.3/fpm/php.ini
+	sed -i 's/expose_php = On/expose_php = Off/' /etc/php/7.3/fpm/php.ini
 	[ -z "$(which openssl)" ] && apt install openssl -y
 	log_errors 0 "Instalacion de $(openssl version): "
 	ROOT_PATH="/var/www/html"
-	systemctl restart php7.3-fpm
+	PHP="php7.3-fpm"
+	PHP_SOCK="/run/php/$PHP.sock"
+	FASTCGI="include snippets/fastcgi-php.conf;"
+	systemctl restart $PHP
 fi
 mkdir -p  /etc/nginx/sites-available/  /etc/nginx/sites-enabled/
 SISTEMA="/etc/nginx/sites-available/$2.conf"
@@ -123,9 +147,9 @@ if [[ $5 == "drupal" ]]; then
 
 			location ~ '\.php\$|^/update.php' {
 					fastcgi_split_path_info ^(.+?\.php)(|/.*)\$;
-					include snippets/fastcgi-php.conf;
+					$FASTCGI
 					fastcgi_intercept_errors on;
-					fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+					fastcgi_pass unix:$PHP_SOCK;
 			}
 
 			location ~ ^/sites/.*/files/styles/ {
@@ -147,7 +171,6 @@ if [[ $5 == "drupal" ]]; then
 "
 else
 	PHP_LOC="location ~ \.php\$ {"
-	FASTCGI="include snippets/fastcgi-php.conf;"
 	[[ $5 == 'joomla' ]] && FASTCGI="include /etc/nginx/fastcgi.conf;" && ADMIN_LOC="location = /administrator { return 302 https://$2/administrator/;	}"
 	[[ $5 == 'moodle' ]] && PHP_LOC="location ~ [^/]\.php(/|\$) {"
 	DATA="location / {
@@ -163,7 +186,7 @@ else
 	$PHP_LOC
 		$FASTCGI
 		fastcgi_intercept_errors on;
-		fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+		fastcgi_pass unix:$PHP_SOCK;
 	}
 "
 fi
@@ -200,7 +223,6 @@ server {
 
 }" |  tee $SISTEMA
 
-echo "Arg 3= $3"
 echo "ln -s $3/$2 $ROOT_PATH/$2"
 echo "root path: $ROOT_PATH"
 
