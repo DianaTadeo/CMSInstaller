@@ -137,22 +137,30 @@ else  # Nginx
 		SECURITY_CONF="/etc/nginx/conf.d/security.conf"
 		sed -i 's/#//' /etc/nginx/sites-available/$3.conf
 	else
-		yum install nginx-extras -y
 		WEB_SERVER_CONF="/etc/nginx/nginx.conf"
 		SECURITY_CONF="/etc/nginx/conf.d/security.conf"
 		sed -i 's/#//' /etc/nginx/sites-available/$3.conf
+		BEGIN_PAGE_BLOCK=$(grep -n "^\s.*error_page" $WEB_SERVER_CONF | cut -f1 -d':' | head -n1)
+		END_PAGE_BLOCK=$(($(grep -n "^\s.*error_page" $WEB_SERVER_CONF | cut -f1 -d':' | tail -n1)+2))
+		sed -i "$BEGIN_PAGE_BLOCK,$END_PAGE_BLOCK{s/.*//}" $WEB_SERVER_CONF
 	fi
 
-	sed -i "s/\(\s*\)#\?\(\s\)\(server_tokens\s*\).*/\1\2\3off;/" $WEB_SERVER_CONF
+	[[ $SO =~ Debian.* ]] && sed -i "s/\(\s*\)#\?\(\s\)\(server_tokens\s*\).*/\1\2\3off;/" $WEB_SERVER_CONF
+	[[ $SO =~ CentOS.* ]] && sed -i '/http\s\+{/a 		server_tokens off;' $WEB_SERVER_CONF
 	log_errors $? "server_tokens off;"
 
 	echo 'add_header Allow "GET, POST, HEAD" always;' >> $SECURITY_CONF
 	echo -e 'server {\nif ( $request_method !~ ^(GET|POST|HEAD)$ ) {\nreturn 405;\n}\n}' >> $SECURITY_CONF
 	log_errors $? "Se deshabilitan metodos HTTP excepto: GET, HEAD, POST"
-	sed -i '/^\s\+server_tokens off;/i 		more_clear_headers Server;' $WEB_SERVER_CONF
-	log_errors $? "ServerSignature Off -> more_clear_headers Server"
 
-	sed -i '/^\s\+try_files $uri $uri\/ =404;/a 		autoindex off;' /etc/nginx/sites-available/default # Se aplica para todos
+	if [[ $SO =~ Debian.* ]]; then
+		sed -i '/^\s\+server_tokens off;/i 		more_clear_headers Server;' $WEB_SERVER_CONF
+		log_errors $? "ServerSignature Off -> more_clear_headers Server"
+	fi
+
+	[[ $SO =~ Debian.* ]] && sed -i '/^\s\+try_files $uri $uri\/ =404;/a 		autoindex off;' /etc/nginx/sites-available/default
+	[[ $SO =~ CentOS.* ]] && sed -i '/^\s\+location\s\+\/\s\+{/a autoindex off;' $WEB_SERVER_CONF
+	# Se aplica para todos
 	log_errors $? "Se deshabilita listado de directorios"
 
 	echo "add_header X-Content-Type-Options nosniff;" >> $SECURITY_CONF
@@ -166,7 +174,10 @@ else  # Nginx
 
 	echo 'add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";' >> $SECURITY_CONF
 	log_errors $? 'add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";'
-	echo 'proxy_cookie_path / "/; HTTPOnly; Secure";' >> /etc/nginx/sites-available/default # Se aplica para todos
+
+	[[ $SO =~ Debian.* ]] && echo 'proxy_cookie_path / "/; HTTPOnly; Secure";' >> /etc/nginx/sites-available/default # Se aplica para todos
+	[[ $SO =~ CentOS.* ]] && sed -i '/^\s\+server\s\+{/i 		proxy_cookie_path / "/; HTTPOnly; Secure";' $WEB_SERVER_CONF
+	log_errors $? 'proxy_cookie_path / "/; HTTPOnly; Secure";'
 
 	echo "add_header Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\";" >> $SECURITY_CONF
 	log_errors $? "add_header Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\";"
@@ -196,8 +207,10 @@ else  # Nginx
 	log_errors $? "Redireccion de codigos de estado al sitio principal"
 
 	# Se aplica a todos
-	sed -i '/server_name _;/a location ~* \/.*\(\(ht|README|robots|INSTALL|UP\(D|GR\)A\(T|D\)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE\)\(.*\)$|\(.*config|version|info|xmlrpc\)\(\\.php)$|\(.*\\.\(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t\(ar.*|ar\\.gz|gz\)|z\(.*|ip\)|~\)$\)\){\n\tdeny all;\n\terror_page 403 \/;\n}' /etc/nginx/sites-available/default
+	[[ $SO =~ Debian.* ]] && sed -i '/server_name _;/a location ~* \/.*\(\(ht|README|robots|INSTALL|UP\(D|GR\)A\(T|D\)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE\)\(.*\)$|\(.*config|version|info|xmlrpc\)\(\\.php)$|\(.*\\.\(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t\(ar.*|ar\\.gz|gz\)|z\(.*|ip\)|~\)$\)\){\n\tdeny all;\n\terror_page 403 \/;\n}' /etc/nginx/sites-available/default
+	[[ $SO =~ CentOS.* ]] && sed -i '/server_name _;/a location ~* \/.*\(\(ht|README|robots|INSTALL|UP\(D|GR\)A\(T|D\)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE\)\(.*\)$|\(.*config|version|info|xmlrpc\)\(\\.php)$|\(.*\\.\(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t\(ar.*|ar\\.gz|gz\)|z\(.*|ip\)|~\)$\)\){\n\tdeny all;\n\terror_page 403 \/;\n}' $WEB_SERVER_CONF
 	log_errors $? "Se restringe el acceso a los archivos publicos"
+
 	if [[ "$SO" =~ Debian.* ]]; then
 		systemctl restart nginx
 		log_errors $? "Se reinicia nginx "
