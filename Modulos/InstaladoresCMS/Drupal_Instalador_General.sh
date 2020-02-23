@@ -75,12 +75,14 @@ install_dep(){
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
+			[[ $3 == "Apache" ]] && PHP="php"
+			[[ $3 == "Nginx" ]] && PHP="php-fpm"
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
 			yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y
 			yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y
 			yum install yum-utils -y
 			yum-config-manager --enable remi-php73 -y
-			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring php-intl php-zip php-xmlrpc unzip zip -y
+			yum install wget $PHP php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring php-intl php-zip php-xmlrpc unzip zip -y
 			log_errors $? "Instalacion de PHP7.3 en Drupal: "
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
 			log_errors $? "Instalacion de PHP7.3-$2: "
@@ -320,7 +322,9 @@ drupal_installer(){
 		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush fp -y"
 	fi
 	log_errors $? "Permisos en carpetas"
-
+	su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush cc drush"
+	su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush ups"
+	
 	jq -c -n --arg title "$SITE_NAME" --arg drup_admin "$CMS_USER" --arg drup_admin_pass "$CMS_PASS" \
 	'{Title: $title, drup_admin:$drup_admin, drup_admin_pass:$drup_admin_pass}' \
 	> ${10}/drupalInfo.json

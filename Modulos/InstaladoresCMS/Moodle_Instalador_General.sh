@@ -78,6 +78,8 @@ install_dep(){
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
+			[[ $3 == "Apache" ]] && PHP="php"
+			[[ $3 == "Nginx" ]] && PHP="php-fpm"
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
 			cmd="yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y"
 			$cmd
@@ -91,7 +93,7 @@ install_dep(){
 			cmd="yum-config-manager --enable remi-php73 -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Moodle: $cmd"
-			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo \
+			cmd="yum install wget $PHP php-mcrypt php-cli php-curl php-gd php-pdo \
 			php-xml php-mbstring php-intl php-zip php-xmlrpc unzip zip -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Moodle: $cmd"
@@ -148,7 +150,7 @@ install_moodle(){
 		moodleName="moodle-$8"
 	fi
 	wget "https://download.moodle.org/download.php/direct/stable$moodleVersion/$moodleName.tgz"
-	tar xzvf $moodleName.tgz
+	tar xzf $moodleName.tgz
 	rm $moodleName.tgz
 	mv moodle $6
 	cd $6

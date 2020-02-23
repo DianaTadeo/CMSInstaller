@@ -81,6 +81,8 @@ install_dep(){
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
+			[[ $3 == "Apache" ]] && PHP="php"
+			[[ $3 == "Nginx" ]] && PHP="php-fpm"
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
 			cmd="yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y"
 			$cmd
@@ -94,7 +96,7 @@ install_dep(){
 			cmd="yum-config-manager --enable remi-php73 -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Joomla: $cmd"
-			cmd="yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-intl php-zip php-xmlrpc unzip zip -y"
+			cmd="yum install wget $PHP php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-intl php-zip php-xmlrpc unzip zip -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-mysql php-pgsql -y; fi
