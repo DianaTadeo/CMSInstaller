@@ -42,13 +42,14 @@ if [[ $1 =~ CentOS.* ]]; then
 	PHP="php-fpm"
 	PHP_SOCK="/run/$PHP/$PHP.sock"
 	FASTCGI="include fastcgi.conf;"
+	[[ $5 = "moodle" ]] && PARAM_EXTRAS="fastcgi_split_path_info  ^(.+\.php)(.*)\$; fastcgi_param PATH_INFO \$fastcgi_path_info; fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;"
 
 	sed -i "s%listen = .*%listen = $PHP_SOCK%" /etc/php-fpm.d/www.conf
 	sed -i "s%;\(listen.owner = \)nobody%\1$WEB_USER%" /etc/php-fpm.d/www.conf
 	sed -i "s%;\(listen.group = \)nobody%\1$WEB_USER%" /etc/php-fpm.d/www.conf
 	sed -i "s%;\(listen.mode = .*\)%\1%" /etc/php-fpm.d/www.conf
 	sed -i "s/user nginx;/user $WEB_USER;/" /etc/nginx/nginx.conf
-	#chown -Rf $WEB_USER:$WEB_USER /var/lib/nginx
+	chown -Rf $WEB_USER:$WEB_USER /var/lib/nginx
 
 	service $PHP restart
 	setenforce 0
@@ -187,6 +188,7 @@ else
 		$FASTCGI
 		fastcgi_intercept_errors on;
 		fastcgi_pass unix:$PHP_SOCK;
+		$PARAM_EXTRAS
 	}
 "
 fi
