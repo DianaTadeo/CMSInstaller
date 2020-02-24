@@ -206,7 +206,7 @@ Include /etc/nginx/rules/*.conf
 
 	mv /etc/nginx/rules/REQUEST-921-PROTOCOL-ATTACK.conf /etc/nginx/rules/REQUEST-921-PROTOCOL-ATTACK.example
 
-	sed -i '/http {/,/}/s/^\(}\)/\tserver { \n\t\tmodsecurity on;\n\t\tmodsecurity_rules_file \/etc\/nginx\/modsec\/modsecurity.conf;\n\t}\n\1/' /etc/nginx/nginx.conf
+	sed -i '/http {/a \\tmodsecurity on;\n\tmodsecurity_rules_file \/etc\/nginx\/modsec\/modsecurity.conf;\n' /etc/nginx/nginx.conf
 	log_errors $? "Configuracion OWASP: modsecurity on;modsecurity_rules_file /etc/nginx/modsec/modsecurity.conf"
 	systemctl restart nginx
 	log_errors $? "Se reinicia nginx: systemctl restart nginx"
