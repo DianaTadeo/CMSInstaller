@@ -141,7 +141,70 @@ install_nginx_WAF(){
 	#cd $locate
 }
 
+## @fn install_nginx_WAF_etc()
+## @brief Instalador de WAF con ModSecurity para Nginx
+## @param $1 version de CentOS
+## @param $2 version de Nginx
+##
+install_nginx_WAF_etc(){
+	# $1=CENTOS_VERSION ; $2=NGINX_VERSION
+	yum groupinstall -y "Development Tools"
+	yum install -y git httpd httpd-devel pcre pcre-devel libxml2 libxml2-devel curl curl-devel openssl openssl-devel libxslt-devel gd-devel perl-ExtUtils-Embed gperftools-devel GeoIP-devel
+	log_errors $? "Instalando dependencias para Nginx: yum install -y git httpd httpd-devel pcre pcre-devel libxml2 libxml2-devel curl curl-devel openssl openssl-devel libxslt-devel gd-devel perl-ExtUtils-Embed gperftools-devel GeoIP-devel"
+	git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity
+	cd ModSecurity
+	git submodule init
+	git submodule update
+	./build.sh
+	./configure
+	make
+	log_errors $? "Comienza instalación de WAF para Nginx"
+	make install
+	log_errors $? "Instalación de WAF para Nginx"
+	git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git
+	wget http://nginx.org/download/nginx-$2.tar.gz
+	tar zxvf nginx-$2.tar.gz
+	cd nginx-$2
+	./configure --add-dynamic-module=../ModSecurity-nginx --prefix=/usr/share/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib64/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --http-client-body-temp-path=/var/lib/nginx/tmp/client_body --http-proxy-temp-path=/var/lib/nginx/tmp/proxy --http-fastcgi-temp-path=/var/lib/nginx/tmp/fastcgi --http-uwsgi-temp-path=/var/lib/nginx/tmp/uwsgi --http-scgi-temp-path=/var/lib/nginx/tmp/scgi --pid-path=/run/nginx.pid --lock-path=/run/lock/subsys/nginx --user=nginx --group=nginx --with-file-aio --with-http_ssl_module --with-http_v2_module --with-http_geoip_module --with-http_realip_module --with-stream_ssl_preread_module --with-http_addition_module --with-http_xslt_module=dynamic --with-http_image_filter_module=dynamic --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module=dynamic --with-http_auth_request_module --with-mail=dynamic --with-mail_ssl_module --with-pcre --with-pcre-jit --with-stream=dynamic --with-stream_ssl_module --with-google_perftools_module --with-debug --with-cc-opt='-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic' --with-ld-opt='-Wl,-z,relro -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -Wl,-E'
+	log_errors $? "Se configura Nginx para utilizar ModSecurity-nginx"
+	make modules
+	cp objs/ngx_http_modsecurity_module.so /usr/share/nginx/modules
+	sed -i "1 i\load_module modules/ngx_http_modsecurity_module.so;" /etc/nginx/nginx.conf
+	log_errors $? "Se carga módulo 'ngx_http_modsecurity_module.so' en '/etc/nginx/nginx.conf'"
 
+	mkdir /etc/nginx/modsec
+
+	wget -P /etc/nginx/modsec/ https://raw.githubusercontent.com/SpiderLabs/ModSecurity/v3/master/modsecurity.conf-recommended
+
+	mv /etc/nginx/modsec/modsecurity.conf-recommended /etc/nginx/modsec/modsecurity.conf
+	cp ../unicode.mapping /etc/nginx/modsec/
+
+	git clone https://github.com/SpiderLabs/owasp-modsecurity-crs.git
+	cd owasp-modsecurity-crs/
+
+	cp -R rules/ /etc/nginx/
+	cp crs-setup.conf.example /etc/nginx/modsec/crs-setup.conf
+	echo "#Load OWASP Config
+Include crs-setup.conf
+#Load all other Rules
+Include /etc/nginx/rules/*.conf
+#Disable rule by ID from error message
+#SecRuleRemoveById 92035" >> /etc/nginx/modsec/modsecurity.conf
+
+	sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/nginx/modsec/modsecurity.conf
+
+	mv /etc/nginx/rules/REQUEST-921-PROTOCOL-ATTACK.conf /etc/nginx/rules/REQUEST-921-PROTOCOL-ATTACK.example
+
+	#mv /etc/nginx/rules/REQUEST-949-BLOCKING-EVALUATION.conf /etc/nginx/rules/REQUEST-949-BLOCKING-EVALUATION.conf.false_positive
+	sed -i '/http {/a \\tmodsecurity on;\n\tmodsecurity_rules_file \/etc\/nginx\/modsec\/modsecurity.conf;\n' /etc/nginx/nginx.conf
+	log_errors $? "Configuracion OWASP: modsecurity on;modsecurity_rules_file /etc/nginx/modsec/modsecurity.conf"
+
+	[[ $1 == "CentOS 7" ]] &&	CMD="systemctl restart nginx"
+	[[ $1 == "CentOS 6" ]] &&	CMD="service nginx restart"
+	$CMD
+	log_errors $? "Se reinicia nginx: $CMD"
+
+}
 
 echo "===============================================" | tee -a $LOG
 echo "     Inicia la instalacion de $2 $3" | tee -a $LOG
@@ -158,7 +221,7 @@ fi
 if [[ $2 == 'Nginx' ]];
 then
 	install_nginx "$1" "$3"
-	#install_nginx_WAF $1
+	install_nginx_WAF_etc "$1" "$3"
 else
 	install_apache
 	install_apache_WAF "$1"
