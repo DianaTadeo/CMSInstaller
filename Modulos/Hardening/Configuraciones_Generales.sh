@@ -36,7 +36,7 @@ disable_default_services(){
 	SERVICES_NOT_DISABLED="[Nn]etwork.* ssh.* cron.* fail2ban.* keyboard.* \
 	console.* r*sync.* r*sys.* system.* d-bus.* apache.* mysql.* p.*g.*sql.* \
 	mariadb.* httpd.* nginx.* log(check|watch).* postfix.* php.* autovt.* \
-	dbus-org.* getty.*"
+	dbus-org.* getty.* sendmail.* ntp.* ip.*tables.*"
 	case $1 in
 		'Debian 9' | 'Debian 10' | 'CentOS 7')
 			DEFAULT_SERVICES_ENABLED=$(systemctl list-unit-files --state=enabled --type=service | grep enabled | cut -f1 -d" " | tr '\n' ' ')
@@ -46,7 +46,7 @@ disable_default_services(){
 		'CentOS 6')
 			DEFAULT_SERVICES_ENABLED=$(chkconfig --list | grep '3:\(activo\|on\)' | cut -d"0" -f1 | cut -d" " -f1 | tr '[[:space:]]' ' ')
 			DISABLE_CMD="chkconfig --del"
-			RESTART_SSH="service ssh restart"
+			RESTART_SSH="service sshd restart"
 			;;
 	esac
 	for SERVICE in $DEFAULT_SERVICES_ENABLED; do
@@ -119,12 +119,15 @@ password_policy(){
 	log_errors $? "Expiración de contraseñas (nuevos usuarios): cada 180 días (se advertirá 90 días antes) y mínimo 7"
 	ACCOUNTS=$(grep "/bin/.*sh" /etc/passwd  | cut -d":" -f1)
 	for ACCOUNT in $ACCOUNTS; do
-		echo "Debes cambiar el password de '$ACCOUNT':"
-		if [[ "$ACCOUNT" == "postgres" ]]; then
-			su postgres -c "psql -c '\password'"
-		else
-			passwd $ACCOUNT
-		fi
+		while true; do
+			echo "Debes cambiar el password de '$ACCOUNT':"
+			if [[ "$ACCOUNT" == "postgres" ]]; then
+				su postgres -c "psql -c '\password'"
+			else
+				passwd $ACCOUNT
+			fi
+			[[ $? == '0' ]] && break
+		done
 		chage -M 180 -m 7 -W 30 $ACCOUNT
 	done
 	log_errors $? "Expiración de contraseñas (usuarios existentes): cada 180 días (se adevertirá 30 días antes) y mínimo 7"
@@ -185,7 +188,7 @@ sudo_policy(){
 	log_errors $? "El usuario '$SUDO_USER' fue agregado al grupo '$GROUP'"
 	echo "El usuario '$SUDO_USER' fue agregado al grupo '$GROUP'"
 	while true; do
-		read -p "Quieres agregar otros usuarios? [N/s]: " RESP
+		read -p "Quieres agregar otros usuarios (Nota: Los usuarios deben existir)? [N/s]: " RESP
 		if [ -z "$RESP" ]; then RESP="N"; fi
 		if [[ $RESP =~ s|S ]]; then
 			read -p "Indica el usuario que quieres añadir: " USER_NAME
@@ -251,6 +254,11 @@ additional_preferences(){
 	log_errors $? "Se deja habilitado el uso de 4 tty"
 
 }
+
+echo "============================================================" | tee -a $LOG
+echo "		  Configuraciones de hardening para '$1'" | tee -a $LOG
+echo "============================================================" | tee -a $LOG
+
 disable_default_services "$1"
 disable_user_accounts
 password_policy "$1"
