@@ -138,7 +138,7 @@ data_base_manager_installer(){
 		'CentOS 6' | 'CentOS 7')
 			# Se ejecuta script para instalación de base de datos en centos
 			bash ./Modulos/Auxiliares/DB_Instalador_CentOS.sh "$2" "$DB_NAME" "$DB_PORT"  \
-			"$DB_USER" "$DB_IP" "$4" "$3"
+			"$DB_USER" "$DB_IP" "$4" "$3" "$1"
 		;;
 	esac
 }
@@ -293,3 +293,4 @@ bash ./Modulos/Auxiliares/Backup_Files_General.sh "$BACKUP_DAYS" "$SO" \
 "$DB_PORT" "$DB_NAME" "$BACKUP_TIME" "$TEMP_PATH" "$EMAIL_NOTIFICATION" "$DB_VERSION"
 bash ./Modulos/Auxiliares/firewall/Firewall_Config.sh "$SO" "$DB_PORT" "$DB_IP"
 echo -e "Recarga las variables de entorno.\n Ejecute los siguientes comandos: . /etc/profile\n\t\t\t\t  . ~/.bashrc"
+[[ $SO =~ CentOS.* ]] && echo "Cierra e inicia sesión para poder utilizar las políticas de sudo."
