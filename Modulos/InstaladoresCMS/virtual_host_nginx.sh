@@ -33,14 +33,14 @@ if [[ $1 =~ CentOS.* ]]; then
 	[ -z "$(which openssl)" ] && yum install openssl -y
 	log_errors 0 "Instalacion de $(openssl version): "
 	yum install mod_ssl -y
-	ROOT_PATH="/var/www"
-	[[ $1 == 'CentOS 7' ]] && ROOT_PATH="/usr/share/nginx/html"
+	ROOT_PATH="/usr/share/nginx/html"
 	WEB_USER=$(grep -o "^www-data" /etc/passwd)
 	[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^apache" /etc/passwd)
 	[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^httpd" /etc/passwd)
 	[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^nginx" /etc/passwd)
 	PHP="php-fpm"
 	PHP_SOCK="/run/$PHP/$PHP.sock"
+	[[ $1 == 'CentOS 6' ]] && PHP_SOCK="/var/run/$PHP/$PHP.sock"
 	FASTCGI="include fastcgi.conf;"
 	[[ $5 = "moodle" ]] && PARAM_EXTRAS="fastcgi_split_path_info  ^(.+\.php)(.*)\$; fastcgi_param PATH_INFO \$fastcgi_path_info; fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;"
 
@@ -53,7 +53,9 @@ if [[ $1 =~ CentOS.* ]]; then
 
 	service $PHP restart
 	setenforce 0
-	sed -i '/^\s\+server\s\+{/i 		include /etc/nginx/sites-enabled/*.conf;' /etc/nginx/nginx.conf
+	[[ $1 == 'CentOS 7' ]] && sed -i '/^\s\+server\s\+{/i 		include /etc/nginx/sites-enabled/*.conf;' /etc/nginx/nginx.conf
+	[[ $1 == 'CentOS 6' ]] && sed -i '/^[\s]*http\s\+{/a include /etc/nginx/sites-enabled/*.conf;' /etc/nginx/nginx.conf
+
 else
 	sed -i 's/;\(cgi.fix_pathinfo=\)1/\10/' /etc/php/7.3/fpm/php.ini
 	sed -i 's/expose_php = On/expose_php = Off/' /etc/php/7.3/fpm/php.ini
