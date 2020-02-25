@@ -14,6 +14,7 @@
 # Argumento 5: Servidor de la Base de Datos (localhost, ip, etc.)
 # Argumento 6: Existencia de BD ['Yes' o 'No']
 # Argumento 7: Versión del manejador
+# Argumento 8: Versión de CentOS [6 ó 7]
 
 LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
@@ -43,19 +44,29 @@ echo "===============================================" | tee -a $LOG
 ## @param $4 Host de la base de datos que se desea crear
 ## @param $5 Pregunta si la base de datos ya existe
 ## @param $6 Version de manejador de base de datos a instalar
+## @param $7 Version de CentOS
 ##
 install_PostgreSQL(){
-	yum install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm -y
+	[[ "$7" == 'CentOS 6' ]] && VERSION="6"
+	[[ "$7" == 'CentOS 7' ]] && VERSION="7"
+	yum install https://download.postgresql.org/pub/repos/yum/reporpms/EL-$VERSION-x86_64/pgdg-redhat-repo-latest.noarch.rpm -y
 	#yum -y install postgresql-server postgresql-contrib
 	pgsqlVersion=$(echo $6 | cut -d"." -f1,2 | sed "s/\.//")
 	yum -y install postgresql$pgsqlVersion-server
 	#postgresql-setup initdb
-	[[ $pgsqlVersion =~ 1.* ]] && /usr/pgsql-$6/bin/postgresql-$pgsqlVersion-setup initdb
-	[[ $pgsqlVersion =~ 9.* ]] && /usr/pgsql-$6/bin/postgresql$pgsqlVersion-setup initdb
-	cmd="systemctl start postgresql-$6"
+	if [[ $7 == "CentOS 7" ]]; then
+		[[ $pgsqlVersion =~ 1.* ]] && /usr/pgsql-$6/bin/postgresql-$pgsqlVersion-setup initdb
+		[[ $pgsqlVersion =~ 9.* ]] && /usr/pgsql-$6/bin/postgresql$pgsqlVersion-setup initdb
+	else
+		service postgresql-$6 initdb
+	fi
+	[[ $7 == 'CentOS 6' ]] && cmd="service postgresql-$6 start"
+	[[ $7 == 'CentOS 7' ]] && cmd="systemctl start postgresql-$6"
 	$cmd
 	log_errors $? "Instalacion de PostgreSQL: $cmd"
-	cmd="systemctl enable postgresql-$6"
+
+	[[ $7 == 'CentOS 6' ]] && cmd="chkconfig postgresql-$6 on"
+	[[ $7 == 'CentOS 7' ]] && cmd="systemctl enable postgresql-$6"
 	$cmd
 	log_errors $? "Instalacion de PostgreSQL: $cmd"
 	if [[ $5 == 'Yes' ]]; then
@@ -77,10 +88,12 @@ install_PostgreSQL(){
 		sed -i "s/^#port = 5432/port = $2/" /var/lib/pgsql/$6/data/postgresql.conf
 		[[ -f /usr/sbin/semanage ]] && /usr/sbin/semanage port -a -t postgresql_port_t -p tcp $2
 		chown postgres:postgres /var/lib/pgsql/$6/data/pg_hba.conf
-		cmd="systemctl daemon-reload"
+		[[ $7 == 'CentOS 6' ]] && cmd=""
+		[[ $7 == 'CentOS 7' ]] && cmd="systemctl daemon-reload"
 		$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd"
-		cmd="systemctl restart postgresql-$6"
+		[[ $7 == 'CentOS 6' ]] && cmd="service postgresql-$6 restart"
+		[[ $7 == 'CentOS 7' ]] && cmd="systemctl sretart postgresql-$6"
 		$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd"
 
@@ -100,10 +113,12 @@ install_PostgreSQL(){
 		mv /var/lib/pgsql/$6/data/pg_hba.conf-aux /var/lib/pgsql/$6/data/pg_hba.conf
 		sed -i "s/\(^host.*\)ident/\1md5/" /var/lib/pgsql/$6/data/pg_hba.conf
 		chown postgres:postgres /var/lib/pgsql/$6/data/pg_hba.conf
-					cmd="systemctl daemon-reload"
+					[[ $7 == 'CentOS 6' ]] && cmd=""
+					[[ $7 == 'CentOS 7' ]] && cmd="systemctl daemon-reload"
 					$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd [Revise archivo pg_hba.conf]"
-					cmd="systemctl restart postgresql-$6"
+					[[ $7 == 'CentOS 6' ]] && cmd="service postgresql-$6 start"
+					[[ $7 == 'CentOS 7' ]] && cmd="systemctl start postgresql-$6"
 					$cmd
 	fi
 }
@@ -117,15 +132,20 @@ install_PostgreSQL(){
 ## @param $3 Nombre de usuario de la base de datos que se desea crear
 ## @param $4 Host de la base de datos que se desea crear
 ## @param $5 Pregunta si la base de datos ya existe
+## @param $6 Version de manejador de base de datos a instalar
+## @param $7 Version de CentOS
 ##
 install_MySQL(){
-	cmd="yum -y install mariadb-server"
+	[[ $7 == 'CentOS 6' ]] && cmd="yum -y install mysql-server-$6*"
+	[[ $7 == 'CentOS 7' ]] && cmd="yum -y install mariadb-server"
 	$cmd
 	log_errors $? "Instalacion de MySQL: $cmd"
-	cmd="systemctl start mariadb"
+	[[ $7 == 'CentOS 6' ]] && cmd="service mysqld start"
+	[[ $7 == 'CentOS 7' ]] && cmd="systemctl start mariadb"
 	$cmd
 	log_errors $? "Instalacion de MySQL: $cmd"
-	cmd="systemctl enable mariadb"
+	[[ $7 == 'CentOS 6' ]] && cmd="chkconfig mysqld on"
+	[[ $7 == 'CentOS 7' ]] && cmd="systemctl enable mariadb"
 	$cmd
 	log_errors $? "Instalacion de MySQL: $cmd"
 	if [[ $5 == 'Yes' ]]; then
@@ -143,14 +163,16 @@ install_MySQL(){
 					 sed -i "s/.*port.*/port=$1/" /etc/my.cnf
 								 sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
 		else
-					 echo "[mysqld]\nport=$2" >> /etc/my.cnf
-								 sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
+					 echo -e "[mysqld]\nport=$2" >> /etc/my.cnf
+								 #sed -i "s/\[mysqld\]/\[mysqld\]\nport=$2/" /etc/my.cnf.d/server.cnf
 		fi
 		[[ -f /usr/sbin/semanage ]] && /usr/sbin/semanage port -a -t mysqld_port_t -p tcp $2
-					cmd="systemctl daemon-reload"
+					[[ $7 == 'CentOS 6' ]] && cmd=""
+					[[ $7 == 'CentOS 7' ]] && cmd="systemctl daemon-reload"
 		$cmd
 		log_errors $? "Configuracion de MySQL: $cmd"
-		cmd="systemctl restart mariadb.service"
+		[[ $7 == 'CentOS 6' ]] && cmd="service mysqld restart"
+		[[ $7 == 'CentOS 7' ]] && cmd="systemctl restart mariadb.service"
 		$cmd
 		log_errors $? "Configuracion de MySQL: $cmd [Revise archivos /etc/my.cnf y /etc/my.cnf.d/server.cnf]"
 		mysql_secure_installation
@@ -185,9 +207,9 @@ install_MySQL(){
 
 if [[ $1 == 'PostgreSQL' ]];
 then
-		install_PostgreSQL $2 $3 $4 $5 $6 $7
+		install_PostgreSQL "$2" "$3" "$4" "$5" "$6" "$7" "$8"
 else
-		install_MySQL $2 $3 $4 $5 $6
+		install_MySQL "$2" "$3" "$4" "$5" "$6" "$7" "$8"
 fi
 echo "==============================================="
 echo "         Instalacion completada"
