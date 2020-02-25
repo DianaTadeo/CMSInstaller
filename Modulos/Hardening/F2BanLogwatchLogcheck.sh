@@ -67,17 +67,21 @@ install_fail2ban(){
 		'CentOS 6' | 'CentOS 7')
 			cmd="yum install -y epel-release"
 			$cmd
-			log_errors $? "$cmd"
+			log_errors 0 "$cmd"
 
 			cmd="yum install -y fail2ban postfix"
 			$cmd
 			log_errors $? "$cmd"
 
 			if [[ "$1" = "CentOS 6" ]]; then
+				service fail2ban start
+				chkconfig fail2ban on
 				APACHE_NAME="httpd"
 				MYSQL_NAME="mysqld"
 				NGINX_NAME="nginx"
 			else # CentOS 7
+				systemctl start fail2ban
+				systemctl enable fail2ban
 				APACHE_NAME="httpd"
 				MYSQL_NAME="mariadb"
 				NGINX_NAME="nginx"
@@ -91,10 +95,10 @@ install_fail2ban(){
 	cp /etc/fail2ban/jail.conf $JAIL_LOCAL
 
 	sed -i "0,/\(bantime[ \t]*=\).*/s/\(bantime[ \t]*=\).*/\1 $BANTIME/" $JAIL_LOCAL
-	log_errors $? "Se asgina bantime=$BANTIME"
+	log_errors $? "Se asigna bantime=$BANTIME"
 
 	sed -i "0,/\(findtime[ \t]*=\).*/s/\(findtime[ \t]*=\).*/\1 $FINDTIME/" $JAIL_LOCAL
-	log_errors $? "Se asgina findtime=$FINDTIME"
+	log_errors $? "Se asigna findtime=$FINDTIME"
 
 	sed -i "0,/\(maxretry[ \t]*=\).*/s/\(maxretry[ \t]*=\).*/\1 $MAXRETRY/" $JAIL_LOCAL
 	log_errors $? "Se asigna maxretry=$MAXRETRY"
@@ -112,7 +116,7 @@ install_fail2ban(){
 	sed -i 's/\(^\[sshd\]\)/\1 \nenabled = true\nfilter = sshd/' $JAIL_LOCAL
 	log_errors $? "Se habilita protección sshd"
 
-	if [[ $(which $APACHE_NAME) ]]; then
+	if [[ $(which $APACHE_NAME) ]] && [[ -z $(sudo service httpd status | grep stopped) ]]; then
 		#sed -i 's/\(\[apache-auth\]\)/\1 \nenabled = true\nfilter = apache-auth/' $JAIL_LOCAL
 		sed -i 's/\(\[apache-badbots\]\)/\1 \nenabled = true\nfilter = apache-badbots/' $JAIL_LOCAL
 		sed -i 's/\(\[apache-shellshock\]\)/\1 \nenabled = true\nfilter = apache-shellshock/' $JAIL_LOCAL
@@ -170,11 +174,13 @@ install_logwatch(){
 	else
 		cmd="yum install -y epel-release"
 		$cmd
-		log_errors $? "$cmd"
+		log_errors 0 "$cmd"
 
 		cmd="yum install -y logwatch postfix"
 		$cmd
 		log_errors $? "$cmd"
+		[[ $1 == 'CentOS 6' ]] && service logwatch start && chkconfig logwatch on
+		[[ $1 == 'CentOS 7' ]] && systemctl start logwatch && systemctl enable logwatch
 	fi
 
 	LOGWATCH_CONF="/usr/share/logwatch/default.conf/logwatch.conf"
@@ -201,11 +207,13 @@ install_logcheck(){
 	else
 		cmd="yum install -y epel-release"
 		$cmd
-		log_errors $? "$cmd"
+		log_errors 0 "$cmd"
 
 		cmd="yum install -y logcheck postfix"
 		$cmd
 		log_errors $? "$cmd"
+		[[ $1 == 'CentOS 6' ]] && service logcheck start && chkconfig logcheck on
+		[[ $1 == 'CentOS 7' ]] && systemctl start logcheck && systemctl enable logcheck
 	fi
 
 	# Archivo de configuración de logcheck
@@ -257,6 +265,10 @@ install_logcheck(){
 #====================================================#
 #	main de instalación de f2b, logwatch y logcheck	 #
 #====================================================#
+echo "=============================================================" | tee -a $LOG
+echo "		 Instalación de f2b, logwatch y logcheck " | tee -a $LOG
+echo "=============================================================" | tee -a $LOG
+
 
 SO=$1
 # Dirección en la que se recibirán las notficaciones -> $2
