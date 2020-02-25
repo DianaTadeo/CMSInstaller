@@ -31,11 +31,13 @@ if [[ $1 =~ CentOS.* ]]; then
 	log_errors 0 "Instalacion de $(openssl version): "
 	yum install mod_ssl -y
 	mkdir /etc/httpd/sites-available /etc/httpd/sites-enabled
-	echo "IncludeOptional sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf
+	[[ $1 == "CentOS 7" ]] && INCLUDE="IncludeOptional"
+	[[ $1 == "CentOS 6" ]] && INCLUDE="Include" && CENTOS_6_80="NameVirtualHost *:80" && CENTOS_6_443="NameVirtualHost *:443"
+	echo "$INCLUDE sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf
 	SISTEMA="/etc/httpd/sites-available/$2.conf"
 	SECURITY_CONF="/etc/httpd/conf.d/security.conf"
-	ROOT_PATH="/var/www"
-	[[ $1 == "CentOS 7" ]] && ROOT_PATH="/var/www/html"
+	ROOT_PATH="/var/www/html"
+	#[[ $1 == "CentOS 7" ]] && ROOT_PATH="/var/www/html"
 	WEB_SERVER="httpd"
 else
 	[ -z "$(which openssl)" ] && apt install openssl -y
@@ -83,6 +85,8 @@ fi
 FINGERPRINT=$(openssl x509 -pubkey < $CRT | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64)
 log_errors 0 "Se obtiene 'fingerprint' del certificado actual: $FINGERPRINT"
 echo "
+$CENTOS_6_80
+$CENTOS_6_443
 <VirtualHost *:80>
 		ServerName $SERVERNAME
 		Redirect / https://$2/
@@ -134,6 +138,7 @@ else
 	setenforce 0
 	log_errors $? "Se habilita sitio $2.conf "
 	if [[ $1 = 'CentOS 6' ]]; then
+		sed -i "s/Require all granted//" $SISTEMA
 		service httpd restart
 		log_errors $? "Se reinicia servicio HTTPD: service httpd restart "
 	else
