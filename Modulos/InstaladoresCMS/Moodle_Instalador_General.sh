@@ -86,10 +86,10 @@ install_dep(){
 			log_errors 0 "Instalacion de dependencias Moodle: $cmd"
 			cmd="yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Moodle: $cmd"
+			log_errors 0 "Instalacion de dependencias Moodle: $cmd"
 			cmd="yum install yum-utils -y"
 			$cmd
-			log_errors 0 "Instalacion de dependencias Moodle: $cmd"
+			log_errors $? "Instalacion de dependencias Moodle: $cmd"
 			cmd="yum-config-manager --enable remi-php73 -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Moodle: $cmd"
