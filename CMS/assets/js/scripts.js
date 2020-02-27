@@ -7,10 +7,13 @@ jQuery(document).ready(function() {
 		$.backstretch("assets/img/backgrounds/1.jpg");
 
 	$(".settings-form form input[name='DB']").click(function () {
-		if($("#DB").is(":checked"))
+		if($("#DB").is(":checked")) {
 			$("#dbIP").show();
-		else
+			$("#messagePW").show();
+		} else {
 			$("#dbIP").hide();
+			$("#messagePW").hide();
+		}
 	});
 
 	// function to set CMS version
@@ -32,9 +35,30 @@ jQuery(document).ready(function() {
 
 	// function to set Database Manager version
 	function dbVersion(){
+		var mysql_versions = [];
+		var postgres_versions = [];
+		if ($('#SO').val() == 'Debian 9'){
+			mysql_versions = ["10.1"];
+			postgres_versions = ["9.6"];
+		} else if ($('#SO').val() == 'Debian 10'){
+			mysql_versions = ["10.3"];
+			postgres_versions = ["11"];
+		} else if ($('#SO').val() == 'CentOS 6'){
+			mysql_versions = ["5.5"];
+			if ($('#CMS').val() == 'joomla' || $('#CMS').val() == 'Moodle')
+				postgres_versions = ["9.6", "11"];
+			else
+				postgres_versions = ["9.4", "9.5", "9.6", "11"];
+		} else{
+			mysql_versions = ["5.5"];
+			if ($('#CMS').val() == 'joomla' || $('#CMS').val() == 'Moodle')
+				postgres_versions = ["9.6", "11"];
+			else
+				postgres_versions = ["9.4", "9.5", "9.6", "11"];
+		}
 		var dbOptions = {
-			MySQL : [" 8.0.12", "7.x"],
-			PostgreSQL : ["3.9.12"],
+			MySQL : mysql_versions,
+			PostgreSQL : postgres_versions,
 		}
 		$('#dbVersion').empty();
 			dbOptions[$('#databasemanager').val()].forEach(function(element,index){
@@ -50,16 +74,16 @@ jQuery(document).ready(function() {
 		var n_versions = [];
 		if ($('#SO').val() == 'Debian 9'){
 			a_versions = ["2.4.25"];
-			n_versions = ["1.10.3"];
+			n_versions = ["1.16.1"];
 		} else if ($('#SO').val() == 'Debian 10'){
 			a_versions = ["2.4.38"];
 			n_versions = ["1.14.2"];
 		} else if ($('#SO').val() == 'CentOS 6'){
 			a_versions = ["2.2.15"];
-			n_versions = ["1.10"];
+			n_versions = ["1.10.3"];
 		} else{
 			a_versions = ["2.4.6"];
-			n_versions = ["1.10"];
+			n_versions = ["1.16.1"];
 		}
 		var webServerOptions = {
 			Nginx : n_versions,
@@ -73,9 +97,14 @@ jQuery(document).ready(function() {
 		$('#webserver').change(webServerVersion);
 	webServerVersion();
 
-	//shows specific web server versions depending on the OS
+	/*shows specific web server versions and specific database manager versions depending on the OS*/
 	$('#SO').change(function() {
 		webServerVersion();
+		dbVersion();
+	});
+	/*shows specific database manager versions depending on the CMS*/
+	$('#CMS').change(function() {
+		dbVersion();
 	});
 	/*
 		Settings form
@@ -104,8 +133,10 @@ jQuery(document).ready(function() {
 								$('.settings-form form .databasePort').addClass('input-error');
 							if(json.databaseUserMessage != '')
 								$('.settings-form form .databaseUser').addClass('input-error');
-						/*	if(json.backupDaysMessage != '')
-								$('.settings-form form .backupdays').addClass('input-error');*/
+							if(json.backupDaysMessage != '')
+								$("#messageBackupDays").show();
+							else
+								$("#messageBackupDays").hide();
 							if(json.emailMessage == '' && json.domainnameMessage == '' &&
 								json.databaseIPMessage == '' && json.databaseUserMessage == '' &&
 								json.databasePortMessage == '' && json.backupDaysMessage == '') {
@@ -118,6 +149,8 @@ jQuery(document).ready(function() {
 
 									window.location = 'download.php?fileID=' + json.fileID;
 							}
+							else
+								grecaptcha.reset();
 					}
 			});
 	});

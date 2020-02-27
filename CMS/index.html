@@ -14,12 +14,18 @@
 	<link rel="stylesheet" href="assets/css/form-elements.css">
 	<link rel="stylesheet" href="assets/css/style.css">
 
+	<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+	<link href="assets/css/clockpicker.css" rel="stylesheet" />
+	<script src="assets/js/clockpicker.js"></script>
+	<link href="assets/css/bootstrap-clockpicker.css" rel="stylesheet" />
 
 	<link rel="shortcut icon" href="assets/ico/cert_negro-favicon.png">
 	<link rel="cert_negro-icon-precomposed" sizes="144x144" href="assets/ico/cert_negro-icon-144-precomposed.png">
 	<link rel="cert_negro-icon-precomposed" sizes="114x114" href="assets/ico/cert_negro-icon-114-precomposed.png">
 	<link rel="cert_negro-icon-precomposed" sizes="72x72" href="assets/ico/cert_negro-icon-72-precomposed.png">
 	<link rel="cert_negro-icon-precomposed" href="assets/ico/cert_negro-icon-57-precomposed.png">
+
+	<script src='https://www.google.com/recaptcha/api.js'></script>
 
 </head>
 
@@ -47,6 +53,7 @@
 				<ul class="nav nav-tabs">
 					<li class="active"><a data-toggle="tab" href="#tab1">Generación de script</a></li>
 					<li><a data-toggle="tab" href="#tab2">Noticias CMS</a></li>
+					<li><a data-toggle="tab" href="#tab3">Estadísticas</a></li>
 				</ul>
 				<div class="tab-content">
 					<div id="tab1" class="tab-pane fade in active">
@@ -148,6 +155,9 @@
 														<input type="text" name="databaseUser" placeholder="Usuario" class="databaseUser form-control" id="databaseUser">
 													</div>
 													</div>
+													<label id="messagePW" style="display: none" class="form-text text-info">
+													* Nota: La contraseña para realizar la conexión con el manejador de la base de datos se solicitará durante la ejecución del script.
+												</label>
 													<div class="radio">
 														<label><input type="radio" name="DB" value="No" id="DB" checked>No</label>
 													</div>
@@ -208,10 +218,26 @@
 														</label>
 													</div>
 												</div>
+												<label id="messageBackupDays" style="display: none" class="form-text text-danger">
+												* Debes seleccionar al menos un día para realizar los respaldos.
+												</label>
 												<div class="form-group">
 													<label for="backuptime"> Indicar hora de respaldo: </label>
-													<input type="time" name="backuptime" class="time form-control" id="backuptime" value="20:00">
+													<!--<input type="time" name="backuptime" class="time form-control" id="backuptime" value="20:00">!-->
+													<input class="form-control" id="backuptime" name="backuptime" value="20:00">
+													<script type="text/javascript">
+													var input = $('#backuptime').clockpicker({
+														placement: 'top',
+														align: 'left',
+														donetext: 'OK',
+														autoclose: false,
+														'default': '20:00'
+													});
+													</script>
 												</div>
+
+												<div class="g-recaptcha" data-sitekey="CLAVE_DE_SITIO_WEB_AQUI"></div><p></p>
+
 												<button type="submit" class="btn">Generar script</button>
 									</form>
 								</div>
@@ -220,6 +246,9 @@
 					</div>
 					<div id="tab2" class="tab-pane">
 						<p>Noticias</p>
+					</div>
+					<div id="tab3" class="tab-pane">
+						<p>Estadísticas</p>
 					</div>
 				</div>
 			</div>
