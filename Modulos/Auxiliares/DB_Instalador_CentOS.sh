@@ -49,7 +49,7 @@ echo "===============================================" | tee -a $LOG
 install_PostgreSQL(){
 	[[ "$7" == 'CentOS 6' ]] && VERSION="6"
 	[[ "$7" == 'CentOS 7' ]] && VERSION="7"
-	yum install https://download.postgresql.org/pub/repos/yum/reporpms/EL-$VERSION-x86_64/pgdg-redhat-repo-latest.noarch.rpm -y
+	yum install "https://download.postgresql.org/pub/repos/yum/reporpms/EL-$VERSION-x86_64/pgdg-redhat-repo-latest.noarch.rpm" -y
 	#yum -y install postgresql-server postgresql-contrib
 	pgsqlVersion=$(echo $6 | cut -d"." -f1,2 | sed "s/\.//")
 	yum -y install postgresql$pgsqlVersion-server
@@ -136,8 +136,13 @@ install_PostgreSQL(){
 ## @param $7 Version de CentOS
 ##
 install_MySQL(){
-	[[ $7 == 'CentOS 6' ]] && cmd="yum -y install mysql-server-$6*"
-	[[ $7 == 'CentOS 7' ]] && cmd="yum -y install mariadb-server"
+	if [[ $7 == 'CentOS 6' ]]; then
+		rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+		rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+		cmd="yum --enablerepo=remi,remi-test -y install mysql-server-$6*"
+	else
+		cmd="yum -y install mariadb-server-$6*"
+	fi
 	$cmd
 	log_errors $? "Instalacion de MySQL: $cmd"
 	[[ $7 == 'CentOS 6' ]] && cmd="service mysqld start"
