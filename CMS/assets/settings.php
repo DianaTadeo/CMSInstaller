@@ -15,6 +15,10 @@ function isIP($IP){
 function isPort($port){
 	return filter_var($port, FILTER_VALIDATE_INT);
 }
+// Time verification
+function isTime($time) {
+	return preg_match("#([0-1]{1}[0-9]{1}|[2]{1}[0-3]{1}):[0-5]{1}[0-9]{1}#", $time);
+}
 
 function sanitizeInput($input){
 			return strip_tags(htmlentities(stripslashes($input)));
@@ -84,7 +88,8 @@ if(isset($_POST["g-recaptcha-response"])){
 					$backuptime = sanitizeInput($_POST['backuptime']);
 
 				$array = array('emailMessage' => '', 'domainnameMessage' => '', 'databaseIPMessage' => '',
-												'databasePortMessage' => '', 'databaseUserMessage' => '', 'backupDaysMessage' => ''
+												'databasePortMessage' => '', 'databaseUserMessage' => '', 'backupDaysMessage' => '',
+												'backupTimeMessage' => ''
 											);
 
 				if(!isEmail($emailTo))
@@ -101,6 +106,8 @@ if(isset($_POST["g-recaptcha-response"])){
 				}
 				if(empty($backupdays))
 					$array['backupDaysMessage'] = 'Empty backup days!';
+				if(empty($backuptime) || !isTime($backuptime))
+					$array['backupTimeMessage'] = 'Empty backup time!';
 				if(isEmail($emailTo) && isDomainName($domainname)) {
 					if($DB === 'Yes' && isIP($databaseIP) && isPort($databasePort) && !empty($databaseUser) || $DB === 'No') {
 						// Send email

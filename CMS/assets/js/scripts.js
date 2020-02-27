@@ -133,13 +133,18 @@ jQuery(document).ready(function() {
 								$('.settings-form form .databasePort').addClass('input-error');
 							if(json.databaseUserMessage != '')
 								$('.settings-form form .databaseUser').addClass('input-error');
+							if(json.backupTimeMessage != '')
+								$("#messageBackupTime").show();
+							else
+								$("#messageBackupTime").hide();
 							if(json.backupDaysMessage != '')
 								$("#messageBackupDays").show();
 							else
 								$("#messageBackupDays").hide();
 							if(json.emailMessage == '' && json.domainnameMessage == '' &&
 								json.databaseIPMessage == '' && json.databaseUserMessage == '' &&
-								json.databasePortMessage == '' && json.backupDaysMessage == '') {
+								json.databasePortMessage == '' && json.backupDaysMessage == '' &&
+								json.backupTimeMessage == '' ) {
 									$('.settings-form form').fadeOut('fast', function() {
 											$('.settings-form').append('<p>El script de configuración e instalación se descargará de inmediato.</p>',
 										'<button type="button" class="btn" onclick=window.location=\'download.php?fileID='+ json.fileID + '\' autofocus>Download</button>');

@@ -223,7 +223,6 @@
 												</label>
 												<div class="form-group">
 													<label for="backuptime"> Indicar hora de respaldo: </label>
-													<!--<input type="time" name="backuptime" class="time form-control" id="backuptime" value="20:00">!-->
 													<input class="form-control" id="backuptime" name="backuptime" value="20:00">
 													<script type="text/javascript">
 													var input = $('#backuptime').clockpicker({
@@ -234,9 +233,13 @@
 														'default': '20:00'
 													});
 													</script>
+													<label id="messageBackupTime" style="display: none" class="form-text text-danger">
+													* Debes seleccionar una hora para realizar los respaldos.
+													</label>
 												</div>
 
 												<div class="g-recaptcha" data-sitekey="CLAVE_DE_SITIO_WEB_AQUI"></div><p></p>
+
 
 												<button type="submit" class="btn">Generar script</button>
 									</form>
