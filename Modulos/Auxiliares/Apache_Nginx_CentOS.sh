@@ -63,8 +63,8 @@ install_nginx(){
 	$cmd
 	log_errors $? "Iniciando Nginx: $cmd"
 
-	[[ $1 == 'CentOS 6' ]] && cdm="chkconfig nginx on"
-	[[ $1 == 'CentOS 7' ]] && cdm="systemctl enable nginx"
+	[[ $1 == 'CentOS 6' ]] && cmd="chkconfig nginx on"
+	[[ $1 == 'CentOS 7' ]] && cmd="systemctl enable nginx"
 	$cmd
 	log_errors $? "Habilitando Nginx: $cmd"
 }
