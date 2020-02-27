@@ -89,10 +89,10 @@ install_dep(){
 			log_errors 0 "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y"
 			$cmd
-			log_errors $? "Instalacion de dependencias Joomla: $cmd"
+			log_errors 0 "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum install yum-utils -y"
 			$cmd
-			log_errors 0 "Instalacion de dependencias Joomla: $cmd"
+			log_errors $? "Instalacion de dependencias Joomla: $cmd"
 			cmd="yum-config-manager --enable remi-php73 -y"
 			$cmd
 			log_errors $? "Instalacion de dependencias Joomla: $cmd"
@@ -175,7 +175,7 @@ install_joomla(){
 	# $7=DOMAIN_NAME; $8=DBM; $9=DB_EXISTS; ${10}=EMAIL_NOTIFICATION;
 	# ${11}=TEMP_PATH; ${12}=SO; ${13}=WEB_USER; ${14}=DB_VERSION
 	DBM="mysqli"
-
+	[[ ${12} == 'CentOS 6' ]] && DBM="mysql"
 	if [[ $8 == "PostgreSQL" ]]; then
 		if [[ ${12} =~ Debian.* ]]; then
 			apt install mariadb-server -y
@@ -188,8 +188,14 @@ install_joomla(){
 			fi
 			systemctl restart postgresql
 		else
-			yum -y install mariadb-server
-			service mariadb start
+			if [[ ${12} == 'CentOS 6' ]]; then
+				rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+				rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+				yum --enablerepo=remi,remi-test -y install mysql-server
+			else
+				yum -y install mariadb-server
+				systemctl start mariadb
+			fi
 			if [[ ${14} == "11" ]]; then
 				DB_CONF_PGSQL="database_conf.pgsql"
 			else
@@ -230,7 +236,13 @@ install_joomla(){
 		fi
 	done
 
-	adminpass_hash=$(htpasswd -bnBC 10 "" $adminpass | tr -d ':\n')
+	if [[ ${12} == 'CentOS 6' ]]; then
+		echo "<?php echo password_hash(\"$adminpass\", PASSWORD_BCRYPT);?>" > script.php
+		adminpass_hash=$(php -f script.php)
+		rm script.php
+	else
+		adminpass_hash=$(htpasswd -bnBC 10 "" $adminpass | tr -d ':\n')
+	fi
 
 	read -p "Ingresa el nombre del sitio ['$7' por defecto]: " site
 	if [ -z "$site" ]; then site="$7"; fi
@@ -280,7 +292,13 @@ install_joomla(){
 		#echo "Introduce la contraseña del usuario '$2' de la BD"
 		su -c "PGPASSWORD=$passDB psql -U $2 $1 -c \"update j_users set username='$adminuser', password='${adminpass_hash//\$/\\$}', email='${10}' where name='Super User';\""
 		rm "${11}/Modulos/InstaladoresCMS/$DB_CONF_PGSQL"
-		if [[ ${12} =~ Debian.* ]]; then apt purge mariadb-server -y; else	yum -y remove mariadb-server; fi
+		if [[ ${12} =~ Debian.* ]]; then
+			apt purge mariadb-server -y
+		else
+			[[ ${12} == 'CentOS 7' ]] && yum -y remove mariadb-server
+			[[ ${12} == 'CentOS 6' ]] && yum -y remove mysql-server
+		fi
+
 	fi
 	log_errors $? "Configuracion de administrador '$adminuser' para joomla"
 
