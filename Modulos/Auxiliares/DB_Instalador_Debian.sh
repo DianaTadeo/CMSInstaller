@@ -46,6 +46,7 @@ install_MySQL(){
 	$cmd
 	log_errors $? "Instalacion de MySQL: $cmd"
 	sed -i "s/.*port.*/port = $6/" /etc/mysql/mariadb.conf.d/50-server.cnf
+	systemctl enable mysql.service
 	systemctl restart mysql.service
 	cmd="mysql_secure_installation"
 	$cmd
@@ -104,6 +105,7 @@ install_PostgreSQL(){
 	cmd="apt-get install postgresql -y"
 	$cmd
 	log_errors $? "Instalacion de PostgreSQL: $cmd"
+	systemctl enable postgresql
 	if [[ $2 == 'Yes' ]]; then
 		# solamente hace conexión a la BD existente
 		while true; do

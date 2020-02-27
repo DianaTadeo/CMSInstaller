@@ -86,7 +86,7 @@ install_nginx_apt(){
 	log_errors $? "Actualización de la lista de paquetes disponibles: apt update"
 	apt install -y nginx=$2* nginx-extras
 	log_errors $? "Instalación de nginx: apt install -y nginx=$2*"
-
+	systemctl enable nginx
 }
 
 ## @fn install_apache()
@@ -109,7 +109,7 @@ install_apache(){
 	#cmd="apt-cache policy apache2"
 	$cmd
 	log_errors $? "Instalacion de Apache: $cmd"
-
+	systemctl enable apache2
 }
 
 ## @fn install_apache_WAF()
