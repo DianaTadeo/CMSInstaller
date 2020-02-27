@@ -39,6 +39,9 @@ if [[ $1 =~ CentOS.* ]]; then
 	ROOT_PATH="/var/www/html"
 	#[[ $1 == "CentOS 7" ]] && ROOT_PATH="/var/www/html"
 	WEB_SERVER="httpd"
+	PHP="php-fpm"
+	[[ $1 == 'CentOS 7' ]] && systemctl enable $PHP
+	[[ $1 == 'CentOS 6' ]] && chkconfig $PHP on
 else
 	[ -z "$(which openssl)" ] && apt install openssl -y
 	log_errors 0 "Instalacion de $(openssl version): "
@@ -46,6 +49,8 @@ else
 	SECURITY_CONF="/etc/apache2/conf-enabled/security.conf"
 	ROOT_PATH="/var/www/html"
 	WEB_SERVER="apache2"
+	PHP="php7.3-fpm"
+	systemctl enable $PHP
 fi
 if [[ $2 =~ [^www.]* ]]; then SERVERNAME="www.$2"; else SERVERNAME=$(echo $2 | cut -f1 -d'.' --complement); fi
 

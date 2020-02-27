@@ -50,7 +50,8 @@ if [[ $1 =~ CentOS.* ]]; then
 	sed -i "s%;\(listen.mode = .*\)%\1%" /etc/php-fpm.d/www.conf
 	sed -i "s/user nginx;/user $WEB_USER;/" /etc/nginx/nginx.conf
 	chown -Rf $WEB_USER:$WEB_USER /var/lib/nginx
-
+	[[ $1 == 'CentOS 7' ]] && systemctl enable $PHP
+	[[ $1 == 'CentOS 6' ]] && chkconfig $PHP on
 	service $PHP restart
 	setenforce 0
 	[[ $1 == 'CentOS 7' ]] && sed -i '/^\s\+server\s\+{/i 		include /etc/nginx/sites-enabled/*.conf;' /etc/nginx/nginx.conf
@@ -65,6 +66,7 @@ else
 	PHP="php7.3-fpm"
 	PHP_SOCK="/run/php/$PHP.sock"
 	FASTCGI="include snippets/fastcgi-php.conf;"
+	systemctl enable $PHP
 	systemctl restart $PHP
 fi
 mkdir -p  /etc/nginx/sites-available/  /etc/nginx/sites-enabled/
