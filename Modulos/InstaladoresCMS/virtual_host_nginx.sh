@@ -63,7 +63,7 @@ else
 	[ -z "$(which openssl)" ] && apt install openssl -y
 	log_errors 0 "Instalacion de $(openssl version): "
 	ROOT_PATH="/var/www/html"
-	PHP="php7.3"
+	PHP="php7.3-fpm"
 	PHP_SOCK="/run/php/$PHP.sock"
 	FASTCGI="include snippets/fastcgi-php.conf;"
 	systemctl enable $PHP
