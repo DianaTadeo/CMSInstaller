@@ -132,6 +132,8 @@ if(isset($_POST["g-recaptcha-response"])){
 							$filename = $dir.$file.'.json';
 							file_put_contents($filename, $json_options);
 							$array['fileID'] = $file;
+
+							$array['fileHash'] = str_replace(' ', '_', $SO)."_".ucfirst($CMS)."_".$webserver."_".$database_manager."_".$file.".tar.gz.sha256";
 					}
 				}
 

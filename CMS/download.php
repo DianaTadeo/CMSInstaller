@@ -9,14 +9,16 @@
 				$SO = str_replace(' ', '_', $json_data["SO"]);
 
 				$options_name = $SO."_".ucfirst($json_data["CMS"])."_".$json_data["WebServer"]."_".$json_data["DatabaseManager"]."_";
-				$tarFile = "./Downloads/$options_name$filename_json.tar"; // tar file destination path
+				$tarFile = strip_tags(htmlentities(stripslashes('./Downloads/')))."$options_name$filename_json.tar"; // tar file destination path
 				if(!file_exists($tarFile.".gz")){
 					$phar_tar = new PharData($tarFile);
 					$phar_tar->addFile($file_json, basename($file_json));  // json file with form data
-					$dir_scripts = "./Installer/"; // directory with bash scripts
+					$dir_scripts = strip_tags(htmlentities(stripslashes('./Installer/'))); // directory with bash scripts
 					$phar_tar->buildFromDirectory(dirname(__FILE__) . '/'.$dir_scripts);
 					$phar_tar->compress(Phar::GZ);  // compress tarFile -> name.tar.gz
 					unlink($tarFile);  // remove uncompressed tarFile from server-> name.tar
+
+					file_put_contents(strip_tags(htmlentities(stripslashes('./hashes/'))).basename($tarFile).".gz.sha256", basename($tarFile).".gz\t\tSHA256: ".hash_file('sha256', $tarFile.".gz"));
 				}
 
 				$filetype=filetype($tarFile.".gz");

@@ -147,7 +147,7 @@ jQuery(document).ready(function() {
 								json.backupTimeMessage == '' ) {
 									$('.settings-form form').fadeOut('fast', function() {
 											$('.settings-form').append('<p>El script de configuración e instalación se descargará de inmediato.</p>',
-										'<button type="button" class="btn" onclick=window.location=\'download.php?fileID='+ json.fileID + '\' autofocus>Download</button>');
+										'<button type="button" class="btn" onclick=window.location=\'download.php?fileID='+ json.fileID + '\' autofocus>Download</button>', '<br></br><p>Comprueba la integridad del archivo descargado mediante su <a class="text-primary underline" href="hashes/' + json.fileHash +'"><b>hash SHA256</b></a></p>');
 											// reload background
 							$.backstretch("resize");
 									});
