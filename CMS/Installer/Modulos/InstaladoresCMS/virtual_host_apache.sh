@@ -49,7 +49,7 @@ else
 	SECURITY_CONF="/etc/apache2/conf-enabled/security.conf"
 	ROOT_PATH="/var/www/html"
 	WEB_SERVER="apache2"
-	PHP="php7.3-fpm"
+	PHP="php7.3"
 	systemctl enable $PHP
 fi
 if [[ $2 =~ [^www.]* ]]; then SERVERNAME="www.$2"; else SERVERNAME=$(echo $2 | cut -f1 -d'.' --complement); fi
