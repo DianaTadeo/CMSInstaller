@@ -127,7 +127,7 @@ if(isset($_POST["g-recaptcha-response"])){
 							$options['DBUser'] = $databaseUser;
 						}
 							$json_options = json_encode($options);
-							$dir = '/var/www/html/CMS/files/';
+							$dir = '../files/';
 							$file = uniqid().getmypid();
 							$filename = $dir.$file.'.json';
 							file_put_contents($filename, $json_options);

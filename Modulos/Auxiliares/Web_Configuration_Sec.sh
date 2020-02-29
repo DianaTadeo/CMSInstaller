@@ -93,8 +93,8 @@ if [[ $WEB_SERVER == "Apache" ]]; then
 	# Apache<2.2.4-
 	#echo "Header set Set-Cookie HttpOnly;Secure" >> $SECURITY_CONF
 
-	echo "Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com;\"" >> $SECURITY_CONF
-	log_errors $? "Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com;\""
+	echo "Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com apis.google.com;\"" >> $SECURITY_CONF
+	log_errors $? "Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com apis.google.com;\""
 
 	echo "Header set Referrer-Policy \"strict-origin-when-cross-origin\"" >> $SECURITY_CONF
 	log_errors $? "Header set Referrer-Policy \"strict-origin-when-cross-origin\": "
@@ -177,8 +177,8 @@ else  # Nginx
 	# Se aplica para todos
 	[[ $SO =~ CentOS.* ]] && sed -i '/^\s\+server\s\+{/i 		proxy_cookie_path / "/; HTTPOnly; Secure";' $WEB_SERVER_CONF && log_errors $? 'proxy_cookie_path / "/; HTTPOnly; Secure";'
 
-	echo "add_header Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\";" >> $SECURITY_CONF
-	log_errors $? "add_header Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\";"
+	echo "add_header Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com apis.google.com\";" >> $SECURITY_CONF
+	log_errors $? "add_header Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com apis.google.com\";"
 
 	echo "add_header Referrer-Policy \"strict-origin-when-cross-origin\";" >> $SECURITY_CONF
 	log_errors $? "add_header Referrer-Policy \"strict-origin-when-cross-origin\""
