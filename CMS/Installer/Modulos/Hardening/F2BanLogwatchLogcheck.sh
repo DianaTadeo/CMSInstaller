@@ -1,26 +1,36 @@
 #!/bin/bash
 
-####################################################################
-# Script para la instalación de Fail2ban, Logwatch y Logcheck
-# en Debian 9, 10 y CentOS 6, 7
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador y configurador de Fail2Ban, LogWatch y LogCheck en Debian 9, 10 y CentOS 6, 7
+## @version 1.0
+##
+## Este archivo permite instalar y confirgurar programas que permiten el monitoreo y ciertas configuraciones de seguridad.
+
 # Argumento 1: SO
 # Argumento 2: EMAIL_NOTIFICATION
 
 LOG="`pwd`/Modulos/Log/Hardening.log"
 
-###################### Log de Errores ###########################
-# $1: Salida de error											#
-# $2: Mensaje de la instalacion									#
-#################################################################
+
+## @fn log_errors()
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR] : $2 " >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2 " 	>> $LOG
 	fi
 }
 
+## @fn web_server_ports()
+## @brief Da formato a los puertos de entrada
+## @param $1 Entrada de Puertos del Servidor web
+##
 web_server_ports(){
 	if [[ -n $(echo $1 | grep " ") ]]; then
 		echo $1 | tr " " ","
@@ -29,6 +39,15 @@ web_server_ports(){
 	fi
 }
 
+## @fn install_fail2ban()
+## @brief Realiza la instalacion de Fail2ban
+## @param $1 Sistema operativo donde se instalara
+## @param $2 Mail donde se enviaran las notificaciones
+## @param $3 Tiempo de banneo
+## @param $4 Tiempo de entrada
+## @param $5 Maxima cantidad de intentos
+## Qparam $6 Correo de envio
+##
 install_fail2ban(){
 	DESTEMAIL=$2
 	BANTIME=$3
@@ -48,17 +67,21 @@ install_fail2ban(){
 		'CentOS 6' | 'CentOS 7')
 			cmd="yum install -y epel-release"
 			$cmd
-			log_errors $? "$cmd"
+			log_errors 0 "$cmd"
 
 			cmd="yum install -y fail2ban postfix"
 			$cmd
 			log_errors $? "$cmd"
 
 			if [[ "$1" = "CentOS 6" ]]; then
+				service fail2ban start
+				chkconfig fail2ban on
 				APACHE_NAME="httpd"
 				MYSQL_NAME="mysqld"
 				NGINX_NAME="nginx"
 			else # CentOS 7
+				systemctl start fail2ban
+				systemctl enable fail2ban
 				APACHE_NAME="httpd"
 				MYSQL_NAME="mariadb"
 				NGINX_NAME="nginx"
@@ -72,10 +95,10 @@ install_fail2ban(){
 	cp /etc/fail2ban/jail.conf $JAIL_LOCAL
 
 	sed -i "0,/\(bantime[ \t]*=\).*/s/\(bantime[ \t]*=\).*/\1 $BANTIME/" $JAIL_LOCAL
-	log_errors $? "Se asgina bantime=$BANTIME"
+	log_errors $? "Se asigna bantime=$BANTIME"
 
 	sed -i "0,/\(findtime[ \t]*=\).*/s/\(findtime[ \t]*=\).*/\1 $FINDTIME/" $JAIL_LOCAL
-	log_errors $? "Se asgina findtime=$FINDTIME"
+	log_errors $? "Se asigna findtime=$FINDTIME"
 
 	sed -i "0,/\(maxretry[ \t]*=\).*/s/\(maxretry[ \t]*=\).*/\1 $MAXRETRY/" $JAIL_LOCAL
 	log_errors $? "Se asigna maxretry=$MAXRETRY"
@@ -90,32 +113,32 @@ install_fail2ban(){
 	sed -i "s/\(^action[ \t]*=\).*/\1 %(action_mwl)s/" $JAIL_LOCAL
 	log_errors $? "Se asigna action= %(action_mwl)s para enviar email con contenido whois y log"
 
-	sed -i 's/\(\[sshd\]\)/\1 \nenabled = true/' $JAIL_LOCAL
+	sed -i 's/\(^\[sshd\]\)/\1 \nenabled = true\nfilter = sshd/' $JAIL_LOCAL
 	log_errors $? "Se habilita protección sshd"
 
-	if [[ $(which $APACHE_NAME) ]]; then
-		sed -i 's/\(\[apache-auth\]\)/\1 \nenabled = true/' $JAIL_LOCAL
-		sed -i 's/\(\[apache-badbots\]\)/\1 \nenabled = true/' $JAIL_LOCAL
-		sed -i 's/\(\[apache-shellshock\]\)/\1 \nenabled = true/' $JAIL_LOCAL
+	if [[ $(which $APACHE_NAME) ]] && [[ -z $(sudo service httpd status | grep stopped) ]]; then
+		#sed -i 's/\(\[apache-auth\]\)/\1 \nenabled = true\nfilter = apache-auth/' $JAIL_LOCAL
+		sed -i 's/\(\[apache-badbots\]\)/\1 \nenabled = true\nfilter = apache-badbots/' $JAIL_LOCAL
+		sed -i 's/\(\[apache-shellshock\]\)/\1 \nenabled = true\nfilter = apache-shellshock/' $JAIL_LOCAL
 		log_errors $? "Se habilita protección de $APACHE_NAME"
 		APACHE_PORT=$(lsof -nP -iTCP -sTCP:LISTEN | grep "apache2" | cut -d":" -f2 | sort -n | uniq | cut -d" " -f1)
 		HTTPD_PORT=$(lsof -nP -iTCP -sTCP:LISTEN | grep "httpd" | cut -d":" -f2 | sort -n | uniq | cut -d" " -f1)
 
 		if [[ -n "$APACHE_PORT" ]];then
-			sed -i "s/\(^port*=\)*http*/\1 $(web_server_ports "$APACHE_PORT") /" $JAIL_LOCAL
+			sed -i "s/\(^port\s\+=\)\s\+http.*/\1 $(web_server_ports "$APACHE_PORT") /" $JAIL_LOCAL
 		fi
 
 		if [[ -n "$HTTPD_PORT" ]];then
-			sed -i "s/\(^port*=\)*http*/\1 $(web_server_ports "$HTTPD_PORT") /" $JAIL_LOCAL
+			sed -i "s/\(^port\s\+=\)\s\+http.*/\1 $(web_server_ports "$HTTPD_PORT") /" $JAIL_LOCAL
 		fi
 	fi
 
 	if [[ $(which $NGINX_NAME) ]]; then
-		sed -i 's/\(\[nginx-http-auth\]\)/\1 \nenabled = true/' $JAIL_LOCAL
-		log_errors "$?" "Se habilita protección de $NGINX_NAME"
+		#sed -i 's/\(\[nginx-http-auth\]\)/\1 \nenabled = true\nfilter = nginx-http-auth/' $JAIL_LOCAL
+		#log_errors "$?" "Se habilita protección de $NGINX_NAME"
 		NGINX_PORT=$(lsof -nP -iTCP -sTCP:LISTEN | grep "nginx" | cut -d":" -f2 | sort -n | uniq | cut -d" " -f1)
 		if [[ -n "$NGINX_PORT" ]];then
-			sed -i "s/\(^port*=\)*http*/\1 $(web_server_ports "$APACHE_PORT") /" $JAIL_LOCAL
+			sed -i "s/\(^port\s\+=\)\s\+http.*/\1 $(web_server_ports "$NGINX_PORT") /" $JAIL_LOCAL
 		fi
 
 	fi
@@ -123,7 +146,7 @@ install_fail2ban(){
 	SSH_PORT=$(lsof -nP -iTCP -sTCP:LISTEN | grep "ssh\|sshd" | cut -d":" -f2 | sort -n | uniq  | cut -d" " -f1)
 
 	if [[ -n "$SSH_PORT" ]];then
-			sed -i "s/\(^port*=\)*ssh$/\1 $ssh_port /" $JAIL_LOCAL
+			sed -i "s/\(^port*=\)*ssh$/\1 $SSH_PORT /" $JAIL_LOCAL
 	fi
 
 	if [[ $1 == 'CentOS 6' ]]; then
@@ -135,6 +158,11 @@ install_fail2ban(){
 	log_errors $? "$cmd"
 }
 
+## @fn install_logcheck()
+## @brief Realiza la instalacion de LogWatch
+## @param $1 Sistema operativo donde se instalara
+## @param $2 Correo de notificaciones
+##
 install_logwatch(){
 	if [[ "$1" == "Debian 9"  ]] || [[ "$1" == "Debian 10"  ]]; then
 		DEBIAN_FRONTEND=noninteractive apt \
@@ -146,11 +174,13 @@ install_logwatch(){
 	else
 		cmd="yum install -y epel-release"
 		$cmd
-		log_errors $? "$cmd"
+		log_errors 0 "$cmd"
 
 		cmd="yum install -y logwatch postfix"
 		$cmd
 		log_errors $? "$cmd"
+		[[ $1 == 'CentOS 6' ]] && service logwatch start && chkconfig logwatch on
+		[[ $1 == 'CentOS 7' ]] && systemctl start logwatch && systemctl enable logwatch
 	fi
 
 	LOGWATCH_CONF="/usr/share/logwatch/default.conf/logwatch.conf"
@@ -165,6 +195,10 @@ install_logwatch(){
 	log_errors $? "Nivel de detalle: Low"
 }
 
+## @fn install_logcheck()
+## @brief Realiza la instalacion de LogCheck
+## @param $1 Sistema operativo donde se instalara
+##
 install_logcheck(){
 	if [[ "$1" == "Debian 9"  ]] || [[ "$1" == "Debian 10"  ]]; then
 		cmd="apt -y install logcheck mailutils postfix"
@@ -173,11 +207,13 @@ install_logcheck(){
 	else
 		cmd="yum install -y epel-release"
 		$cmd
-		log_errors $? "$cmd"
+		log_errors 0 "$cmd"
 
 		cmd="yum install -y logcheck postfix"
 		$cmd
 		log_errors $? "$cmd"
+		[[ $1 == 'CentOS 6' ]] && service logcheck start && chkconfig logcheck on
+		[[ $1 == 'CentOS 7' ]] && systemctl start logcheck && systemctl enable logcheck
 	fi
 
 	# Archivo de configuración de logcheck
@@ -226,9 +262,13 @@ install_logcheck(){
 	fi
 }
 
-####################################################
+#====================================================#
 #	main de instalación de f2b, logwatch y logcheck	 #
-####################################################
+#====================================================#
+echo "=============================================================" | tee -a $LOG
+echo "		 Instalación de f2b, logwatch y logcheck " | tee -a $LOG
+echo "=============================================================" | tee -a $LOG
+
 
 SO=$1
 # Dirección en la que se recibirán las notficaciones -> $2

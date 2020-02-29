@@ -17,6 +17,9 @@
 # Argumento 9: Url de Drupal
 # Argumento 10: Correo de notificaciones
 # Argumento 11: Web Server
+# Argumento 12: Existencia de BD
+# Argumento 13: Compatibilidad con IPv6
+
 
 # Se devuelve un archivo json con la informacion y credenciales
 # de la instalacion de Drupal
@@ -29,10 +32,10 @@ LOG="`pwd`/Modulos/Log/CMS_Instalacion.log"
 ##
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR] : $2 " >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2 " 	>> $LOG
 	fi
 }
 
@@ -43,17 +46,20 @@ log_errors(){
 ## @param $3 Servidor web con el que se realiza la instalacion : 'Apache' o 'Nginx'
 ## @param $4 Nombre de dominio del sitio
 ## @param $5 Ruta donde se instalara Drupal
+## @param $6 Compatibilidad con IPv6
 ##
 install_dep(){
-	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL
+	# $1=SO; $2=DBM; $3=WEB_SERVER; $4=DOMAIN_NAME; $5=PATH_INSTALL; $6=IPv6
 	case $1 in
 		'Debian 9' | 'Debian 10')
+			[[ $3 == "Apache" ]] && PHP="php7.3"
+			[[ $3 == "Nginx" ]] && PHP="php7.3-fpm"
 			if [[ $1 == 'Debian 9' ]]; then VERSION_NAME="stretch"; else VERSION_NAME="buster"; fi
 			apt install ca-certificates apt-transport-https gnupg -y
 			wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
 			echo "deb https://packages.sury.org/php/ $VERSION_NAME main" | tee /etc/apt/sources.list.d/php.list
 			apt update
-			apt install php7.3 php7.3-common \
+			apt install $PHP php7.3-common \
 			php7.3-gd php7.3-json php7.3-mbstring \
 			php7.3-xml php7.3-zip unzip zip -y
 			log_errors $? "Instalacion de PHP7.3 en Drupal: "
@@ -63,146 +69,31 @@ install_dep(){
 			if [[ $3 == 'Apache' ]]; then
 				apt install libapache2-mod-php7.3 -y
 				log_errors $? "Instalacion de libapache2-mod-php7.3: "
-				virtual_host_apache "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				site_default_nginx "Debian"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6" "drupal"
 			fi
 			;;
 		'CentOS 6' | 'CentOS 7')
+			[[ $3 == "Apache" ]] && PHP="php"
+			[[ $3 == "Nginx" ]] && PHP="php-fpm"
 			if [[ $1 == 'CentOS 6' ]]; then VERSION="6"; else VERSION="7"; fi
 			yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-$VERSION.noarch.rpm -y
 			yum install http://rpms.remirepo.net/enterprise/remi-release-$VERSION.rpm -y
 			yum install yum-utils -y
 			yum-config-manager --enable remi-php73 -y
-			yum install wget php php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring unzip -y
+			yum install wget $PHP php-mcrypt php-cli php-curl php-gd php-pdo php-xml php-mbstring php-intl php-zip php-xmlrpc unzip zip -y
 			log_errors $? "Instalacion de PHP7.3 en Drupal: "
 			if [[ $2 == 'MySQL' ]]; then yum install php-mysql -y; else yum install php-pgsql -y; fi
 			log_errors $? "Instalacion de PHP7.3-$2: "
 			if [[ $3 == 'Apache' ]]; then
-#				yum install libapache2-mod-php -y
-#				a2enmod rewrite;
-				site_default_apache "CentOS"
-				virtual_host_apache "$1" "$4" "$5"
+				bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$1" "$4" "$5"
 			else
-				site_default_nginx "CentOS"
+				bash ./Modulos/InstaladoresCMS/virtual_host_nginx.sh "$1" "$4" "$5" "$6" "drupal"
 			fi
 			;;
 	esac
 	git_composer_drush "$1"
-}
-
-## @fn virtual_host_apache()
-## @brief Funcion que realiza la configuracion del sitio, la configuracion con https y se permite .htaccess para Drupal
-## @param $1 El sistema operativo donde se esta instalando Drupal : 'Debian 9', 'Debian 10', 'CentOS 6' o 'CentOS 7'
-## @param $2 Nombre de dominio del sitio
-## @param $3 Ruta donde se instalara Drupal
-##
-virtual_host_apache(){
-# $1=SO; $2=DomainName; $3=PathInstall
-	if [[ $1 =~ CentOS.* ]]; then
-		[ -z "$(which openssl)" ] && yum install openssl -y
-		log_errors 0 "Instalacion de $(openssl version): "
-		yum install mod_ssl -y
-		SISTEMA="/etc/httpd/sites-available/$2.conf"
-		SECURITY_CONF="/etc/httpd/conf.d/security.conf"
-	else
-		[ -z "$(which openssl)" ] && apt install openssl -y
-		log_errors 0 "Instalacion de $(openssl version): "
-		SISTEMA="/etc/apache2/sites-available/$2.conf"
-		SECURITY_CONF="/etc/apache2/conf-enabled/security.conf"
-	fi
-	if [[ $2 =~ [^www.]* ]]; then SERVERNAME="www.$2"; else SERVERNAME=$2; fi
-
-	read -p "Tienes un certificado de seguridad para tu sitio? [N/s]: " RESP_HTTPS
-	if [ -z "$RESP_HTTPS" ]; then RESP_HTTPS="N"; fi
-	if [[ $RESP =~ s|S ]]; then
-		while true; do
-			read -p "Indica la ruta donde se encuentra el archivo .crt:" CRT
-			[ -f "$CRT" ] && break
-		done
-		while true; do
-			read -p "Indica la ruta donde se encuentra el archivo .key:" KEY
-			[ -f "$KEY" ] && break
-		done
-		while true; do
-			read -p "Indica la ruta donde se encuentra el archivo .csr:" CSR
-			[ -f "$CSR" ] && break
-		done
-	else
-		echo "Se generará un certificado autofirmado."
-		echo "NOTA: Una vez que tengas un certificado firmado por una CA reconocida, debes reemplazar\
-		los archivos de configuración correspondientes."
-		KEY="/root/$2.key"; CSR="/root/$2.csr"; CRT="/root/$2.crt"
-		openssl genrsa -out $KEY 2048
-		./Modulos/InstaladoresCMS/openssl_req.exp "$KEY" "$CSR" "$2" "temporal@email.com"
-		#openssl req -new -key $KEY -out $CSR
-		openssl x509 -req -days 365 -in $CSR -signkey $KEY -out $CRT
-	fi
-	FINGERPRINT=$(openssl x509 -pubkey < $CRT | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64)
-	log_errors 0 "Se obtiene 'fingerprint' del certificado actual: $FINGERPRINT"
-	echo "
-	<VirtualHost *:80>
-			ServerName $SERVERNAME
-			Redirect / https://$2
-			ServerAlias $2
-		</VirtualHost>
-
-	<VirtualHost _default_:443>
-		ServerName $SERVERNAME
-		ServerAlias $2
-
-		SSLEngine On
-		SSLCertificateFile $CRT
-		SSLCertificateKeyFile $KEY
-
-		Header set Public-Key-Pins \"pin-sha256=\\\"$FINGERPRINT\\\"; max-age=2592000; includeSubDomains\"
-
-		DocumentRoot /var/www/html/$2
-		<Directory /var/www/html/$2>
-				AllowOverride All
-				Require all granted
-		</Directory>
-
-		ErrorLog /var/log/apache2/error.log
-		CustomLog /var/log/apache2/access.log combined
-		#ErrorLog /var/www/html/$2/error.log
-		#CustomLog /var/www/html/$2/requests.log combined
-
-	</VirtualHost>" |  tee $SISTEMA
-		if [ $3 != "/var/www/html" ] && [ $3 != "/var/www/html/" ]; then
-			ln -s $3/$2 /var/www/html/$2
-			log_errors $? "Enlace en /var/www/html/$2: "
-		fi
-
-		if [[ $1 =~ Debian.* ]]; then
-			cd /etc/apache2/sites-available/
-			a2ensite $2.conf
-			log_errors $? "Se habilita sitio $2.conf "
-			a2enmod rewrite
-			log_errors $? "Se habilita modulo de Apache: a2enmod rewrite"
-			a2enmod ssl
-			log_errors $? "Se habilita modulo de Apache: a2enmod ssl"
-			a2enmod headers
-			log_errors $? "Se habilita modulos headers: a2enmod headers"
-			cd -
-			systemctl restart apache2
-			log_errors $? "Se reinicia servicio Apache: systemctl restart apache2"
-		else
-			ln -s /etc/httpd/sites-available/$2.conf  /etc/httpd/sites-enabled/$2.conf
-			setenforce 0
-			log_errors $? "Se habilita sitio $2.conf "
-			if [[ $1 = 'CentOS 6' ]]; then
-				service httpd restart
-				log_errors $? "Se reinicia servicio HTTPD: service httpd restart "
-			else
-				systemctl restart httpd
-				log_errors $? "Se reinicia servicio HTTPD: systemctl restart httpd "
-			fi
-		fi
-}
-
-site_default_nginx(){
-	echo "site_default_nginx: TODO"
 }
 
 ## @fn git_composer_drush()
@@ -255,12 +146,6 @@ git_composer_drush(){
 	log_errors $? "Instalacion de drush 8.x "
 }
 
-
-# Se hace respaldo del sitio
-backup(){
-	su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush archive-dump --root=$1 --destination=$1.tar.gz -v --overwrite"
-}
-
 ## @fn modulos_configuraciones()
 ## @brief Funcion que instala y configura los modulos para habilitar CAPTCHA, deshabilitar creacion de cuentas anonimas y comentarios de anonimos
 ## @param $1 La version de Drupal que se esta configurando : '7.x' u '8.x'
@@ -268,7 +153,7 @@ backup(){
 modulos_configuraciones(){
 	if [[ $1 =~ 7.* ]]; then
 		 su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush \
-		 vset drupal_http_request_fails 1"
+		 vset drupal_http_request_fails 0"
 		 # Se incluye captcha en inicio de sesión
 		 su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush \
 		 dl captcha && $(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush \
@@ -345,7 +230,7 @@ complementos_seguridad(){
 	fi
 }
 
-## @fn install_moodle()
+## @fn drupal_installer()
 ## @brief Funcion que realiza la instalacion de Joomla
 ## @param $1 Version de drupal que se va a instalar
 ## @param $2 Manejador de la base de datos  ['MySQL'|'PostgreSQL']
@@ -357,19 +242,44 @@ complementos_seguridad(){
 ## @param $8 Corrreo de administracion y notificacion del sitio
 ## @param $9 Indica si se especifico que se tiene una base de datos existente
 ## @param ${10} Ruta del directorio donde fue ejecutado el script main.sh
+## @param ${11} Nombre de usuario con el que se ejecuta el servidor web
 ##
 drupal_installer(){
 	# $1=CMS_VERSION; $2=DBM; $3=DB_USER; $4=DB_IP; $5=DB_PORT; $6=DB_NAME;
-	# $7=DOMAIN_NAME; $8=EMAIL_NOTIFICATION; $9=DB_EXISTS; ${10}=TEMP_PATH
+	# $7=DOMAIN_NAME; $8=EMAIL_NOTIFICATION; $9=DB_EXISTS; ${10}=TEMP_PATH; ${11}=WEB_USER
 	if [[ $2 == 'MySQL' ]]; then DBM="mysql"; else DBM="pgsql"; fi
 	# Se instala drupal con Drush
 	echo "Instalando drupal ######################################################"
 
 	su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush dl drupal-$1 --drupal-project-rename=$7"
 	log_errors $? "Se descarga 'drupal-$1' y se renombra como '$7'"
-	read -sp "Ingresa la contraseña del usuario '$3' de la BD: " DB_PASS; echo -e "\n"
-	read -p "Ingresa el usuario para configurar Drupal: " CMS_USER
-	read -sp "Ingresa la contraseña del usuario '$CMS_USER' para configurar Drupal: " CMS_PASS; echo -e "\n"
+
+	while true; do
+		read -sp "Ingresa la contraseña del usuario '$3' de la BD: " DB_PASS; echo -e "\n"
+		if [[ -n $DB_PASS ]]; then
+			if [[ $2 == "PostgreSQL" ]]; then
+				su postgres -c "PGPASSWORD="$DB_PASS" psql -h $4 -p $5 -d $6 -U $3 -c '\q'"
+			else
+				mysql -h $4 -P $5 -u $3 --password=$DB_PASS $6 -e "\q"
+			fi
+			[[ $? == '0' ]] && break
+		fi
+	done
+
+	while true; do
+		read -p "Ingresa el usuario para configurar Drupal: " CMS_USER
+		[[ -n $CMS_USER ]] && break
+	done
+
+	while true; do
+		read -sp "Ingresa la contraseña del usuario '$CMS_USER' para configurar Drupal: " CMS_PASS; echo -e "\n"
+		if [[ -n $CMS_PASS ]]; then
+			read -sp "Ingresa nuevamente el password: " userPass2; echo -e "\n"
+			[[ "$CMS_PASS" == "$userPass2" ]] && userPass2="" && break
+			echo -e "No coinciden!\n"
+		fi
+	done
+
 	read -p "Ingresa el nombre que tendrá el sitio ['$7' por defecto]: " SITE_NAME
 	if [ -z "$SITE_NAME" ]; then SITE_NAME="$7"; fi
 
@@ -402,12 +312,19 @@ drupal_installer(){
 			log_errors $? "Se elimina la base de datos 'dbtemporal' de PostgreSQL"
 		fi
 	fi
-
-	chown www-data:www-data sites/default/files/
-
+	chown ${11}:${11} sites/default/files/
 	modulos_configuraciones "$1"
 	complementos_seguridad "$7" "$1"
 
+	if [[ $1 =~ 7.* ]]; then
+		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush @none dl file_permissions"
+		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush cc drush"
+		su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush fp -y"
+	fi
+	log_errors $? "Permisos en carpetas"
+	su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush cc drush"
+	su $SUDO_USER -c "$(su $SUDO_USER -c "composer config -g home")/vendor/bin/drush ups"
+	
 	jq -c -n --arg title "$SITE_NAME" --arg drup_admin "$CMS_USER" --arg drup_admin_pass "$CMS_PASS" \
 	'{Title: $title, drup_admin:$drup_admin, drup_admin_pass:$drup_admin_pass}' \
 	> ${10}/drupalInfo.json
@@ -426,15 +343,25 @@ DOMAIN_NAME=$9
 EMAIL_NOTIFICATION=${10}
 WEB_SERVER=${11}
 DB_EXISTS=${12}
+IPv6=${13}
+
+echo "===============================================" | tee -a $LOG
+echo "     Inicia la instalacion de Drupal $DRUPAL_VERSION" | tee -a $LOG
+echo "===============================================" | tee -a $LOG
 
 TEMP_PATH="$(su $SUDO_USER -c "pwd")"
 
 mkdir -p $PATH_INSTALL
 
-install_dep "$SO" "$DBM" "$WEB_SERVER" "$DOMAIN_NAME" "$PATH_INSTALL"
+install_dep "$SO" "$DBM" "$WEB_SERVER" "$DOMAIN_NAME" "$PATH_INSTALL" "$IPv6"
 chown $SUDO_USER:$SUDO_USER $PATH_INSTALL
+
+WEB_USER=$(grep -o "^www-data" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^apache" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^httpd" /etc/passwd)
+[[ -z $WEB_USER ]] && WEB_USER=$(grep -o "^nginx" /etc/passwd)
 
 cd $PATH_INSTALL
 drupal_installer "$DRUPAL_VERSION" "$DBM" "$DB_USER" "$DB_IP" "$DB_PORT"\
 									"$DB_NAME" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$DB_EXISTS"\
-									"$TEMP_PATH"
+									"$TEMP_PATH" "$WEB_USER"

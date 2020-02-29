@@ -1,7 +1,12 @@
 #!/bin/bash
-##################################################
-#Instalador de apache y Nginx para Debian 9 y 10 #
-##################################################
+
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador y configurador de Apache o Nginx en Debian 9 y 10
+## @version 1.0
+##
+## Este archivo permite instalar y configurar, ya sea Apache, o Nginx con WAF embebido
 
 
 #Argumento 1: Version de Debian
@@ -10,27 +15,28 @@
 
 LOG="`pwd`/Modulos/Log/Aux_Instalacion.log"
 
-###################### Log de Errores ###########################
-# $1: Salida de error											#
-# $2: Mensaje de la instalacion									#
-#################################################################
+## @fn log_errors()
+## @param $1 Salida de error
+## @param $2 Mensaje de error o acierto
+##
 log_errors(){
 	if [ $1 -ne 0 ]; then
-		echo "[`date +"%F %X"`] : $2 : [ERROR]" >> $LOG
+		echo "[`date +"%F %X"`] : [ERROR] : $2" >> $LOG
 		exit 1
 	else
-		echo "[`date +"%F %X"`] : $2 : [OK]" 	>> $LOG
+		echo "[`date +"%F %X"`] : [OK] : $2" 	>> $LOG
 	fi
 }
 
-################## Instalacion de Nginx #########################
-# $1: Version													#
-#################################################################
+## @fn install_nginx()
+## @brief Instalador de Nginx para Debian
+## @param $1 version
+##
 install_nginx(){
 		cd /opt
 		wget http://nginx.org/download/nginx-1.12.0.tar.gz
-		tar -zxf nginx-$1.tar.gz
-		cd nginx-$1
+		tar -zxf nginx-1.12.0.tar.gz
+		cd nginx-1.12.0
 		cmd="apt-get install -y git zlibc zlib1g zlib1g-dev libgeoip-dev libgeoip1 git build-essential libpcre3 libpcre3-dev libssl-dev libtool autoconf apache2-dev libxml2-dev libcurl4-openssl-dev automake pkgconf"
 		$cmd
 		log_errors $? "Instalando dependencias para Nginx: $cmd"
@@ -57,15 +63,37 @@ install_nginx(){
 	#rm nginx_signing.key
 }
 
-#install_modsecurity_nginx(){
-#
-#}
+## @fn install_nginx_apt()
+## @brief Instalador de Nginx para Debian
+## @param $1 Version de Debian
+## @param $1 Version de Nginx
+##
+install_nginx_apt(){
+	# $1=DEBIAN_VERSION; $2=WEBSERVER_VERSION
+	apt install curl gnupg2 ca-certificates lsb-release -y
 
+	if [[ $1 == "Debian 10" ]]; then
+		echo "deb http://nginx.org/packages/debian buster nginx" \
+		| sudo tee /etc/apt/sources.list.d/nginx.list
+		log_errors $? "Repostorio para instalar nginx: deb http://nginx.org/packages/debian buster nginx"
+		curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+	else
+		wget -q https://packages.sury.org/nginx/apt.gpg -O- | sudo apt-key add -
+		echo "deb https://packages.sury.org/nginx/ stretch main" | sudo tee /etc/apt/sources.list.d/nginx.list
+		log_errors $? "Repostorio para instalar nginx: deb https://packages.sury.org/nginx/ stretch main"
+	fi
+	apt update
+	log_errors $? "Actualización de la lista de paquetes disponibles: apt update"
+	apt install -y nginx=$2* nginx-extras
+	log_errors $? "Instalación de nginx: apt install -y nginx=$2*"
+	systemctl enable nginx
+}
 
-################## Instalacion de Apache ##########################
-# $1: Version Debian
-# $2: Version Apache													  #
-###################################################################
+## @fn install_apache()
+## @brief Instalador de Apache para Debian
+## @param $1 Version Debian
+## @param $2 Version Apache
+##
 install_apache(){
 	#if [[ $1 == "Debian 9" ]]; then
 	#echo "deb http://ssecurity.debian.org stretch/updates main \n deb http://security.debian.org buster/updates" >> /etc/apt/sources.list
@@ -81,10 +109,12 @@ install_apache(){
 	#cmd="apt-cache policy apache2"
 	$cmd
 	log_errors $? "Instalacion de Apache: $cmd"
-
+	systemctl enable apache2
 }
-############# Instalacion de WAF para Apache ######################
-###################################################################
+
+## @fn install_apache_WAF()
+## @brief Instalador de WAF con ModSecurity para apache
+##
 install_apache_WAF(){
 	echo "[`date +"%F %X"`] Instalando ModSecurity para Apache"
 	cmd="apt-get -y install libapache2-mod-security2"
@@ -120,6 +150,69 @@ install_apache_WAF(){
 	$cmd
 	log_errors "$?" "Configuracion OWASP: $cmd"
 }
+
+## @fn install_nginx_WAF_etc()
+## @brief Instalador de WAF con ModSecurity para Nginx
+## @param $1 version de Debian
+## @param $2 version de Nginx
+##
+install_nginx_WAF_etc(){
+	# $1=DEBIAN_VERSION ; $2=NGINX_VERSION
+	apt install -y git zlibc zlib1g zlib1g-dev libgeoip-dev libgeoip1 git build-essential libpcre3 libpcre3-dev libssl-dev libtool autoconf apache2-dev libxml2-dev libcurl4-openssl-dev automake pkgconf libxslt-dev libgd-dev
+	log_errors $? "Instalando dependencias para Nginx: apt install -y git zlibc zlib1g zlib1g-dev libgeoip-dev libgeoip1 git build-essential libpcre3 libpcre3-dev libssl-dev libtool autoconf apache2-dev libxml2-dev libcurl4-openssl-dev automake pkgconf libxslt-dev libgd-dev"
+	git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity
+	cd ModSecurity
+	git submodule init
+	git submodule update
+	./build.sh
+	./configure
+	make
+	log_errors $? "Comienza instalación de WAF para Nginx"
+	make install
+	log_errors $? "Instalación de WAF para Nginx"
+	git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git
+	wget http://nginx.org/download/nginx-$2.tar.gz
+	tar zxvf nginx-$2.tar.gz
+	cd nginx-$2
+	#./configure --with-compat --add-dynamic-module=../ModSecurity-nginx
+	./configure --add-dynamic-module=../ModSecurity-nginx --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -fPIC' --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_dav_module --with-http_slice_module --with-threads --with-http_addition_module --with-http_geoip_module=dynamic --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module=dynamic --with-http_sub_module --with-http_xslt_module=dynamic --with-stream=dynamic --with-stream_ssl_module --with-stream_ssl_preread_module --with-mail=dynamic --with-mail_ssl_module
+
+	log_errors $? "Se configura Nginx para utilizar ModSecurity-nginx"
+	make modules
+	cp objs/ngx_http_modsecurity_module.so /usr/share/nginx/modules
+	sed -i "1 i\load_module modules/ngx_http_modsecurity_module.so;" /etc/nginx/nginx.conf
+	log_errors $? "Se carga módulo 'ngx_http_modsecurity_module.so' en '/etc/nginx/nginx.conf'"
+
+	mkdir /etc/nginx/modsec
+
+	wget -P /etc/nginx/modsec/ https://raw.githubusercontent.com/SpiderLabs/ModSecurity/v3/master/modsecurity.conf-recommended
+
+	mv /etc/nginx/modsec/modsecurity.conf-recommended /etc/nginx/modsec/modsecurity.conf
+	cp ../unicode.mapping /etc/nginx/modsec/
+
+	git clone https://github.com/SpiderLabs/owasp-modsecurity-crs.git
+	cd owasp-modsecurity-crs/
+
+	cp -R rules/ /etc/nginx/
+	cp crs-setup.conf.example /etc/nginx/modsec/crs-setup.conf
+	echo "#Load OWASP Config
+Include crs-setup.conf
+#Load all other Rules
+Include /etc/nginx/rules/*.conf
+#Disable rule by ID from error message
+#SecRuleRemoveById 92035" >> /etc/nginx/modsec/modsecurity.conf
+
+	sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/nginx/modsec/modsecurity.conf
+
+	mv /etc/nginx/rules/REQUEST-921-PROTOCOL-ATTACK.conf /etc/nginx/rules/REQUEST-921-PROTOCOL-ATTACK.example
+
+	sed -i '/http {/a \\tmodsecurity on;\n\tmodsecurity_rules_file \/etc\/nginx\/modsec\/modsecurity.conf;\n' /etc/nginx/nginx.conf
+	log_errors $? "Configuracion OWASP: modsecurity on;modsecurity_rules_file /etc/nginx/modsec/modsecurity.conf"
+	systemctl restart nginx
+	log_errors $? "Se reinicia nginx: systemctl restart nginx"
+
+}
+
 ############# Instalacion de WAF para Nginx ######################
 ###################################################################
 install_nginx_WAF(){
@@ -198,18 +291,7 @@ DEBIAN_FRONTEND=noninteractive apt \
 -o Dpkg::Options::=--force-confdef \
 -y upgrade
 log_errors $? "Upgrade de paquetes"
-#############################  Se instalan con main.sh
-#apt -y install curl wget
-################## La version de PHP correspondiente se instala en cada script
-# de instaladorCMS
-#if [[ $1 == 'Debian 9' ]]; #Si es Debian 9
-#then
-#	wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
-#	echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-#	apt update
-#fi
-#apt -y install php php-mysql
-#log_errors $? "Instalacion de utilerias"
+
 apt -y install lsb-release apt-transport-https ca-certificates
 log_errors $? "Instalacion de extensiones"
 
@@ -221,8 +303,8 @@ fi
 
 if [[ $2 == 'Nginx' ]];
 then
-	install_nginx $1 $3
-	install_nginx_WAF
+	install_nginx_apt "$1" "$3"
+	install_nginx_WAF_etc "$1" "$3"
 else
 	install_apache $1 $3
 	install_apache_WAF

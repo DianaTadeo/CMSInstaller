@@ -5,7 +5,8 @@
 ## @author Diana G. Tadeo Guillen
 ## @brief Script Main de instalador y configurador de CMS seguros en Debian 9, 10 y CentOS 6, 7
 ## @version 1.0
-##
+## @includes Modulos/Auxiliares/DB_Instalador_Debian.sh
+## @includes Modulos/Auxiliares/DB_Instalador_CentOS.sh
 
 # Argumento 1: fileID.json generado desde el sitio web
 
@@ -35,8 +36,10 @@ log_errors(){
 ##
 jq_install_OS_detection(){
 	if [ `cat /etc/issue | grep -E 'Debian'| wc -l` == '1' ]; then
+		apt update -y
 		apt install jq -y
 	elif [ -e "/etc/centos-release" ]; then
+		yum update -y
 		yum install epel-release -y
 		yum install jq -y
 # Para script final se habilita exit
@@ -57,7 +60,7 @@ OS_dependencies(){
 			;;
 		'CentOS 6' | 'CentOS 7')
 			echo "Cent6"
-			yum install sudo vim curl wget expect sendmail -y
+			yum install sudo vim curl wget expect sendmail lsof -y
 			;;
 	esac
 }
@@ -130,12 +133,12 @@ data_base_manager_installer(){
 		'Debian 9' | 'Debian 10')
 			# Se ejecuta script para instalación de base de datos en debian
 			bash ./Modulos/Auxiliares/DB_Instalador_Debian.sh "$2" "$3" "$4" "$DB_NAME" \
-			"$DB_USER" "$DB_IP" "$DB_PORT"
+			"$DB_USER" "$DB_IP" "$DB_PORT" "$1"
 		;;
 		'CentOS 6' | 'CentOS 7')
 			# Se ejecuta script para instalación de base de datos en centos
-			bash ./Modulos/Auxiliares/DB_Instalador_CentOS.sh "$2" "$3" "$4" "$DB_NAME" \
-			"$DB_USER" "$DB_IP" "$DB_PORT"
+			bash ./Modulos/Auxiliares/DB_Instalador_CentOS.sh "$2" "$DB_NAME" "$DB_PORT"  \
+			"$DB_USER" "$DB_IP" "$4" "$3" "$1"
 		;;
 	esac
 }
@@ -155,44 +158,43 @@ data_base_manager_installer(){
 ## @param $11 Correo a donde se enviar[an las notificaciones
 ## @param $12 Servidor Web 'Apache' o 'Nginx'
 ## @param $13 Existe la base de datos
+## @param $14 Compatibilidad con IPv6
+## @param $15 Versión del manejador de base de datos
 ##
 CMS(){
 	# $1=CMS; $2=$SO; $3=$CMS_VERSION; $4=$DBM; $5=$DB_NAME; $6=$DB_IP; $7=$DB_PORT;
 	# $8=$DB_USER; $9=$PATH_INSTALL; $10=$DOMAIN_NAME;
-	# $11=EMAIL_NOTIFICATION; $12=WEB_SERVER; $13=DB_EXISTS
+	# $11=EMAIL_NOTIFICATION; $12=WEB_SERVER; $13=DB_EXISTS; $14=IPv6; $15=DB_VERSION
 	case $1 in
 		'drupal')
 			echo 'Drupal' $3
 			bash ./Modulos/InstaladoresCMS/Drupal_Instalador_General.sh "$2" "$3" "$4" \
-			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}"
+			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}"
 			;;
 		'joomla')
 			echo 'Joomla' $3
 			bash ./Modulos/InstaladoresCMS/Joomla_Instalador_General.sh "$5" "$8" "$6" \
-			"$7" "$9" "$3" "$2" "$4"
+			"$7" "$9" "$3" "$2" "$4" "${13}" "${11}" "${12}" "${10}" "${14}" "${15}"
 			;;
 		'moodle')
 			echo 'moodle' $3
 			bash ./Modulos/InstaladoresCMS/Moodle_Instalador_General.sh "$5" "$8" "$6" \
-			"$7" "$9" "$3" "${10}" "$2" "$4" "${12}" "${11}"
+			"$7" "$9" "$3" "${10}" "$2" "$4" "${12}" "${11}" "${14}"
 			;;
 		'wordpress')
 			echo 'wordpress' $3
 			bash ./Modulos/InstaladoresCMS/WP_Instalador_General.sh "$5" "$6:$7" "$8" "$9" \
-			"${10}" "${11}" "$4" "${12}" "$2" "$3"
+			"${10}" "${11}" "$4" "${12}" "$2" "$3" "${14}"
 			;;
 		'ojs')
 			echo 'ojs' $3
 			bash ./Modulos/InstaladoresCMS/OJS_Instalador_General.sh "$2" "$3" "$4" \
-			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}"
+			"$5" "$6" "$7" "$8" "$9" "${10}" "${11}" "${12}" "${13}" "${14}"
 			;;
 	esac
-	bash ./Modulos/Auxiliares/Web_Configuration_Sec.sh "$2" "${12}"
+	bash ./Modulos/Auxiliares/Web_Configuration_Sec.sh "$2" "${12}" "${10}"
 }
 
-backups(){
-	echo "backups: TODO"
-}
 #===============================================================================================#
 #																								#													#
 #					Main de instalador y configurador de CMS seguros							#
@@ -244,7 +246,7 @@ IPV_6=`jq '.IPV6' $JSON_OPTIONS | cut -f2 -d'"'`
 PATH_INSTALL=`jq '.PathInstall' $JSON_OPTIONS | cut -f2 -d'"'`
 EMAIL_NOTIFICATION=`jq '.EmailTo' $JSON_OPTIONS | cut -f2 -d'"'`
 
-BACKUP_DAYS=`jq '.BackupDays' *.json -c | tr ',[]' ' ()'`  # revisar como pasar a array
+BACKUP_DAYS=`jq '.BackupDays' *.json -c | tr '["]' ' ' | sed -e 's/ //g'`
 BACKUP_TIME=`jq '.BackupTime' $JSON_OPTIONS | cut -f2 -d'"'`
 
 DB_EXISTS=`jq '.DBExists' $JSON_OPTIONS | cut -f2 -d'"'`
@@ -254,14 +256,17 @@ DB_EXISTS=`jq '.DBExists' $JSON_OPTIONS | cut -f2 -d'"'`
 OS_dependencies "$SO"
 chmod +x ./Modulos/Auxiliares/* ./Modulos/InstaladoresCMS/* ./Modulos/Hardening/*
 web_server_installer "$SO" "$WEB_SERVER" "$WS_VERSION"
-
+TEMP_PATH="$PWD"
 # Se asginan valores para conexión a la BD si existe o no
 if [ $DB_EXISTS = "Yes" ]; then
 	DB_USER=`jq '.DBUser' $JSON_OPTIONS | cut -f2 -d'"'`
 	DB_IP=`jq '.DBIP' $JSON_OPTIONS | cut -f2 -d'"'`
 	DB_PORT=`jq '.DBPort' $JSON_OPTIONS | cut -f2 -d'"'`
 else
-	read -p "Ingresa el usuario para la base de datos: " DB_USER
+	while true; do
+		read -p "Ingresa el usuario para la base de datos: " DB_USER
+		[[ -n $DB_USER ]] && break
+	done
 	## Se quita la opción de ingresar IP porque la BD es local
 	#read -p "Ingresa la dirección IPv4 del servidor de la base de datos [localhost por defecto]: " DB_IP
 	if [ -z "$DB_IP" ]; then DB_IP="localhost"; fi
@@ -269,15 +274,23 @@ else
 	read -p "Ingresa el puerto del servidor de la base de datos [$DEFAULT_DB_PORT por defecto]: " DB_PORT
 	if [ -z "$DB_PORT" ]; then DB_PORT=$DEFAULT_DB_PORT; fi
 fi
-read -p "Ingresa el nombre de la base de datos: " DB_NAME
+while true; do
+	read -p "Ingresa el nombre de la base de datos: " DB_NAME
+	[[ -n $DB_NAME ]] && break
+done
 
 data_base_manager_installer "$SO" "$DBM" "$DB_VERSION" "$DB_EXISTS" \
 "$DB_USER" "$DB_IP" "$DB_PORT" "$DB_NAME"
 
 CMS "$CMS" "$SO"  "$CMS_VERSION" "$DBM" "$DB_NAME" "$DB_IP" "$DB_PORT" \
 "$DB_USER" "$PATH_INSTALL" "$DOMAIN_NAME" "$EMAIL_NOTIFICATION" "$WEB_SERVER" \
-"$DB_EXISTS"
+"$DB_EXISTS" "$IPV_6" "$DB_VERSION"
 
 OS_hardening "$SO" "$EMAIL_NOTIFICATION"
-backups
-echo -e "Recarga las variables de entorno.\n Ejecute: . ~/.bashrc"
+
+bash ./Modulos/Auxiliares/Backup_Files_General.sh "$BACKUP_DAYS" "$SO" \
+"$WEB_SERVER" "$DBM" "$PATH_INSTALL" "$DOMAIN_NAME" "$DB_USER" "$DB_IP" \
+"$DB_PORT" "$DB_NAME" "$BACKUP_TIME" "$TEMP_PATH" "$EMAIL_NOTIFICATION" "$DB_VERSION"
+bash ./Modulos/Auxiliares/firewall/Firewall_Config.sh "$SO" "$DB_PORT" "$DB_IP"
+echo -e "Recarga las variables de entorno.\n Ejecute los siguientes comandos: . /etc/profile\n\t\t\t\t  . ~/.bashrc"
+[[ $SO =~ CentOS.* ]] && echo "Cierra e inicia sesión para poder utilizar las políticas de sudo."
