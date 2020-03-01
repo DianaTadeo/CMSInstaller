@@ -1,0 +1,1 @@
+{"SO":"Debian 9","DomainName":"cms.wordpress.com","IPv4":"Yes","IPv6":"No","CMS":"wordpress","CMSVersion":"5.3.2","DatabaseManager":"PostgreSQL","DBVersion":"9.6","WebServer":"Apache","WSVersion":"2.4.25","PathInstall":"\/opt\/wp","BackupDays":["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],"BackupTime":"19:11","EmailTo":"demo@hotmail.com","DBExists":"No"}

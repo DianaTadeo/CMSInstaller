@@ -239,7 +239,7 @@ server {
 	error_page 502 =200 https://$2/;
 	error_page 503 =200 https://$2/;
 	error_page 504 =200 https://$2/;
-
+	
 }" |  tee $SISTEMA
 
 echo "ln -s $3/$2 $ROOT_PATH/$2"

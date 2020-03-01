@@ -110,7 +110,7 @@ $CENTOS_6_443
 			AllowOverride All
 			Require all granted
 	</Directory>
-	#<FilesMatch \"(?i)(README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t?(ar.*|ar\.gz|gz)|z(.*|ip)|~)\$)\">
+	#<FilesMatch \"(?i)(README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t?(ar|ar\.gz|gz)|z(.*|ip)|~)\$)\">
 	#		Require all denied
 	#</FilesMatch>
 	ErrorLog /var/log/$WEB_SERVER/$2-error.log
@@ -128,7 +128,7 @@ $CENTOS_6_443
 	ErrorDocument 502 https://$2/
 	ErrorDocument 503 https://$2/
 	ErrorDocument 504 https://$2/
-
+	
 </VirtualHost>" |  tee $SISTEMA
 if [[ ! $3 =~ $ROOT_PATH/? ]]; then
 	ln -s $3/$2 $ROOT_PATH/$2
