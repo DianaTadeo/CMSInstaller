@@ -116,6 +116,19 @@ $CENTOS_6_443
 	ErrorLog /var/log/$WEB_SERVER/$2-error.log
 	CustomLog /var/log/$WEB_SERVER/$2-requests.log combined
 
+	ErrorDocument 301 https://$2/
+	ErrorDocument 400 https://$2/
+	ErrorDocument 401 https://$2/
+	ErrorDocument 403 https://$2/
+	ErrorDocument 404 https://$2/
+	ErrorDocument 405 https://$2/
+	ErrorDocument 408 https://$2/
+	ErrorDocument 500 https://$2/
+	ErrorDocument 501 https://$2/
+	ErrorDocument 502 https://$2/
+	ErrorDocument 503 https://$2/
+	ErrorDocument 504 https://$2/
+	
 </VirtualHost>" |  tee $SISTEMA
 if [[ ! $3 =~ $ROOT_PATH/? ]]; then
 	ln -s $3/$2 $ROOT_PATH/$2

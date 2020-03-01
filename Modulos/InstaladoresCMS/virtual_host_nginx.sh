@@ -227,6 +227,19 @@ server {
 	access_log /var/log/nginx/$2-access.log;
 	error_log /var/log/nginx/$2-error.log;
 
+	error_page 301 =200 https://$2/;
+	error_page 400 =200 https://$2/;
+	error_page 401 =200 https://$2/;
+	error_page 403 =200 https://$2/;
+	error_page 404 =200 https://$2/;
+	error_page 405 =200 https://$2/;
+	error_page 408 =200 https://$2/;
+	error_page 500 =200 https://$2/;
+	error_page 501 =200 https://$2/;
+	error_page 502 =200 https://$2/;
+	error_page 503 =200 https://$2/;
+	error_page 504 =200 https://$2/;
+	
 }" |  tee $SISTEMA
 
 echo "ln -s $3/$2 $ROOT_PATH/$2"
