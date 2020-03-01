@@ -141,13 +141,13 @@ modulos_configuraciones(){
 			se te soliciten."
 			while true; do
 				echo "Primer clave"
-				read -p "Public key:" reCAPTCHA_PUB_KEY
-				[ -n "$reCAPTCHA_pub_key" ] && break
+				read -p "Public key: " reCAPTCHA_PUB_KEY
+				[ -n "$reCAPTCHA_PUB_KEY" ] && break
 			done
 			while true; do
 				echo "Segunda clave"
-				read -p "Public key:" reCAPTCHA_PRIV_KEY
-				[ -n "$reCAPTCHA_pub_key" ] && break
+				read -p "Private key: " reCAPTCHA_PRIV_KEY
+				[ -n "$reCAPTCHA_PRIV_KEY" ] && break
 			done
 			sed -i 's/;*\(.*allow_url_fopen\s*=\s*\).*/\1on/' config.inc.php config.TEMPLATE.inc.php
 			log_errors $? "Se habilita url_open para comptabilidad con recaptcha"
