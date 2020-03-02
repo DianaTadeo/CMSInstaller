@@ -51,26 +51,26 @@ install_iptables_Centos(){
 	[[ $1 == 'CentOS 6' ]] && cmd="service iptables start"
 	$cmd
 	log_errors $? "Instalando iptables: $cmd"
-	[[ $1 == 'CentOS 7' ]] && cmd="systemctl start iptables6"
-	[[ $1 == 'CentOS 6' ]] && cmd="service iptables6 start"
-	$cmd
-	log_errors $? "Instalando iptables: $cmd"
+	#[[ $1 == 'CentOS 7' ]] && cmd="systemctl start iptables6"
+	#[[ $1 == 'CentOS 6' ]] && cmd="service iptables6 start"
+	#$cmd
+	#log_errors $? "Instalando iptables: $cmd"
 	[[ $1 == 'CentOS 7' ]] && cmd="systemctl enable iptables"
 	[[ $1 == 'CentOS 6' ]] && cmd="chkconfig iptables on"
 	$cmd
 	log_errors $? "Instalando iptables: $cmd"
-	[[ $1 == 'CentOS 7' ]] && cmd="systemctl enable iptables6"
-	[[ $1 == 'CentOS 6' ]] && cmd="chkconfig iptables6 on"
-	$cmd
-	log_errors $? "Instalando iptables: $cmd"
+	#[[ $1 == 'CentOS 7' ]] && cmd="systemctl enable iptables6"
+	#[[ $1 == 'CentOS 6' ]] && cmd="chkconfig iptables6 on"
+	#$cmd
+	#log_errors $? "Instalando iptables: $cmd"
 	[[ $1 == 'CentOS 7' ]] && cmd="systemctl status iptables"
 	[[ $1 == 'CentOS 6' ]] && cmd="service iptables status"
 	$cmd
 	log_errors $? "Instalando iptables: $cmd"
-	[[ $1 == 'CentOS 7' ]] && cmd="systemctl status iptables6"
-	[[ $1 == 'CentOS 6' ]] && cmd="service iptables6 status"
-	$cmd
-	log_errors $? "Instalando iptables: $cmd"
+	#[[ $1 == 'CentOS 7' ]] && cmd="systemctl status iptables6"
+	#[[ $1 == 'CentOS 6' ]] && cmd="service iptables6 status"
+	#$cmd
+	#log_errors $? "Instalando iptables: $cmd"
 }
 
 ## @fn install_iptables_Debian()
