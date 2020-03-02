@@ -1,9 +1,269 @@
-<h4 class="text-primary"><b>CMS</b></h4>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Instalación y configuración de CMS</title>
+
+	<!-- CSS -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600">
+	<link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/css/form-elements.css">
+	<link rel="stylesheet" href="assets/css/style.css">
+
+	<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+	<link href="assets/css/clockpicker.css" rel="stylesheet" />
+	<script src="assets/js/clockpicker.js"></script>
+	<link href="assets/css/bootstrap-clockpicker.css" rel="stylesheet" />
+
+	<link rel="shortcut icon" href="assets/ico/cert_negro-favicon.png">
+	<link rel="cert_negro-icon-precomposed" sizes="144x144" href="assets/ico/cert_negro-icon-144-precomposed.png">
+	<link rel="cert_negro-icon-precomposed" sizes="114x114" href="assets/ico/cert_negro-icon-114-precomposed.png">
+	<link rel="cert_negro-icon-precomposed" sizes="72x72" href="assets/ico/cert_negro-icon-72-precomposed.png">
+	<link rel="cert_negro-icon-precomposed" href="assets/ico/cert_negro-icon-57-precomposed.png">
+
+	<script src='https://www.google.com/recaptcha/api.js'></script>
+
+</head>
+
+<body>
+
+	<!-- Top content -->
+	<div class="top-content">
+
+		<div class="inner-bg">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-8 col-sm-offset-2 text">
+						<h1><b>Instalación y configuración de CMS</b></h1>
+						<div class="description">
+							<p>
+								Este sitio genera un script de instalación y configuración de CMS de acuerdo a las preferencias
+								que se elijan en el siguiente formulario.
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-6 col-sm-offset-3 form-box">
+
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#tab1">Generación de script</a></li>
+					<li><a data-toggle="tab" href="#tab2">Noticias CMS</a></li>
+					<li><a data-toggle="tab" href="#tab3">Estadísticas</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="tab1" class="tab-pane fade in active">
+								<div class="form-top">
+									<h3><b>Opciones de instalación</b></h3>
+									<p>Selecciona las opciones para generar el script de instalación correspondiente.</p>
+								</div>
+								<div class="form-bottom settings-form">
+									<form role="form" action="assets/settings.php" method="post">
+										<div class="form-row">
+											<div class="form-group">
+												<label for="SO">Sistema operativo</label>
+												<select name="SO" class="so form-control" id="SO">
+													<option>Debian 9</option>
+													<option>Debian 10</option>
+													<option>CentOS 6</option>
+													<option>CentOS 7</option>
+												</select>
+											</div>
+											<div class="form-group">
+												<label for="domainname">Nombre de dominio</label>
+												<input type="text" name="domainname" placeholder="Introducir nombre de dominio" class="domainname form-control" id="domainname">
+											</div>
+											<div class="form-group">
+												<p>IPv4</p>
+												<label class="radio-inline">
+													<input type="radio" name="IPv4" value="Yes" checked>Sí
+												</label>
+												<label class="radio-inline">
+													<input type="radio" name="IPv4" value="No">No
+												</label>
+											</div>
+											<div class="form-group">
+												<p>IPv6</p>
+												<label class="radio-inline">
+													<input type="radio" name="IPv6" value="Yes">Sí
+												</label>
+												<label class="radio-inline">
+													<input type="radio" name="IPv6" value="No" checked>No
+												</label>
+											</div>
+											<div class="form-group">
+												<div class="row">
+													<div class="col-xs-6">
+														<label for="CMS">CMS</label>
+														<select name="CMS" class="cms form-control" id="CMS">
+															<option value="drupal">Drupal</option>
+															<option value="joomla">Joomla</option>
+															<option value="moodle">Moodle</option>
+															<option value="ojs">OJS</option>
+															<option value="wordpress">Wordpress</option>
+														</select>
+													</div>
+													<div class="col-xs-6">
+														<label for="CMSVersion">Version</label>
+														<select name="CMSVersion" class="cmsversion form-control" id="CMSVersion">
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label for="path">Ruta de instalación</label>
+												<input type="text" name="path" placeholder="Por defecto: /var/www/html" class="path form-control" id="path">
+											</div>
+
+											<div class="form-group">
+												<div class="row">
+													<div class="col-xs-6">
+														<label for="databasemanager">Manejador de base de datos</label>
+														<select name="databasemanager" class="databasemanager form-control" id="databasemanager">
+															<option value="MySQL">MySQL/MariaDB</option>
+															<option value="PostgreSQL">PostgreSQL</option>
+														</select>
+													</div>
+													<div class="col-xs-6">
+														<label for="dbVersion">Version</label>
+														<select name="dbVersion" class="dbversion form-control" id="dbVersion">
+														</select>
+													</div>
+												</div>
+											</div>
+
+											<div class="form-group">
+													<p>¿Se tiene una base de datos preexistente?</p>
+													<div class="radio">
+														<label><input type="radio" name="DB" value="Yes" id="DB">Sí</label>
+													</div>
+													<div id="dbIP" style="display: none" class="row">
+													<div class="col-xs-4">
+														<label class="sr-only" for="databaseIP">Database IP</label>
+														<input type="text" name="databaseIP" placeholder="Dirección IP" class="databaseIP form-control" id="databaseIP">
+													</div>
+													<div class="col-xs-4">
+														<label class="sr-only" for="databasePort">Port</label>
+														<input type="text" name="databasePort" placeholder="Puerto" class="databasePort form-control" id="databasePort">
+													</div>
+													<div class="col-xs-4">
+														<label class="sr-only" for="databaseUser">User</label>
+														<input type="text" name="databaseUser" placeholder="Usuario" class="databaseUser form-control" id="databaseUser">
+													</div>
+													</div>
+													<label id="messagePW" style="display: none" class="form-text text-info">
+													* Nota: La contraseña para realizar la conexión con el manejador de la base de datos se solicitará durante la ejecución del script.
+												</label>
+													<div class="radio">
+														<label><input type="radio" name="DB" value="No" id="DB" checked>No</label>
+													</div>
+												</div>
+
+											<div class="form-group">
+												<div class="row">
+													<div class="col-xs-6">
+														<label for="webserver">Servidor Web</label>
+														<select name="webserver" class="webserver form-control" id="webserver">
+															<option value="Apache">Apache HTTPD</option>
+															<option value="Nginx">NGINX</option>
+														</select>
+													</div>
+													<div class="col-xs-6">
+														<label for="webServerVersion">Version</label>
+														<select name="webServerVersion" class="webServerVersion form-control" id="webServerVersion">
+														</select>
+													</div>
+												</div>
+											</div>
+
+											<div class="form-group">
+													<label for="emailTo">Dirección de correo de notificación</label>
+													<!--<label class="sr-only" for="emailTo">Email</label>-->
+													<input type="text" name="emailTo" placeholder="ejemplo@notificacion.com" class="emailTo form-control" id="emailTo">
+												</div>
+												<div class="form-group">
+													<label for="backupdate">Periodicidad de respaldo<p></></label>
+													<div class="btn-group" data-toggle="buttons" name="backupdate" id="backupdate">
+														<label class="btn btn-primary active">
+															<input type="checkbox" name="backupdays[]" value="Mon" checked> Lunes
+															<span class="fa fa-check"></span>
+														</label>
+														<label class="btn btn-primary" >
+															<input type="checkbox" name="backupdays[]" value="Tue"> Martes
+															<span class="fa fa-check"></span>
+														</label>
+														<label class="btn btn-primary">
+															<input type="checkbox" name="backupdays[]" value="Wed"> Miércoles
+															<span class="fa fa-check"></span>
+														</label>
+														<label class="btn btn-primary">
+															<input type="checkbox" name="backupdays[]" value="Thu"> Jueves
+															<span class="fa fa-check"></span>
+														</label>
+														<label class="btn btn-primary">
+															<input type="checkbox" name="backupdays[]" value="Fri"> Viernes
+															<span class="fa fa-check"></span>
+														</label>
+														<label class="btn btn-primary">
+															<input type="checkbox" name="backupdays[]" value="Sat"> Sábado
+															<span class="fa fa-check"></span>
+														</label>
+														<label class="btn btn-primary">
+															<input type="checkbox" name="backupdays[]" value="Sun"> Domingo
+															<span class="fa fa-check"></span>
+														</label>
+													</div>
+												</div>
+												<label id="messageBackupDays" style="display: none" class="form-text text-danger">
+												* Debes seleccionar al menos un día para realizar los respaldos.
+												</label>
+												<div class="form-group">
+													<label for="backuptime"> Indicar hora de respaldo: </label>
+													<input class="form-control" id="backuptime" name="backuptime" value="20:00">
+													<script type="text/javascript">
+													var input = $('#backuptime').clockpicker({
+														placement: 'top',
+														align: 'left',
+														donetext: 'OK',
+														autoclose: false,
+														'default': '20:00'
+													});
+													</script>
+													<label id="messageBackupTime" style="display: none" class="form-text text-danger">
+													* Debes seleccionar una hora para realizar los respaldos.
+													</label>
+												</div>
+
+												<div class="g-recaptcha" data-sitekey="6Lckut0UAAAAAJl-xgly2acEzNI2jKEGdHjcdU2n"></div><p></p>
+
+												<button type="submit" class="btn">Generar script</button>
+									</form>
+								</div>
+								</div>
+
+					</div>
+					<div id="tab2" class="tab-pane">
+						<p>Noticias</p>
+					</div>
+					<div id="tab3" class="tab-pane">
+						<div class="container">
+							<div class="form-top">
+									<h3><b>Estadisticas</b></h3>
+									<p>Enseguida de muestran las actuales descargas hasta el momento</p>
+							</div>
+							
+							<div class="form-bottom settings-form">
+								<h4 class="text-primary"><b>CMS</b></h4>
+								<p>Enseguida de muestran los CMS's mas descargados hasta el momento.</p>
 								<table class="table table-striped">
 									<thead>
 										<tr>
 											<th>Sistema instalado</th>
-											<th>Cantidad de descarga</th>
+											<th>Cantidad de descargas</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -29,3 +289,80 @@
 										</tr>
 									</tbody>
 								</table>
+								
+								<h4 class="text-primary"><b>Sistema Operativo</b></h4>
+								<p>Se muestra el sistema operativo para el que mas se han realizado descargas.</p>
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th>Sistema Operativo</th>
+											<th>Cantidad de descargas</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Debian 9</td>
+											<td id="debian9"></td>
+										</tr>
+										<tr>
+											<td>Debian 10</td>
+											<td id="debian10"></td>
+										</tr>
+										<tr>
+											<td>CentOS 6</td>
+											<td id="centos6"></td>
+										</tr>
+										<tr>
+											<td>CentOS 7</td>
+											<td id="centos7"></td>
+										</tr>
+									</tbody>
+								</table>
+								
+								<h4 class="text-primary"><b>Manejador de Base de datos</b></h4>
+								<p>Enseguida se muestran los manejadores de bases de datos que se han elejido.</p>
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th>Manejador de bases de datos</th>
+											<th>Cantidad de descargas</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>MySQL</td>
+											<td id="mysql"></td>
+										</tr>
+										<tr>
+											<td>PostgreSQL</td>
+											<td id="postgresql"></td>
+										</tr>
+									</tbody>
+								</table>
+								
+								
+							</div>
+						</div>
+  
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Javascript -->
+
+	
+
+	<script src="assets/js/jquery-1.11.1.min.js"></script>
+	<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+	<script src="assets/js/jquery.backstretch.min.js"></script>
+	<script src="assets/js/scripts.js"></script>
+
+	<!--[if lt IE 10]>
+						<script src="assets/js/placeholder.js"></script>
+				<![endif]-->
+
+</body>
+
+</html>
