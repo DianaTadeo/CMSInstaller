@@ -93,7 +93,7 @@ install_PostgreSQL(){
 		$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd"
 		[[ $7 == 'CentOS 6' ]] && cmd="service postgresql-$6 restart"
-		[[ $7 == 'CentOS 7' ]] && cmd="systemctl sretart postgresql-$6"
+		[[ $7 == 'CentOS 7' ]] && cmd="systemctl restart postgresql-$6"
 		$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd"
 

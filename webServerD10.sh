@@ -11,6 +11,7 @@ web_server_apache(){
 	# Instalación de apache y php
 	apt install apache2 php7.3 libapache2-mod-php -y
 	a2enmod php7.3
+	systemctl enable apache2
 	systemctl restart apache2.service
 }
 
