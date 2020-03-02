@@ -1,13 +1,24 @@
 
 jQuery(document).ready(function() {
+	
+	
+	function reloadstatistics(json_data){
+		json_data.cms['drupal']=1;
+		var val=JSON.stringify(json_data);
+		var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
+		xobj.open("POST", 'files/estadisticas.json', true);
+		xobj.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xobj.send(val);
+	}
+	
 
     function loadJSON(callback) {   
 		var xobj = new XMLHttpRequest();
         xobj.overrideMimeType("application/json");
-		xobj.open('GET', 'files/estadisticas.json', true); // Replace 'my_data' with the path to your file
+		xobj.open('GET', 'files/estadisticas.json', true); 
 		xobj.onreadystatechange = function () {
 			if (xobj.readyState == 4 && xobj.status == "200") {
-            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
 				callback(xobj.responseText);
 			}
 		};
@@ -29,9 +40,11 @@ jQuery(document).ready(function() {
 			document.getElementById("centos7").innerHTML = obj.os.centos7;
 			document.getElementById("mysql").innerHTML = obj.database.mysql;
 			document.getElementById("postgresql").innerHTML = obj.database.postgresql;
+			
+			reloadstatistics(obj);
 		});
 	}
-    makestatistics();
+	makestatistics();
 
 
 		/*
@@ -48,15 +61,6 @@ jQuery(document).ready(function() {
 			$("#messagePW").hide();
 		}
 	});
-	
-	
-	function getEstadisticas(){
-		
-		var obj= JSON.parse("files/estadisticas.json"); 
-		
-		document.getElementById("demo").innerHTML = $('#CMS').val()
-		
-	}
 	
 	
 
