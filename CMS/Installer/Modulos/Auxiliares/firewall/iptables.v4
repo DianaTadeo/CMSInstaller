@@ -2,7 +2,7 @@
 :INPUT DROP [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT DROP [0:0]
-:fail2ban-ssh - [0:0]
+:f2b-ssh - [0:0]
 ############### Local ###############
 # loopback
 -A INPUT -i lo -j ACCEPT
@@ -16,7 +16,7 @@
 -A OUTPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
 ############### Dependencia ###############
 # Dependencia - SSH
--A INPUT -s 132.247.1.0/24 -p tcp -m multiport --dports SSHPORT -j fail2ban-ssh
+-A INPUT -s 132.247.1.0/24 -p tcp -m multiport --dports SSHPORT -j f2b-ssh
 -A OUTPUT -d 132.247.1.0/24 -p tcp -m tcp --sport SSHPORT -j ACCEPT
 # Dependencia - HTTP
 -A INPUT -s 132.247.1.0/24 -p tcp -m tcp --dport 80 -j ACCEPT
@@ -43,7 +43,7 @@
 
 ############### Publico ###############
 # Publico - SSH
--A INPUT -p tcp -m multiport --dports SSHPORT -j fail2ban-ssh
+-A INPUT -p tcp -m multiport --dports SSHPORT -j f2b-ssh
 -A OUTPUT -p tcp -m tcp --sport SSHPORT -j ACCEPT
 # Publico - HTTP
 -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
@@ -77,3 +77,4 @@
 # DATABASE
 -A INPUT -p tcp -m tcp --dport DBPORT -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport DBPORT -j ACCEPT
+-A f2b-ssh -j RETURN

@@ -43,14 +43,17 @@ install_iptables_Centos(){
 		cmd="systemctl mask --now firewalld"
 		$cmd
 		log_errors $? "Deshabilitando firewalld: $cmd"
+		cmd="yum install -y iptables-services"
+		$cmd
+	else
+		cmd="yum install -y iptables"
+		$cmd
 	fi
-	cmd="yum install -y iptables-services"
-	$cmd
+
 	log_errors $? "Instalando iptables: $cmd"
-	[[ $1 == 'CentOS 7' ]] && cmd="systemctl start iptables"
-	[[ $1 == 'CentOS 6' ]] && cmd="service iptables start"
-	$cmd
-	log_errors $? "Instalando iptables: $cmd"
+	[[ $1 == 'CentOS 7' ]] && cmd="systemctl start iptables" && $cmd && log_errors $? "Instalando iptables: $cmd"
+	[[ $1 == 'CentOS 6' ]] && service iptables start
+
 	#[[ $1 == 'CentOS 7' ]] && cmd="systemctl start iptables6"
 	#[[ $1 == 'CentOS 6' ]] && cmd="service iptables6 start"
 	#$cmd
@@ -122,6 +125,7 @@ else
 	install_iptables_Centos "$1"
 fi
 rewrite "$3" "$2"
+[[ $1 == 'CentOS 6' ]] && sed -i "s/f2b-ssh/f2b-sshd/" ./Modulos/Auxiliares/firewall/iptables.v4
 echo "COMMIT" >>  ./Modulos/Auxiliares/firewall/iptables.v4
 echo "ATENCION: Se aplicaran las reglas de firewall por defecto. Revisar el archivo"
 echo "          CMSInstaller/Modulos/Auxiliares/firewall/iptables.v4 si se desea"
