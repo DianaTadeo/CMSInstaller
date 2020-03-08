@@ -110,7 +110,7 @@ $CENTOS_6_443
 			AllowOverride All
 			Require all granted
 	</Directory>
-	#<FilesMatch \"(?i)(\.ht|README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t?(ar|ar\.gz|[^css]gz)|z(.*|ip)|~)\$)\">
+	#<FilesMatch \"(?i)(^\.ht|README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t?(ar|ar\.gz|[^css]gz)|z(.*|ip)|~)\$)\">
 	#		Require all denied
 	#</FilesMatch>
 	ErrorLog /var/log/$WEB_SERVER/$2-error.log

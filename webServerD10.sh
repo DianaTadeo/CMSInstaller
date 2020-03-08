@@ -42,7 +42,7 @@ se te soliciten."
 		systemctl restart apache2
 		echo -e "\n\nEl sitio '$1' está listo"
 	else
-		echo "\n\nDeberás configurar el reCAPTCHA de forma manual (de lo contrario \
+		echo -e "\n\nDeberás configurar el reCAPTCHA de forma manual (de lo contrario \
 el formulario no funcionará):\
 https://www.google.com/u/2/recaptcha/admin/create colocando \
 la clave pública en la línea 'CLAVE_DE_SITIO_WEB_AQUI' del archivo \
@@ -98,7 +98,7 @@ bash ./Modulos/InstaladoresCMS/virtual_host_apache.sh "$SO" "$DOMAIN_NAME" "$PAT
 bash ./Modulos/Auxiliares/Web_Configuration_Sec.sh "$SO" "$WEB_SERVER" "$DOMAIN_NAME"
 rm -r ./Modulos/Log/
 
-sed -i "s#Header set Content-Security-Policy.*#Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com https://apis.google.com https://www.google.com/recaptcha/api.js https://www.gstatic.com/recaptcha/releases/61bII03-TtCmSUR7dw9MJF9q/recaptcha__en.js https://code.jquery.com/jquery-3.2.1.js;\"#" /etc/apache2/conf-enabled/security.conf
+sed -i "s#Header set Content-Security-Policy.*#Header set Content-Security-Policy \"script-src 'self' 'unsafe-inline' 'unsafe-eval' ajax.googleapis.com https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://code.jquery.com/jquery-3.2.1.js; frame-src https://www.google.com/recaptcha/\"#" /etc/apache2/conf-enabled/security.conf
 systemctl restart apache2
 
 cd ..

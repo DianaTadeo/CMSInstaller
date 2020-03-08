@@ -183,7 +183,7 @@ else
 		autoindex off;
 	}
 
-	#location ~* /.*((\.ht[^ml]|README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t(ar|ar\.gz|gz)|z(.*|ip)|~)\$)){
+	#location ~* /.*((^\.ht|README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t(ar|ar\.gz|gz)|z(.*|ip)|~)\$)){
 	#		deny all;
 	#		error_page 403 http://$2;
 	#}
