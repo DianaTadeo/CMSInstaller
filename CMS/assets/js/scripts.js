@@ -1,51 +1,5 @@
 
 jQuery(document).ready(function() {
-	
-	
-	function reloadstatistics(json_data){
-		json_data.cms['drupal']=1;
-		var val=JSON.stringify(json_data);
-		var xobj = new XMLHttpRequest();
-        xobj.overrideMimeType("application/json");
-		xobj.open("POST", 'files/estadisticas.json', true);
-		xobj.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		xobj.send(val);
-	}
-	
-
-    function loadJSON(callback) {   
-		var xobj = new XMLHttpRequest();
-        xobj.overrideMimeType("application/json");
-		xobj.open('GET', 'files/estadisticas.json', true); 
-		xobj.onreadystatechange = function () {
-			if (xobj.readyState == 4 && xobj.status == "200") {
-				callback(xobj.responseText);
-			}
-		};
-		xobj.send(null);  
-	}
- 
-	function makestatistics() {
-		var obj;
-		loadJSON(function(response) {
-			obj = JSON.parse(response);
-			document.getElementById("drupal").innerHTML = obj.cms.drupal;
-			document.getElementById("wordpress").innerHTML = obj.cms.wordpress;
-			document.getElementById("moodle").innerHTML = obj.cms.moodle;
-			document.getElementById("joomla").innerHTML = obj.cms.joomla;
-			document.getElementById("ojs").innerHTML = obj.cms.ojs;
-			document.getElementById("debian9").innerHTML = obj.os.debian9;
-			document.getElementById("debian10").innerHTML =	obj.os.debian10;
-			document.getElementById("centos6").innerHTML = obj.os.centos6;
-			document.getElementById("centos7").innerHTML = obj.os.centos7;
-			document.getElementById("mysql").innerHTML = obj.database.mysql;
-			document.getElementById("postgresql").innerHTML = obj.database.postgresql;
-			
-			reloadstatistics(obj);
-		});
-	}
-	makestatistics();
-
 
 		/*
 				Fullscreen background
@@ -61,8 +15,6 @@ jQuery(document).ready(function() {
 			$("#messagePW").hide();
 		}
 	});
-	
-	
 
 	// function to set CMS version
 	function cmsVersion(){
@@ -79,7 +31,7 @@ jQuery(document).ready(function() {
 			});
 		}
 		$('#CMS').change(cmsVersion);
-	cmsVersion();j
+	cmsVersion();
 
 	// function to set Database Manager version
 	function dbVersion(){
@@ -164,7 +116,7 @@ jQuery(document).ready(function() {
 		e.preventDefault();
 			$('.settings-form form input[type="text"], .settings-form form textarea').removeClass('input-error');
 			var postdata = $('.settings-form form').serialize();
-            
+
 			$.ajax({
 					type: 'POST',
 					url: 'assets/settings.php',

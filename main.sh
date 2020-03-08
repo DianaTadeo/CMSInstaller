@@ -41,9 +41,7 @@ jq_install_OS_detection(){
 	elif [ -e "/etc/centos-release" ]; then
 		yum update -y
 		yum install epel-release -y
-		[[ $(grep 'CentOS.*6.*' /etc/centos-release) ]] && sed -i "s/mirrorlist=https/mirrorlist=http/" /etc/yum.repos.d/epel.repo
 		yum install jq -y
-		[[ $(grep 'CentOS.*6.*' /etc/centos-release) ]] && sed -i "s/mirrorlist=http/mirrorlist=https/"
 # Para script final se habilita exit
 #	else
 #		exit

@@ -122,11 +122,6 @@ password_policy(){
 		while true; do
 			echo "Debes cambiar el password de '$ACCOUNT':"
 			if [[ "$ACCOUNT" == "postgres" ]]; then
-				if [[ $1 == 'CentOS 7' ]]; then
-					PG_HBA=$(find /var/lib/pgsql/ -name pg_hba.conf)
-					sed -i "s/\(^local.*\)md5/\1peer/" $PG_HBA
-					systemctl restart postgresql*
-				fi
 				su postgres -c "psql -c '\password'"
 			else
 				passwd $ACCOUNT
@@ -136,11 +131,7 @@ password_policy(){
 		chage -M 180 -m 7 -W 30 $ACCOUNT
 	done
 	log_errors $? "Expiración de contraseñas (usuarios existentes): cada 180 días (se adevertirá 30 días antes) y mínimo 7"
-	if [[ $1 == 'CentOS 7' ]] && [[ $(grep 'postgres' /etc/passwd) ]]; then
-		PG_HBA=$(find /var/lib/pgsql/ -name pg_hba.conf)
-		sed -i "s/\(^local.*\)peer/\1md5/" $PG_HBA
-		systemctl restart postgresql*
-	fi
+
 }
 
 ## @fn users_and_privileges()

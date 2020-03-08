@@ -93,7 +93,7 @@ install_PostgreSQL(){
 		$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd"
 		[[ $7 == 'CentOS 6' ]] && cmd="service postgresql-$6 restart"
-		[[ $7 == 'CentOS 7' ]] && cmd="systemctl restart postgresql-$6"
+		[[ $7 == 'CentOS 7' ]] && cmd="systemctl sretart postgresql-$6"
 		$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd"
 
@@ -112,14 +112,13 @@ install_PostgreSQL(){
 		rm /var/lib/pgsql/$6/data/pg_hba.conf
 		mv /var/lib/pgsql/$6/data/pg_hba.conf-aux /var/lib/pgsql/$6/data/pg_hba.conf
 		sed -i "s/\(^host.*\)ident/\1md5/" /var/lib/pgsql/$6/data/pg_hba.conf
-		[[ $7 == 'CentOS 7' ]] && sed -i "s/\(^local.*\)peer/\1md5/" /var/lib/pgsql/$6/data/pg_hba.conf
 		chown postgres:postgres /var/lib/pgsql/$6/data/pg_hba.conf
 					[[ $7 == 'CentOS 6' ]] && cmd=""
 					[[ $7 == 'CentOS 7' ]] && cmd="systemctl daemon-reload"
 					$cmd
 		log_errors $? "Configuracion de PostgreSQL: $cmd [Revise archivo pg_hba.conf]"
-					[[ $7 == 'CentOS 6' ]] && cmd="service postgresql-$6 restart"
-					[[ $7 == 'CentOS 7' ]] && cmd="systemctl restart postgresql-$6"
+					[[ $7 == 'CentOS 6' ]] && cmd="service postgresql-$6 start"
+					[[ $7 == 'CentOS 7' ]] && cmd="systemctl start postgresql-$6"
 					$cmd
 	fi
 }
