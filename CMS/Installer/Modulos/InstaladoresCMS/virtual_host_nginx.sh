@@ -183,7 +183,7 @@ else
 		autoindex off;
 	}
 
-	#location ~* /.*((ht|README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t(ar|ar\.gz|gz)|z(.*|ip)|~)\$)){
+	#location ~* /.*((^\.ht|README|robots|INSTALL|UP(D|GR)A(T|D)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE)(.*)\$|(.*config|version|info|xmlrpc)(\.php)\$|(.*\.(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t(ar|ar\.gz|[^css]gz)|z(.*|ip)|~)\$)){
 	#		deny all;
 	#		error_page 403 http://$2;
 	#}
@@ -227,7 +227,6 @@ server {
 	access_log /var/log/nginx/$2-access.log;
 	error_log /var/log/nginx/$2-error.log;
 
-	error_page 301 =200 https://$2/;
 	error_page 400 =200 https://$2/;
 	error_page 401 =200 https://$2/;
 	error_page 403 =200 https://$2/;
@@ -239,7 +238,7 @@ server {
 	error_page 502 =200 https://$2/;
 	error_page 503 =200 https://$2/;
 	error_page 504 =200 https://$2/;
-	
+
 }" |  tee $SISTEMA
 
 echo "ln -s $3/$2 $ROOT_PATH/$2"

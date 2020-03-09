@@ -205,8 +205,8 @@ else  # Nginx
 	log_errors $? "Redireccion de codigos de estado al sitio principal"
 
 	# Se aplica a todos
-	[[ $SO =~ Debian.* ]] && sed -i '/^[^#]*server_name\s\+_;/a location ~* \/.*\(\(^\\.ht|README|robots|INSTALL|UP\(D|GR\)A\(T|D\)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE\)\(.*\)$|\(.*config|version|info|xmlrpc\)\(\\.php)$|\(.*\\.\(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t\(ar|ar\\.gz|gz\)|z\(.*|ip\)|~\)$\)\){\n\tdeny all;\n\terror_page 403 \/;\n}' /etc/nginx/sites-available/default && log_errors $? "Se restringe el acceso a los archivos publicos"
-	[[ $SO =~ CentOS.* ]] && sed -i '/^[^#]*server_name\s\+_;/a location ~* \/.*\(\(^\\.ht|README|robots|INSTALL|UP\(D|GR\)A\(T|D\)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE\)\(.*\)$|\(.*config|version|info|xmlrpc\)\(\\.php)$|\(.*\\.\(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t\(ar|ar\\.gz|gz\)|z\(.*|ip\)|~\)$\)\){\n\tdeny all;\n\terror_page 403 \/;\n}' $WEB_SERVER_CONF && log_errors $? "Se restringe el acceso a los archivos publicos"
+	[[ $SO =~ Debian.* ]] && sed -i '/^[^#]*server_name\s\+_;/a location ~* \/.*\(\(^\\.ht|README|robots|INSTALL|UP\(D|GR\)A\(T|D\)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE\)\(.*\)$|\(.*config|version|info|xmlrpc\)\(\\.php)$|\(.*\\.\(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t\(ar|ar\\.gz|[^css]gz\)|z\(.*|ip\)|~\)$\)\){\n\tdeny all;\n\terror_page 403 \/;\n}' /etc/nginx/sites-available/default && log_errors $? "Se restringe el acceso a los archivos publicos"
+	[[ $SO =~ CentOS.* ]] && sed -i '/^[^#]*server_name\s\+_;/a location ~* \/.*\(\(^\\.ht|README|robots|INSTALL|UP\(D|GR\)A\(T|D\)E|CHANGELOG|LICENSE|COPYING|CONTRIBUTING|TRADEMARK|EXAMPLE|PULL_REQUEST_TEMPLATE\)\(.*\)$|\(.*config|version|info|xmlrpc\)\(\\.php)$|\(.*\\.\(bak|conf|dist|fla|in[ci]|log|orig|sh|sql|t\(ar|ar\\.gz|[^css]gz\)|z\(.*|ip\)|~\)$\)\){\n\tdeny all;\n\terror_page 403 \/;\n}' $WEB_SERVER_CONF && log_errors $? "Se restringe el acceso a los archivos publicos"
 
 	if [[ "$SO" =~ Debian.* ]]; then
 		systemctl restart nginx

@@ -86,6 +86,11 @@ install_MySQL(){
 		log_errors $? "Creación de la base de datos '$3' en MySQL, servidor '$5'"
 		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "FLUSH PRIVILEGES;"
 		log_errors $? "Privilegios otorgados al usuario '$4' en MySQL, servidor '$5'"
+
+		# Para moodle
+		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "SET GLOBAL innodb_file_format=Barracuda;"
+		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "SET GLOBAL innodb_file_per_table=ON;"
+		mysql -h $5 -P $6 -u 'root' --password=$rootPass -e "SET GLOBAL innodb_large_prefix=ON;"
 	fi
 }
 

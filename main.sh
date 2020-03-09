@@ -41,7 +41,9 @@ jq_install_OS_detection(){
 	elif [ -e "/etc/centos-release" ]; then
 		yum update -y
 		yum install epel-release -y
+		[[ $(grep 'CentOS.*6.*' /etc/centos-release) ]] && sed -i "s/mirrorlist=https/mirrorlist=http/" /etc/yum.repos.d/epel.repo
 		yum install jq -y
+		[[ $(grep 'CentOS.*6.*' /etc/centos-release) ]] && sed -i "s/mirrorlist=http/mirrorlist=https/" /etc/yum.repos.d/epel.repo
 # Para script final se habilita exit
 #	else
 #		exit
@@ -201,6 +203,21 @@ CMS(){
 #																								#													#
 #===============================================================================================#
 
+if [ -z $(which sudo) ]; then
+	echo "Para ejecutar el script primero se instalará sudo:"
+	if [ `cat /etc/issue | grep -E 'Debian'| wc -l` == '1' ]; then
+		apt install sudo -y
+	elif [ -e "/etc/centos-release" ]; then
+		yum install sudo -y
+	fi
+	echo -e "Ejecuta nuevamente el script.\nEjecución: sudo ./main.sh"
+	exit 1
+fi
+
+if [ $(id -u) -ne 0 ] && [ -z "$SUDO_USER" ];then
+	echo "Ejecución: sudo ./main.sh"
+	exit 1
+fi
 # Se instala jq para parsear JSON con las opciones elegidas en Debian o CentOS
 jq_install_OS_detection
 
@@ -210,25 +227,6 @@ JSON_OPTIONS='*.json'
 # Se asginan los valores del archivo JSON
 
 SO=`jq '.SO' $JSON_OPTIONS | cut -f2 -d'"'`
-
-if [ -z $(which sudo) ]; then
-        echo "Para ejecutar el script primero se instalará sudo:"
-        case $SO in
-                'Debian 9' | 'Debian 10')
-                        apt install sudo -y
-                        ;;
-                'CentOS 6' | 'CentOS 7')
-                        yum install sudo -y
-                        ;;
-        esac
-        echo -e "Ejecuta nuevamente el script.\nEjecución: sudo ./main.sh"
-        exit 1
-fi
-
-if [ $(id -u) -ne 0 ] && [ -z "$SUDO_USER" ];then
-        echo "Ejecución: sudo ./main.sh"
-        exit 1
-fi
 
 CMS=`jq '.CMS' $JSON_OPTIONS | cut -f2 -d'"'`
 CMS_VERSION=`jq '.CMSVersion' $JSON_OPTIONS | cut -f2 -d'"'`
