@@ -58,7 +58,7 @@ OS_dependencies(){
 	case $1 in
 		'Debian 9' | 'Debian 10')
 			echo "Deb9"
-			apt install -y sudo vim curl wget expect sendmail
+			apt install -y sudo vim curl wget expect sendmail lsof
 			;;
 		'CentOS 6' | 'CentOS 7')
 			echo "Cent6"
