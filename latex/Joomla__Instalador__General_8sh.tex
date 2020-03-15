@@ -1,42 +1,40 @@
-\hypertarget{Joomla__Instalador__General_8sh}{}\section{Modulos/\+Instaladores\+C\+M\+S/\+Joomla\+\_\+\+Instalador\+\_\+\+General.sh File Reference}
+\hypertarget{Joomla__Instalador__General_8sh}{}\section{Referencia del Archivo Modulos/\+Instaladores\+C\+M\+S/\+Joomla\+\_\+\+Instalador\+\_\+\+General.sh}
 \label{Joomla__Instalador__General_8sh}\index{Modulos/\+Instaladores\+C\+M\+S/\+Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Modulos/\+Instaladores\+C\+M\+S/\+Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}}
 
 
 Instalador de Joomla para Cent\+OS 6, Cent\+OS 7, Debian 9 y Debian 10.  
 
 
-\subsection*{Functions}
+\subsection*{Funciones}
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\Hypertarget{Joomla__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{Joomla__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
 {\bfseries log\+\_\+errors} (\$1, \$2)
 \item 
-\hyperlink{Joomla__Instalador__General_8sh_a867cb91b69b68d903ea8d2ebcff6ea36}{install\+\_\+dep} (\$1, \$2, \$3, \$4, \$5)
+\hyperlink{Joomla__Instalador__General_8sh_a0def5b6b697b8869c4772673d56a5a4a}{install\+\_\+dep} (\$1, \$2, \$3, \$4, \$5, \$6)
 \begin{DoxyCompactList}\small\item\em Funcion que realiza la instalacion de las dependencias de php para Joomla. \end{DoxyCompactList}\item 
-\hyperlink{Joomla__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}{virtual\+\_\+host\+\_\+apache} (\$1, \$2, \$3)
-\begin{DoxyCompactList}\small\item\em Funcion que realiza la configuracion del sitio, la configuracion con https. \end{DoxyCompactList}\item 
 \hyperlink{Joomla__Instalador__General_8sh_a3a17cfb1d7aa0bd1433900e4d4141cdb}{modulos\+\_\+joomla} (\$1, \$2)
 \begin{DoxyCompactList}\small\item\em Funcion que instala y habilita modulos para captcha y de seguridad. \end{DoxyCompactList}\item 
 \hyperlink{Joomla__Instalador__General_8sh_a9cbb91389a71b89c6cab0848d688e423}{install\+\_\+composer} ()
 \begin{DoxyCompactList}\small\item\em Funcion que realiza la instalacion de composer. \end{DoxyCompactList}\item 
-\hyperlink{Joomla__Instalador__General_8sh_a43fed5b5e461aa386546fdcc766aa29e}{install\+\_\+joomla} (\$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$10, \$11, \$12)
+\hyperlink{Joomla__Instalador__General_8sh_a3a4814ecab9a481f63cd780e0099d050}{install\+\_\+joomla} (\$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$10, \$11, \$12, \$13, \$14)
 \begin{DoxyCompactList}\small\item\em Funcion que realiza la instalacion de Joomla. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
-\subsection{Detailed Description}
+\subsection{Descripción detallada}
 Instalador de Joomla para Cent\+OS 6, Cent\+OS 7, Debian 9 y Debian 10. 
 
-\begin{DoxyAuthor}{Author}
+\begin{DoxyAuthor}{Autor}
 Rafael Alejandro Vallejo Fernandez 
 
 Diana G. Tadeo Guillen 
 \end{DoxyAuthor}
-\begin{DoxyVersion}{Version}
+\begin{DoxyVersion}{Versión}
 1.\+0 
 \end{DoxyVersion}
 
 
-\subsection{Function Documentation}
+\subsection{Documentación de las funciones}
 \mbox{\Hypertarget{Joomla__Instalador__General_8sh_a9cbb91389a71b89c6cab0848d688e423}\label{Joomla__Instalador__General_8sh_a9cbb91389a71b89c6cab0848d688e423}} 
 \index{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}!install\+\_\+composer@{install\+\_\+composer}}
 \index{install\+\_\+composer@{install\+\_\+composer}!Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}}
@@ -47,20 +45,26 @@ Diana G. Tadeo Guillen
 
 Funcion que realiza la instalacion de composer. 
 
-Composer es necesario para poder instalar Joomla de forma remota (Por linea de comando) \mbox{\Hypertarget{Joomla__Instalador__General_8sh_a867cb91b69b68d903ea8d2ebcff6ea36}\label{Joomla__Instalador__General_8sh_a867cb91b69b68d903ea8d2ebcff6ea36}} 
+Composer es necesario para poder instalar Joomla de forma remota (Por linea de comando) \mbox{\Hypertarget{Joomla__Instalador__General_8sh_a0def5b6b697b8869c4772673d56a5a4a}\label{Joomla__Instalador__General_8sh_a0def5b6b697b8869c4772673d56a5a4a}} 
 \index{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}!install\+\_\+dep@{install\+\_\+dep}}
 \index{install\+\_\+dep@{install\+\_\+dep}!Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}}
 \subsubsection{\texorpdfstring{install\+\_\+dep()}{install\_dep()}}
-{\footnotesize\ttfamily install\+\_\+dep (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5 }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily install\+\_\+dep (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6 }\end{DoxyParamCaption})}
 
 
 
 Funcion que realiza la instalacion de las dependencias de php para Joomla. 
 
+Funcion que realiza la instalacion de las dependencias de php para O\+JS.
+
 Funcion que realiza la instalacion de las dependencias de php para Drupal.
 
+Funcion que realiza la instalacion de las dependencias de php para Wordpress.
 
-\begin{DoxyParams}{Parameters}
+Funcion que realiza la instalacion de las dependencias de php para Moodle.
+
+
+\begin{DoxyParams}{Parámetros}
 {\em \$1} & El sistema operativo donde se desea instalar Joomla \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
 \hline
 {\em \$2} & Manejador de base de datos para la instalaci\mbox{[}on de Joomla \\
@@ -69,7 +73,33 @@ Funcion que realiza la instalacion de las dependencias de php para Drupal.
 \hline
 {\em \$4} & Nombre de dominio del sitio \\
 \hline
-{\em \$5} & Ruta donde se instalara Joomla\\
+{\em \$5} & Ruta donde se instalara Joomla \\
+\hline
+{\em \$6} & Compatibilidad con I\+Pv6\\
+\hline
+{\em \$1} & El sistema operativo donde se desea instalar Moodle \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
+\hline
+{\em \$2} & Manejador de base de datos para la instalaci\mbox{[}on de Moodle \\
+\hline
+{\em \$3} & Servidor web con el que se realiza la instalacion \+: \textquotesingle{}Apache\textquotesingle{} o \textquotesingle{}Nginx\textquotesingle{} \\
+\hline
+{\em \$4} & Nombre de dominio del sitio \\
+\hline
+{\em \$5} & Ruta donde se instalara Moodle \\
+\hline
+{\em \$6} & Compatibilidad con I\+Pv6\\
+\hline
+{\em \$1} & El sistema operativo donde se desea instalar Wordpress \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
+\hline
+{\em \$2} & Manejador de base de datos para la instalacion de Wordpress \\
+\hline
+{\em \$3} & Servidor web con el que se realiza la instalacion \+: \textquotesingle{}Apache\textquotesingle{} o \textquotesingle{}Nginx\textquotesingle{} \\
+\hline
+{\em \$4} & Nombre de dominio del sitio \\
+\hline
+{\em \$5} & Ruta donde se instalara Word\+Press \\
+\hline
+{\em \$6} & Compatibilidad con I\+Pv6\\
 \hline
 {\em \$1} & El sistema operativo donde se desea instalar Drupal \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
 \hline
@@ -81,19 +111,33 @@ Funcion que realiza la instalacion de las dependencias de php para Drupal.
 \hline
 {\em \$5} & Ruta donde se instalara Drupal \\
 \hline
+{\em \$6} & Compatibilidad con I\+Pv6\\
+\hline
+{\em \$1} & El sistema operativo donde se desea instalar Drupal \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
+\hline
+{\em \$2} & Manejador de base de datos para la instalacion de O\+JS \\
+\hline
+{\em \$3} & Servidor web con el que se realiza la instalacion \+: \textquotesingle{}Apache\textquotesingle{} o \textquotesingle{}Nginx\textquotesingle{} \\
+\hline
+{\em \$4} & Nombre de dominio del sitio \\
+\hline
+{\em \$5} & Ruta donde se instalara O\+JS \\
+\hline
+{\em \$6} & Compatibilidad con I\+Pv6 \\
+\hline
 \end{DoxyParams}
-\mbox{\Hypertarget{Joomla__Instalador__General_8sh_a43fed5b5e461aa386546fdcc766aa29e}\label{Joomla__Instalador__General_8sh_a43fed5b5e461aa386546fdcc766aa29e}} 
+\mbox{\Hypertarget{Joomla__Instalador__General_8sh_a3a4814ecab9a481f63cd780e0099d050}\label{Joomla__Instalador__General_8sh_a3a4814ecab9a481f63cd780e0099d050}} 
 \index{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}!install\+\_\+joomla@{install\+\_\+joomla}}
 \index{install\+\_\+joomla@{install\+\_\+joomla}!Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}}
 \subsubsection{\texorpdfstring{install\+\_\+joomla()}{install\_joomla()}}
-{\footnotesize\ttfamily install\+\_\+joomla (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6,  }\item[{}]{\$7,  }\item[{}]{\$8,  }\item[{}]{\$9,  }\item[{}]{\$10,  }\item[{}]{\$11,  }\item[{}]{\$12 }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily install\+\_\+joomla (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6,  }\item[{}]{\$7,  }\item[{}]{\$8,  }\item[{}]{\$9,  }\item[{}]{\$10,  }\item[{}]{\$11,  }\item[{}]{\$12,  }\item[{}]{\$13,  }\item[{}]{\$14 }\end{DoxyParamCaption})}
 
 
 
 Funcion que realiza la instalacion de Joomla. 
 
 
-\begin{DoxyParams}{Parameters}
+\begin{DoxyParams}{Parámetros}
 {\em \$1} & Nombre de la base de para Joomla \\
 \hline
 {\em \$2} & Usuario de la base de datos para Joomla \\
@@ -118,6 +162,10 @@ Funcion que realiza la instalacion de Joomla.
 \hline
 {\em \$12} & El sistema operativo donde se desea instalar Joomla \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
 \hline
+{\em \$13} & Nombre de usuario con el que se ejecuta el servidor web \\
+\hline
+{\em \$14} & Versión del manejador de base de datos \\
+\hline
 \end{DoxyParams}
 \mbox{\Hypertarget{Joomla__Instalador__General_8sh_a3a17cfb1d7aa0bd1433900e4d4141cdb}\label{Joomla__Instalador__General_8sh_a3a17cfb1d7aa0bd1433900e4d4141cdb}} 
 \index{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}!modulos\+\_\+joomla@{modulos\+\_\+joomla}}
@@ -130,36 +178,9 @@ Funcion que realiza la instalacion de Joomla.
 Funcion que instala y habilita modulos para captcha y de seguridad. 
 
 
-\begin{DoxyParams}{Parameters}
+\begin{DoxyParams}{Parámetros}
 {\em \$1} & Ruta del directorio raiz donde se instalara Joomla \\
 \hline
 {\em \$2} & Nombre de dominio del sitio \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{Joomla__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}\label{Joomla__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}} 
-\index{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}!virtual\+\_\+host\+\_\+apache@{virtual\+\_\+host\+\_\+apache}}
-\index{virtual\+\_\+host\+\_\+apache@{virtual\+\_\+host\+\_\+apache}!Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh@{Joomla\+\_\+\+Instalador\+\_\+\+General.\+sh}}
-\subsubsection{\texorpdfstring{virtual\+\_\+host\+\_\+apache()}{virtual\_host\_apache()}}
-{\footnotesize\ttfamily virtual\+\_\+host\+\_\+apache (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3 }\end{DoxyParamCaption})}
-
-
-
-Funcion que realiza la configuracion del sitio, la configuracion con https. 
-
-Funcion que realiza la configuracion del sitio, la configuracion con https y se permite .htaccess para Drupal.
-
-
-\begin{DoxyParams}{Parameters}
-{\em \$1} & El sistema operativo donde se esta instalando Joomla \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
-\hline
-{\em \$2} & Nombre de dominio del sitio \\
-\hline
-{\em \$3} & Ruta donde se instalara Joomla\\
-\hline
-{\em \$1} & El sistema operativo donde se esta instalando Drupal \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
-\hline
-{\em \$2} & Nombre de dominio del sitio \\
-\hline
-{\em \$3} & Ruta donde se instalara Drupal \\
 \hline
 \end{DoxyParams}

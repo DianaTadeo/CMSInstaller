@@ -1,0 +1,90 @@
+\hypertarget{Apache__Nginx__Debian_8sh}{}\section{Referencia del Archivo Modulos/\+Auxiliares/\+Apache\+\_\+\+Nginx\+\_\+\+Debian.sh}
+\label{Apache__Nginx__Debian_8sh}\index{Modulos/\+Auxiliares/\+Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh@{Modulos/\+Auxiliares/\+Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh}}
+
+
+Instalador y configurador de Apache o Nginx en Debian 9 y 10.  
+
+
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{Apache__Nginx__Debian_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{Apache__Nginx__Debian_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
+{\bfseries log\+\_\+errors} (\$1, \$2)
+\item 
+\hyperlink{Apache__Nginx__Debian_8sh_a20b3bf0e3172e66928d551f5ab8cfac4}{install\+\_\+nginx} (\$1)
+\begin{DoxyCompactList}\small\item\em Instalador de Nginx para Debian. \end{DoxyCompactList}\item 
+\hyperlink{Apache__Nginx__Debian_8sh_a919a039d139e2c48f79368fc8a909d0d}{install\+\_\+nginx\+\_\+apt} (\$1, \$1)
+\begin{DoxyCompactList}\small\item\em Instalador de Nginx para Debian. \end{DoxyCompactList}\item 
+\hyperlink{Apache__Nginx__Debian_8sh_afafab8b1f22260753bb8a28972ad9fa5}{install\+\_\+apache} (\$1, \$2)
+\begin{DoxyCompactList}\small\item\em Instalador de Apache para Debian. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{Apache__Nginx__Debian_8sh_a9b9e55b032e919096f0f651241d55f53}\label{Apache__Nginx__Debian_8sh_a9b9e55b032e919096f0f651241d55f53}} 
+\hyperlink{Apache__Nginx__Debian_8sh_a9b9e55b032e919096f0f651241d55f53}{install\+\_\+apache\+\_\+\+W\+AF} ()
+\begin{DoxyCompactList}\small\item\em Instalador de W\+AF con Mod\+Security para apache. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{Apache__Nginx__Debian_8sh_a23436949ee6add4c036008836b5dfdb0}\label{Apache__Nginx__Debian_8sh_a23436949ee6add4c036008836b5dfdb0}} 
+{\bfseries install\+\_\+nginx\+\_\+\+W\+A\+F\+\_\+etc} (\$1, \$2)
+\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+Instalador y configurador de Apache o Nginx en Debian 9 y 10. 
+
+\begin{DoxyAuthor}{Autor}
+Rafael Alejandro Vallejo Fernandez 
+
+Diana G. Tadeo Guillen 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Versión}
+1.\+0
+\end{DoxyVersion}
+Este archivo permite instalar y configurar, ya sea Apache, o Nginx con W\+AF embebido 
+
+\subsection{Documentación de las funciones}
+\mbox{\Hypertarget{Apache__Nginx__Debian_8sh_afafab8b1f22260753bb8a28972ad9fa5}\label{Apache__Nginx__Debian_8sh_afafab8b1f22260753bb8a28972ad9fa5}} 
+\index{Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh}!install\+\_\+apache@{install\+\_\+apache}}
+\index{install\+\_\+apache@{install\+\_\+apache}!Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh}}
+\subsubsection{\texorpdfstring{install\+\_\+apache()}{install\_apache()}}
+{\footnotesize\ttfamily install\+\_\+apache (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2 }\end{DoxyParamCaption})}
+
+
+
+Instalador de Apache para Debian. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & Version Debian \\
+\hline
+{\em \$2} & Version Apache \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{Apache__Nginx__Debian_8sh_a20b3bf0e3172e66928d551f5ab8cfac4}\label{Apache__Nginx__Debian_8sh_a20b3bf0e3172e66928d551f5ab8cfac4}} 
+\index{Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh}!install\+\_\+nginx@{install\+\_\+nginx}}
+\index{install\+\_\+nginx@{install\+\_\+nginx}!Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh}}
+\subsubsection{\texorpdfstring{install\+\_\+nginx()}{install\_nginx()}}
+{\footnotesize\ttfamily install\+\_\+nginx (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Instalador de Nginx para Debian. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & version \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{Apache__Nginx__Debian_8sh_a919a039d139e2c48f79368fc8a909d0d}\label{Apache__Nginx__Debian_8sh_a919a039d139e2c48f79368fc8a909d0d}} 
+\index{Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh}!install\+\_\+nginx\+\_\+apt@{install\+\_\+nginx\+\_\+apt}}
+\index{install\+\_\+nginx\+\_\+apt@{install\+\_\+nginx\+\_\+apt}!Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Debian.\+sh}}
+\subsubsection{\texorpdfstring{install\+\_\+nginx\+\_\+apt()}{install\_nginx\_apt()}}
+{\footnotesize\ttfamily install\+\_\+nginx\+\_\+apt (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Instalador de Nginx para Debian. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & Version de Debian \\
+\hline
+{\em \$1} & Version de Nginx \\
+\hline
+\end{DoxyParams}

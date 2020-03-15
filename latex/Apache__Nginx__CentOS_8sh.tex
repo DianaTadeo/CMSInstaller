@@ -1,0 +1,94 @@
+\hypertarget{Apache__Nginx__CentOS_8sh}{}\section{Referencia del Archivo Modulos/\+Auxiliares/\+Apache\+\_\+\+Nginx\+\_\+\+Cent\+OS.sh}
+\label{Apache__Nginx__CentOS_8sh}\index{Modulos/\+Auxiliares/\+Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh@{Modulos/\+Auxiliares/\+Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh}}
+
+
+Instalador y configurador de Apache o Nginx en Cent\+OS 6 y Cent\+OS 7.  
+
+
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{Apache__Nginx__CentOS_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{Apache__Nginx__CentOS_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
+{\bfseries log\+\_\+errors} (\$1, \$2)
+\item 
+\mbox{\Hypertarget{Apache__Nginx__CentOS_8sh_a01b71b7f26483d8d7d7a77c41884a3c3}\label{Apache__Nginx__CentOS_8sh_a01b71b7f26483d8d7d7a77c41884a3c3}} 
+\hyperlink{Apache__Nginx__CentOS_8sh_a01b71b7f26483d8d7d7a77c41884a3c3}{install\+\_\+apache} ()
+\begin{DoxyCompactList}\small\item\em Instalador de apache para Cent\+OS. \end{DoxyCompactList}\item 
+\hyperlink{Apache__Nginx__CentOS_8sh_a7a8a87a6c379ba1d79a4ad2c2608ed86}{install\+\_\+nginx} (\$1, \$2)
+\begin{DoxyCompactList}\small\item\em Instalador de Nginx para Cent\+OS. \end{DoxyCompactList}\item 
+\hyperlink{Apache__Nginx__CentOS_8sh_a7a45cf4f454e9ef11157535c09cbddd9}{install\+\_\+apache\+\_\+\+W\+AF} (\$1)
+\begin{DoxyCompactList}\small\item\em Instalador de W\+AF con Mod\+Security para apache. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{Apache__Nginx__CentOS_8sh_a552037508bacb63920867eb5812186cd}\label{Apache__Nginx__CentOS_8sh_a552037508bacb63920867eb5812186cd}} 
+\hyperlink{Apache__Nginx__CentOS_8sh_a552037508bacb63920867eb5812186cd}{install\+\_\+nginx\+\_\+\+W\+AF} ()
+\begin{DoxyCompactList}\small\item\em Instalador de W\+AF con Mod\+Security para Nginx. \end{DoxyCompactList}\item 
+\hyperlink{Apache__Nginx__CentOS_8sh_a23436949ee6add4c036008836b5dfdb0}{install\+\_\+nginx\+\_\+\+W\+A\+F\+\_\+etc} (\$1, \$2)
+\begin{DoxyCompactList}\small\item\em Instalador de W\+AF con Mod\+Security para Nginx. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+Instalador y configurador de Apache o Nginx en Cent\+OS 6 y Cent\+OS 7. 
+
+\begin{DoxyAuthor}{Autor}
+Rafael Alejandro Vallejo Fernandez 
+
+Diana G. Tadeo Guillen 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Versión}
+1.\+0
+\end{DoxyVersion}
+Este archivo permite instalar y configurar, ya sea Apache, o Nginx con W\+AF embebido 
+
+\subsection{Documentación de las funciones}
+\mbox{\Hypertarget{Apache__Nginx__CentOS_8sh_a7a45cf4f454e9ef11157535c09cbddd9}\label{Apache__Nginx__CentOS_8sh_a7a45cf4f454e9ef11157535c09cbddd9}} 
+\index{Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh}!install\+\_\+apache\+\_\+\+W\+AF@{install\+\_\+apache\+\_\+\+W\+AF}}
+\index{install\+\_\+apache\+\_\+\+W\+AF@{install\+\_\+apache\+\_\+\+W\+AF}!Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh}}
+\subsubsection{\texorpdfstring{install\+\_\+apache\+\_\+\+W\+A\+F()}{install\_apache\_WAF()}}
+{\footnotesize\ttfamily install\+\_\+apache\+\_\+\+W\+AF (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Instalador de W\+AF con Mod\+Security para apache. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & Version de Cent\+OS \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{Apache__Nginx__CentOS_8sh_a7a8a87a6c379ba1d79a4ad2c2608ed86}\label{Apache__Nginx__CentOS_8sh_a7a8a87a6c379ba1d79a4ad2c2608ed86}} 
+\index{Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh}!install\+\_\+nginx@{install\+\_\+nginx}}
+\index{install\+\_\+nginx@{install\+\_\+nginx}!Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh}}
+\subsubsection{\texorpdfstring{install\+\_\+nginx()}{install\_nginx()}}
+{\footnotesize\ttfamily install\+\_\+nginx (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2 }\end{DoxyParamCaption})}
+
+
+
+Instalador de Nginx para Cent\+OS. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & version de Cent\+OS \\
+\hline
+{\em \$2} & version de Nginx \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{Apache__Nginx__CentOS_8sh_a23436949ee6add4c036008836b5dfdb0}\label{Apache__Nginx__CentOS_8sh_a23436949ee6add4c036008836b5dfdb0}} 
+\index{Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh}!install\+\_\+nginx\+\_\+\+W\+A\+F\+\_\+etc@{install\+\_\+nginx\+\_\+\+W\+A\+F\+\_\+etc}}
+\index{install\+\_\+nginx\+\_\+\+W\+A\+F\+\_\+etc@{install\+\_\+nginx\+\_\+\+W\+A\+F\+\_\+etc}!Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh@{Apache\+\_\+\+Nginx\+\_\+\+Cent\+O\+S.\+sh}}
+\subsubsection{\texorpdfstring{install\+\_\+nginx\+\_\+\+W\+A\+F\+\_\+etc()}{install\_nginx\_WAF\_etc()}}
+{\footnotesize\ttfamily install\+\_\+nginx\+\_\+\+W\+A\+F\+\_\+etc (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2 }\end{DoxyParamCaption})}
+
+
+
+Instalador de W\+AF con Mod\+Security para Nginx. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & version de Cent\+OS \\
+\hline
+{\em \$2} & version de Nginx\\
+\hline
+{\em \$1} & version de Debian \\
+\hline
+{\em \$2} & version de Nginx \\
+\hline
+\end{DoxyParams}

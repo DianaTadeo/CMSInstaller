@@ -1,71 +1,72 @@
-\hypertarget{WP__Instalador__General_8sh}{}\section{Modulos/\+Instaladores\+C\+M\+S/\+W\+P\+\_\+\+Instalador\+\_\+\+General.sh File Reference}
+\hypertarget{WP__Instalador__General_8sh}{}\section{Referencia del Archivo Modulos/\+Instaladores\+C\+M\+S/\+W\+P\+\_\+\+Instalador\+\_\+\+General.sh}
 \label{WP__Instalador__General_8sh}\index{Modulos/\+Instaladores\+C\+M\+S/\+W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh@{Modulos/\+Instaladores\+C\+M\+S/\+W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh}}
 
 
 Instalador de Wordpress para Cent\+OS 6, Cent\+OS 7, Debian 9 y Debian 10.  
 
 
-\subsection*{Functions}
+\subsection*{Funciones}
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\Hypertarget{WP__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{WP__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
 {\bfseries log\+\_\+errors} (\$1, \$2)
 \item 
-\mbox{\Hypertarget{WP__Instalador__General_8sh_a7aff02becf631a8cd3f06f1fc2688670}\label{WP__Instalador__General_8sh_a7aff02becf631a8cd3f06f1fc2688670}} 
-{\bfseries install\+\_\+dep} (\$1, \$2)
+\mbox{\Hypertarget{WP__Instalador__General_8sh_a0def5b6b697b8869c4772673d56a5a4a}\label{WP__Instalador__General_8sh_a0def5b6b697b8869c4772673d56a5a4a}} 
+{\bfseries install\+\_\+dep} (\$1, \$2, \$3, \$4, \$5, \$6)
 \item 
-\mbox{\Hypertarget{WP__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}\label{WP__Instalador__General_8sh_a2ea632f8e04de9564521b12cf10c47f4}} 
-{\bfseries virtual\+\_\+host\+\_\+apache} (\$1, \$2, \$3)
-\item 
-\hyperlink{WP__Instalador__General_8sh_ab8bd4095cd5a5c54fa9256d3064f6d0f}{install\+\_\+\+WP} (\$1, \$2, \$3, \$4, \$5, \$6, \$7)
+\hyperlink{WP__Instalador__General_8sh_abb84488e94ed8fa0eff09a789a9e42ca}{install\+\_\+\+WP} (\$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$10)
 \begin{DoxyCompactList}\small\item\em Funcion que realiza la instalacion de Wordpress. \end{DoxyCompactList}\item 
-\hyperlink{WP__Instalador__General_8sh_add91f549a7f408a6c51455ab9982ef5e}{configure\+\_\+\+WP} (\$1, \$2)
+\hyperlink{WP__Instalador__General_8sh_abd32b653a68475c7994f69226c32d530}{configure\+\_\+\+WP} (\$1, \$2, \$3, \$4)
 \begin{DoxyCompactList}\small\item\em Funcion que realiza la configuracion de Wordpress. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
-\subsection{Detailed Description}
+\subsection{Descripción detallada}
 Instalador de Wordpress para Cent\+OS 6, Cent\+OS 7, Debian 9 y Debian 10. 
 
-\begin{DoxyAuthor}{Author}
+\begin{DoxyAuthor}{Autor}
 Rafael Alejandro Vallejo Fernandez 
 
 Diana G. Tadeo Guillen 
 \end{DoxyAuthor}
-\begin{DoxyVersion}{Version}
+\begin{DoxyVersion}{Versión}
 1.\+0 
 \end{DoxyVersion}
 
 
-\subsection{Function Documentation}
-\mbox{\Hypertarget{WP__Instalador__General_8sh_add91f549a7f408a6c51455ab9982ef5e}\label{WP__Instalador__General_8sh_add91f549a7f408a6c51455ab9982ef5e}} 
+\subsection{Documentación de las funciones}
+\mbox{\Hypertarget{WP__Instalador__General_8sh_abd32b653a68475c7994f69226c32d530}\label{WP__Instalador__General_8sh_abd32b653a68475c7994f69226c32d530}} 
 \index{W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh@{W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh}!configure\+\_\+\+WP@{configure\+\_\+\+WP}}
 \index{configure\+\_\+\+WP@{configure\+\_\+\+WP}!W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh@{W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh}}
 \subsubsection{\texorpdfstring{configure\+\_\+\+W\+P()}{configure\_WP()}}
-{\footnotesize\ttfamily configure\+\_\+\+WP (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2 }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily configure\+\_\+\+WP (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4 }\end{DoxyParamCaption})}
 
 
 
 Funcion que realiza la configuracion de Wordpress. 
 
 
-\begin{DoxyParams}{Parameters}
+\begin{DoxyParams}{Parámetros}
 {\em \$1} & Url donde se encontrara Wordpress \\
 \hline
 {\em \$2} & correo para el administrador de Wordpress \\
 \hline
+{\em \$3} & Ruta del directorio donde fue ejecutado el script \hyperlink{main_8sh}{main.\+sh} \\
+\hline
+{\em \$4} & Manejador de base de datos para el sitio \mbox{[}\textquotesingle{}My\+S\+QL\textquotesingle{} o \textquotesingle{}Postgre\+S\+QL\textquotesingle{}\mbox{]} \\
+\hline
 \end{DoxyParams}
-\mbox{\Hypertarget{WP__Instalador__General_8sh_ab8bd4095cd5a5c54fa9256d3064f6d0f}\label{WP__Instalador__General_8sh_ab8bd4095cd5a5c54fa9256d3064f6d0f}} 
+\mbox{\Hypertarget{WP__Instalador__General_8sh_abb84488e94ed8fa0eff09a789a9e42ca}\label{WP__Instalador__General_8sh_abb84488e94ed8fa0eff09a789a9e42ca}} 
 \index{W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh@{W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh}!install\+\_\+\+WP@{install\+\_\+\+WP}}
 \index{install\+\_\+\+WP@{install\+\_\+\+WP}!W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh@{W\+P\+\_\+\+Instalador\+\_\+\+General.\+sh}}
 \subsubsection{\texorpdfstring{install\+\_\+\+W\+P()}{install\_WP()}}
-{\footnotesize\ttfamily install\+\_\+\+WP (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6,  }\item[{}]{\$7 }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily install\+\_\+\+WP (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6,  }\item[{}]{\$7,  }\item[{}]{\$8,  }\item[{}]{\$9,  }\item[{}]{\$10 }\end{DoxyParamCaption})}
 
 
 
 Funcion que realiza la instalacion de Wordpress. 
 
 
-\begin{DoxyParams}{Parameters}
+\begin{DoxyParams}{Parámetros}
 {\em \$1} & Nombre de la base de datos para Wordpress \\
 \hline
 {\em \$2} & Servidor de la base de datos seguido del puerto (host\+:port) \\
@@ -79,5 +80,11 @@ Funcion que realiza la instalacion de Wordpress.
 {\em \$6} & Tipo de Servidor Web \textquotesingle{}Apache\textquotesingle{} o \textquotesingle{}Nginx\textquotesingle{} \\
 \hline
 {\em \$7} & El sistema operativo donde se desea instalar Wordpress \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
+\hline
+{\em \$8} & Nombre de dominio del sitio \\
+\hline
+{\em \$9} & Version de Word\+Press \\
+\hline
+{\em \$10} & Nombre de usuario con el que se ejecuta el servidor web \\
 \hline
 \end{DoxyParams}

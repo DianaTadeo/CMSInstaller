@@ -1,22 +1,38 @@
 #!/bin/bash
 
+## @file
+## @author Rafael Alejandro Vallejo Fernandez
+## @author Diana G. Tadeo Guillen
+## @brief Instalador de aplicacion web para el servidor web.
+## @version 1.0
+##
+## Este archivo permite instalar tanto el backend como el frotend del Servicio Web
+## que permite generar los archivos de descarga.
+
+## @fn utilerias()
+## @brief funcion que permite la instalacion de utilerías para realizar la configuración del sitio web y adicionales
+##
+## jq -> utilería para manipular JSON
+## expect -> utilería para automatizar scripts interactivos
+##
 utilerias(){
-	# Instalación de utilerías para realizar la configuración del sitio web y adicionales
-	# jq -> utilería para manipular JSON
-	# expect -> utilería para automatizar scripts interactivos
 	apt install vim wget curl subversion jq expect -y
 }
 
+## @fn web_server_apache()
+## @brief funcion que permite instalar y levantar el servicio web de apache
+##
 web_server_apache(){
-	# Instalación de apache y php
 	apt install apache2 php7.3 libapache2-mod-php -y
 	a2enmod php7.3
 	systemctl enable apache2
 	systemctl restart apache2.service
 }
 
+## @fn wrecaptcha_setup(){
+## @brief Configuración de reCAPTCHA necesario para el funcionamiento del sitio web
+##
 recaptcha_setup(){
-	# Configuración de reCAPTCHA necesario para el funcionamiento del sitio web
 	echo -e "\n\nInstrucciones para obtener el par de claves \
 (pública y privada) necesarias para la configuración.\n\
 Inicia sesión en el siguiente sitio con tu cuenta de Google y rellena el formulario: \

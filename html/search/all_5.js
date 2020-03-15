@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['joomla_5finstalador_5fgeneral_2esh',['Joomla_Instalador_General.sh',['../Joomla__Instalador__General_8sh.html',1,'']]],
-  ['jq_5finstall_5fos_5fdetection',['jq_install_OS_detection',['../main_8sh.html#a14153ec632198b7643c2d2f1cff3471d',1,'main.sh']]]
+  ['git_5fcomposer_5fdrush',['git_composer_drush',['../Drupal__Instalador__General_8sh.html#a3cc44682ce03ae17ac41a78185920c59',1,'Drupal_Instalador_General.sh']]],
+  ['git_5fexistence',['git_existence',['../OJS__Instalador__General_8sh.html#acb263c3e6443d96a7048d5e672616b9d',1,'OJS_Instalador_General.sh']]]
 ];

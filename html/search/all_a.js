@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['web_5fserver_5finstaller',['web_server_installer',['../main_8sh.html#a8fbc4bde96d235c9985b0d1697e1b552',1,'main.sh']]],
-  ['web_5fserver_5fports',['web_server_ports',['../F2BanLogwatchLogcheck_8sh.html#a5c1106882b059a6588637f440e6b5758',1,'F2BanLogwatchLogcheck.sh']]],
-  ['wp_5finstalador_5fgeneral_2esh',['WP_Instalador_General.sh',['../WP__Instalador__General_8sh.html',1,'']]]
+  ['ojs_5finstalador_5fgeneral_2esh',['OJS_Instalador_General.sh',['../OJS__Instalador__General_8sh.html',1,'']]],
+  ['ojs_5finstaller',['ojs_installer',['../OJS__Instalador__General_8sh.html#a9608ed294e757cd331743fa2d2f68d13',1,'OJS_Instalador_General.sh']]],
+  ['os_5fdependencies',['OS_dependencies',['../main_8sh.html#a48e8d18ccca665f9cd6bacd76dcd3d7d',1,'main.sh']]],
+  ['os_5fhardening',['OS_hardening',['../main_8sh.html#acd33682741fa52b482fbeb09846bd3cb',1,'main.sh']]]
 ];

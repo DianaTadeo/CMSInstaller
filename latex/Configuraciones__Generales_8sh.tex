@@ -1,11 +1,11 @@
-\hypertarget{Configuraciones__Generales_8sh}{}\section{Modulos/\+Hardening/\+Configuraciones\+\_\+\+Generales.sh File Reference}
+\hypertarget{Configuraciones__Generales_8sh}{}\section{Referencia del Archivo Modulos/\+Hardening/\+Configuraciones\+\_\+\+Generales.sh}
 \label{Configuraciones__Generales_8sh}\index{Modulos/\+Hardening/\+Configuraciones\+\_\+\+Generales.\+sh@{Modulos/\+Hardening/\+Configuraciones\+\_\+\+Generales.\+sh}}
 
 
 Script para la configuración general de hardening en Debian 9, 10 y Cent\+OS 6, 7.  
 
 
-\subsection*{Functions}
+\subsection*{Funciones}
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\Hypertarget{Configuraciones__Generales_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{Configuraciones__Generales_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
@@ -15,23 +15,32 @@ Script para la configuración general de hardening en Debian 9, 10 y Cent\+OS 6,
 \begin{DoxyCompactList}\small\item\em Función que deshabilita los servicios del sistema predeterminados. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{Configuraciones__Generales_8sh_af9950a47b946dd1e1d14b44a39ad3a7d}\label{Configuraciones__Generales_8sh_af9950a47b946dd1e1d14b44a39ad3a7d}} 
 \hyperlink{Configuraciones__Generales_8sh_af9950a47b946dd1e1d14b44a39ad3a7d}{disable\+\_\+user\+\_\+accounts} ()
-\begin{DoxyCompactList}\small\item\em Función que deshabilita las cuentas de usuario que tienen una shell definida en /etc/passwd. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Función que deshabilita las cuentas de usuario que tienen una shell definida en /etc/passwd. \end{DoxyCompactList}\item 
+\hyperlink{Configuraciones__Generales_8sh_ac4fb2a5b8684da33e70460b3b419f32d}{password\+\_\+policy} (\$1)
+\begin{DoxyCompactList}\small\item\em Función que establece la política de conteseñas para los usuarios del sistema. \end{DoxyCompactList}\item 
+\hyperlink{Configuraciones__Generales_8sh_a1fc4ba4932f2393664a8130399016a15}{users\+\_\+and\+\_\+privileges} (\$1)
+\begin{DoxyCompactList}\small\item\em Función que establece los permisos y dueños de archivos relevantes en el sistema. \end{DoxyCompactList}\item 
+\hyperlink{Configuraciones__Generales_8sh_a2d14b76d44400f8580c56fd4d74022ae}{sudo\+\_\+policy} (\$1)
+\begin{DoxyCompactList}\small\item\em Función que realiza las políticas de sudo y agrega usuarios a ese grupo. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{Configuraciones__Generales_8sh_a3abca90681740a1a93061f0453bdfccd}\label{Configuraciones__Generales_8sh_a3abca90681740a1a93061f0453bdfccd}} 
+\hyperlink{Configuraciones__Generales_8sh_a3abca90681740a1a93061f0453bdfccd}{additional\+\_\+preferences} ()
+\begin{DoxyCompactList}\small\item\em Función que añade elementos adicionales de hardening y preferencias a los usuarios del sistema. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
-\subsection{Detailed Description}
+\subsection{Descripción detallada}
 Script para la configuración general de hardening en Debian 9, 10 y Cent\+OS 6, 7. 
 
-\begin{DoxyAuthor}{Author}
+\begin{DoxyAuthor}{Autor}
 Rafael Alejandro Vallejo Fernandez 
 
 Diana G. Tadeo Guillen 
 \end{DoxyAuthor}
-\begin{DoxyVersion}{Version}
+\begin{DoxyVersion}{Versión}
 1.\+0
 \end{DoxyVersion}
 Este archivo permite instalar y confirgurar programas que permiten el monitoreo y ciertas configuraciones de seguridad. 
 
-\subsection{Function Documentation}
+\subsection{Documentación de las funciones}
 \mbox{\Hypertarget{Configuraciones__Generales_8sh_ad83bd5e5089ad1546035126564e2a5d1}\label{Configuraciones__Generales_8sh_ad83bd5e5089ad1546035126564e2a5d1}} 
 \index{Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}!disable\+\_\+default\+\_\+services@{disable\+\_\+default\+\_\+services}}
 \index{disable\+\_\+default\+\_\+services@{disable\+\_\+default\+\_\+services}!Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}}
@@ -43,7 +52,52 @@ Este archivo permite instalar y confirgurar programas que permiten el monitoreo 
 Función que deshabilita los servicios del sistema predeterminados. 
 
 
-\begin{DoxyParams}{Parameters}
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & Sistema operativo \mbox{[}\textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{}\mbox{]} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{Configuraciones__Generales_8sh_ac4fb2a5b8684da33e70460b3b419f32d}\label{Configuraciones__Generales_8sh_ac4fb2a5b8684da33e70460b3b419f32d}} 
+\index{Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}!password\+\_\+policy@{password\+\_\+policy}}
+\index{password\+\_\+policy@{password\+\_\+policy}!Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}}
+\subsubsection{\texorpdfstring{password\+\_\+policy()}{password\_policy()}}
+{\footnotesize\ttfamily password\+\_\+policy (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Función que establece la política de conteseñas para los usuarios del sistema. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & Sistema operativo \mbox{[}\textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{}\mbox{]} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{Configuraciones__Generales_8sh_a2d14b76d44400f8580c56fd4d74022ae}\label{Configuraciones__Generales_8sh_a2d14b76d44400f8580c56fd4d74022ae}} 
+\index{Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}!sudo\+\_\+policy@{sudo\+\_\+policy}}
+\index{sudo\+\_\+policy@{sudo\+\_\+policy}!Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}}
+\subsubsection{\texorpdfstring{sudo\+\_\+policy()}{sudo\_policy()}}
+{\footnotesize\ttfamily sudo\+\_\+policy (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Función que realiza las políticas de sudo y agrega usuarios a ese grupo. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & Sistema operativo \mbox{[}\textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{}\mbox{]} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{Configuraciones__Generales_8sh_a1fc4ba4932f2393664a8130399016a15}\label{Configuraciones__Generales_8sh_a1fc4ba4932f2393664a8130399016a15}} 
+\index{Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}!users\+\_\+and\+\_\+privileges@{users\+\_\+and\+\_\+privileges}}
+\index{users\+\_\+and\+\_\+privileges@{users\+\_\+and\+\_\+privileges}!Configuraciones\+\_\+\+Generales.\+sh@{Configuraciones\+\_\+\+Generales.\+sh}}
+\subsubsection{\texorpdfstring{users\+\_\+and\+\_\+privileges()}{users\_and\_privileges()}}
+{\footnotesize\ttfamily users\+\_\+and\+\_\+privileges (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Función que establece los permisos y dueños de archivos relevantes en el sistema. 
+
+
+\begin{DoxyParams}{Parámetros}
 {\em \$1} & Sistema operativo \mbox{[}\textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{}\mbox{]} \\
 \hline
 \end{DoxyParams}

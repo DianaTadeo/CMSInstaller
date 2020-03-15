@@ -1,0 +1,91 @@
+\hypertarget{OJS__Instalador__General_8sh}{}\section{Referencia del Archivo Modulos/\+Instaladores\+C\+M\+S/\+O\+J\+S\+\_\+\+Instalador\+\_\+\+General.sh}
+\label{OJS__Instalador__General_8sh}\index{Modulos/\+Instaladores\+C\+M\+S/\+O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh@{Modulos/\+Instaladores\+C\+M\+S/\+O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh}}
+
+
+Instalador de O\+JS para Cent\+OS 6, Cent\+OS 7, Debian 9 y Debian 10.  
+
+
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{OJS__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}\label{OJS__Instalador__General_8sh_a92067b58a8478c9841b2cd9b75ea3565}} 
+{\bfseries log\+\_\+errors} (\$1, \$2)
+\item 
+\mbox{\Hypertarget{OJS__Instalador__General_8sh_a0def5b6b697b8869c4772673d56a5a4a}\label{OJS__Instalador__General_8sh_a0def5b6b697b8869c4772673d56a5a4a}} 
+{\bfseries install\+\_\+dep} (\$1, \$2, \$3, \$4, \$5, \$6)
+\item 
+\hyperlink{OJS__Instalador__General_8sh_acb263c3e6443d96a7048d5e672616b9d}{git\+\_\+existence} (\$1)
+\begin{DoxyCompactList}\small\item\em Funcion que verifica la existencia o instala git. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{OJS__Instalador__General_8sh_ae5ce76ad68690ff00cb63811e18c8a37}\label{OJS__Instalador__General_8sh_ae5ce76ad68690ff00cb63811e18c8a37}} 
+{\bfseries modulos\+\_\+configuraciones} (\$1)
+\item 
+\hyperlink{OJS__Instalador__General_8sh_a9608ed294e757cd331743fa2d2f68d13}{ojs\+\_\+installer} (\$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$\{10\}, \$\{11\}, \$\{12\})
+\begin{DoxyCompactList}\small\item\em Funcion que realiza la instalacion de O\+JS. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+Instalador de O\+JS para Cent\+OS 6, Cent\+OS 7, Debian 9 y Debian 10. 
+
+\begin{DoxyAuthor}{Autor}
+Rafael Alejandro Vallejo Fernandez 
+
+Diana G. Tadeo Guillen 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Versión}
+1.\+0 
+\end{DoxyVersion}
+
+
+\subsection{Documentación de las funciones}
+\mbox{\Hypertarget{OJS__Instalador__General_8sh_acb263c3e6443d96a7048d5e672616b9d}\label{OJS__Instalador__General_8sh_acb263c3e6443d96a7048d5e672616b9d}} 
+\index{O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh@{O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh}!git\+\_\+existence@{git\+\_\+existence}}
+\index{git\+\_\+existence@{git\+\_\+existence}!O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh@{O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh}}
+\subsubsection{\texorpdfstring{git\+\_\+existence()}{git\_existence()}}
+{\footnotesize\ttfamily git\+\_\+existence (\begin{DoxyParamCaption}\item[{}]{\$1 }\end{DoxyParamCaption})}
+
+
+
+Funcion que verifica la existencia o instala git. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & El sistema operativo donde se esta instalando O\+JS \+: \textquotesingle{}Debian 9\textquotesingle{}, \textquotesingle{}Debian 10\textquotesingle{}, \textquotesingle{}Cent\+OS 6\textquotesingle{} o \textquotesingle{}Cent\+OS 7\textquotesingle{} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{OJS__Instalador__General_8sh_a9608ed294e757cd331743fa2d2f68d13}\label{OJS__Instalador__General_8sh_a9608ed294e757cd331743fa2d2f68d13}} 
+\index{O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh@{O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh}!ojs\+\_\+installer@{ojs\+\_\+installer}}
+\index{ojs\+\_\+installer@{ojs\+\_\+installer}!O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh@{O\+J\+S\+\_\+\+Instalador\+\_\+\+General.\+sh}}
+\subsubsection{\texorpdfstring{ojs\+\_\+installer()}{ojs\_installer()}}
+{\footnotesize\ttfamily ojs\+\_\+installer (\begin{DoxyParamCaption}\item[{}]{\$1,  }\item[{}]{\$2,  }\item[{}]{\$3,  }\item[{}]{\$4,  }\item[{}]{\$5,  }\item[{}]{\$6,  }\item[{}]{\$7,  }\item[{}]{\$8,  }\item[{}]{\$9,  }\item[{}]{\$\{10\},  }\item[{}]{\$\{11\},  }\item[{}]{\$\{12\} }\end{DoxyParamCaption})}
+
+
+
+Funcion que realiza la instalacion de O\+JS. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em \$1} & Version de ojs que se va a instalar \\
+\hline
+{\em \$2} & Manejador de la base de datos \mbox{[}\textquotesingle{}My\+S\+QL\textquotesingle{}$\vert$\textquotesingle{}Postgre\+S\+QL\textquotesingle{}\mbox{]} \\
+\hline
+{\em \$3} & Usuario de la base de datos para ojs \\
+\hline
+{\em \$4} & Servidor de la base de datos (host) \\
+\hline
+{\em \$5} & Puerto al que se conecta el manejador de base de datos \\
+\hline
+{\em \$6} & Nombre de la base de datos con la que se establecera la conexion \\
+\hline
+{\em \$7} & Nombre de dominio que tendra el sitio \\
+\hline
+{\em \$8} & Corrreo de administracion y notificacion del sitio \\
+\hline
+{\em \$9} & Indica si se especifico que se tiene una base de datos existente \\
+\hline
+{\em \$\{10\}} & Ruta del directorio donde fue ejecutado el script \hyperlink{main_8sh}{main.\+sh} \\
+\hline
+{\em \$\{11\}} & Servidor web con el que se realiza la instalacion \+: \textquotesingle{}Apache\textquotesingle{} o \textquotesingle{}Nginx\textquotesingle{} \\
+\hline
+{\em \$\{12\}} & Nombre de usuario con el que se ejecuta el servidor web \\
+\hline
+\end{DoxyParams}
